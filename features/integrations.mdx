@@ -1,397 +1,141 @@
 ---
 title: 'Integrations'
-description: 'Connect PulseGuard with your favorite tools and services'
+description: 'Cloud platform integraties voor automatische monitoring'
 ---
 
 ## Overview
 
-Connect PulseGuard with other services to enhance your monitoring workflow. Our integrations allow you to receive notifications, trigger actions, and share monitoring data with your favorite tools.
-
-## Available Integrations
-
-<CardGroup cols={3}>
-  <Card title="Slack" icon="slack" color="#4A154B">
-    Receive notifications and alerts in Slack channels. Get instant updates when issues are detected or resolved.
-    <div className="mt-2">
-      <span className="text-xs font-medium text-gray-500">Available on all plans</span>
-    </div>
-  </Card>
-  
-  <Card title="Discord" icon="discord" color="#5865F2">
-    Get monitoring updates in Discord channels. Perfect for team collaboration and real-time notifications.
-    <div className="mt-2">
-      <span className="text-xs font-medium text-gray-500">Available on all plans</span>
-    </div>
-  </Card>
-  
-  <Card title="Telegram" icon="telegram" color="#0088cc">
-    Receive alerts via Telegram. Get instant notifications wherever you are, on any device.
-    <div className="mt-2">
-      <span className="text-xs font-medium text-gray-500">Available on all plans</span>
-    </div>
-  </Card>
-  
-  <Card title="Email" icon="envelope" color="#4285F4">
-    Email notifications for important events. Customize frequency and alert types.
-    <div className="mt-2">
-      <span className="text-xs font-medium text-gray-500">Available on all plans</span>
-    </div>
-  </Card>
-  
-  <Card title="Webhooks" icon="code" color="#000000">
-    Integrate with custom services using webhooks. Trigger actions based on monitoring events.
-    <div className="mt-2">
-      <span className="text-xs font-medium text-blue-500">Pro & Expert plans</span>
-    </div>
-  </Card>
-  
-  <Card title="SMS" icon="mobile-screen" color="#25D366">
-    Get critical alerts via SMS for urgent notifications when you're away from your computer.
-    <div className="mt-2">
-      <span className="text-xs font-medium text-blue-500">Pro & Expert plans</span>
-    </div>
-  </Card>
-</CardGroup>
-
-## Setting Up Slack Integration
-
-Connect PulseGuard to Slack to receive real-time notifications about your monitored resources:
-
-<Steps>
-  <Step title="Navigate to Integrations">
-    Go to Settings > Integrations in your PulseGuard dashboard
-  </Step>
-  <Step title="Select Slack">
-    Click on the Slack card in the available integrations
-  </Step>
-  <Step title="Authorize PulseGuard">
-    Click the "Connect to Slack" button and authorize PulseGuard to access your Slack workspace
-  </Step>
-  <Step title="Select Channels">
-    Choose which Slack channels should receive notifications
-  </Step>
-  <Step title="Configure Notifications">
-    Select which events should trigger notifications (e.g., domain down, SSL expiry warnings)
-  </Step>
-  <Step title="Save Configuration">
-    Click "Save" to activate the integration
-  </Step>
-</Steps>
-
-<Frame>
-  <div className="bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-4">
-    <div className="flex items-center border-b border-gray-200 dark:border-gray-600 pb-4 mb-4">
-      <div className="bg-[#4A154B] rounded p-2 mr-3">
-        <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M5.042 11.667A2.208 2.208 0 2.834 15.291a2.208 2.208 0 2.208 2.209h6.625v-2.209H5.042v-3.624zM12.875 5.042a2.208 2.208 0 0 0-2.208 2.208v6.625h2.208V7.25h3.625V5.042h-3.625zM18.958 12.875a2.208 2.208 0 0 0-2.208 2.208v3.625h-3.625v2.208h3.625a2.208 2.208 0 0 0 2.208-2.208v-5.833zM8.042 5.042a2.208 2.208 0 0 0 0 4.416h6.625V7.25H8.042V5.042z" />
-        </svg>
-      </div>
-      <h3 className="text-lg font-medium">Slack Integration Settings</h3>
-    </div>
-    
-    <div className="mb-4">
-      <div className="flex items-center justify-between mb-2">
-        <label className="text-sm font-medium">Connected Workspace</label>
-        <span className="text-green-600 dark:text-green-400 text-xs font-medium">Connected</span>
-      </div>
-      <div className="flex items-center bg-gray-50 dark:bg-gray-800 p-2 rounded">
-        <img src="https://a.slack-edge.com/80588/marketing/img/icons/icon_slack_hash_colored.png" alt="Workspace" className="h-5 w-5 mr-2" />
-        <span className="text-sm">yourworkspace.slack.com</span>
-      </div>
-    </div>
-    
-    <div className="mb-4">
-      <label className="block text-sm font-medium mb-2">Channel Configuration</label>
-      <div className="space-y-2">
-        <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-2 rounded">
-          <div className="flex items-center">
-            <span className="text-gray-500 mr-2">#</span>
-            <span className="text-sm">monitoring-alerts</span>
-          </div>
-          <div className="flex items-center">
-            <span className="px-2 py-0.5 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded text-xs">Critical</span>
-          </div>
-        </div>
-        
-        <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-2 rounded">
-          <div className="flex items-center">
-            <span className="text-gray-500 mr-2">#</span>
-            <span className="text-sm">monitoring-status</span>
-          </div>
-          <div className="flex items-center">
-            <span className="px-2 py-0.5 bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 rounded text-xs">All</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div className="mb-4">
-      <label className="block text-sm font-medium mb-2">Notification Settings</label>
-      <div className="space-y-2">
-        <div className="flex items-center">
-          <input type="checkbox" id="domain-down" className="rounded text-blue-600 mr-2" checked />
-          <label htmlFor="domain-down" className="text-sm">Domain Down Alerts</label>
-        </div>
-        
-        <div className="flex items-center">
-          <input type="checkbox" id="domain-up" className="rounded text-blue-600 mr-2" checked />
-          <label htmlFor="domain-up" className="text-sm">Domain Recovery Notifications</label>
-        </div>
-        
-        <div className="flex items-center">
-          <input type="checkbox" id="ssl-expiry" className="rounded text-blue-600 mr-2" checked />
-          <label htmlFor="ssl-expiry" className="text-sm">SSL Certificate Expiry Warnings</label>
-        </div>
-        
-        <div className="flex items-center">
-          <input type="checkbox" id="device-alerts" className="rounded text-blue-600 mr-2" checked />
-          <label htmlFor="device-alerts" className="text-sm">Device Performance Alerts</label>
-        </div>
-      </div>
-    </div>
-    
-    <div className="flex justify-end">
-      <button className="bg-blue-600 text-white px-4 py-2 rounded text-sm">Save Settings</button>
-    </div>
-  </div>
-  <figcaption>Example of Slack integration configuration</figcaption>
-</Frame>
-
-## Using Webhooks
-
-Webhooks allow you to integrate PulseGuard with custom services and applications:
-
-<AccordionGroup>
-  <Accordion title="Webhook Setup">
-    1. Go to Settings > Integrations > Webhooks
-    2. Click "Add Webhook"
-    3. Enter the webhook URL that will receive the data
-    4. Select which events should trigger the webhook
-    5. Choose the data format (JSON or Form Data)
-    6. Save the webhook configuration
-  </Accordion>
-  
-  <Accordion title="Webhook Payload Format">
-    ```json
-    {
-      "event": "domain_down",
-      "resource": {
-        "type": "domain",
-        "id": "d-12345",
-        "name": "example.com",
-        "url": "https://example.com"
-      },
-      "status": {
-        "code": "down",
-        "status_code": 503,
-        "message": "Service Unavailable"
-      },
-      "timestamp": "2023-07-15T14:22:31Z",
-      "additional_data": {
-        "response_time": null,
-        "previous_status": "up",
-        "down_since": "2023-07-15T14:22:31Z"
-      }
-    }
-    ```
-  </Accordion>
-  
-  <Accordion title="Webhook Events">
-    - `domain_down`: Triggered when a domain becomes unavailable
-    - `domain_up`: Triggered when a domain recovers
-    - `ssl_expiry_warning`: Triggered when an SSL certificate is nearing expiration
-    - `device_alert`: Triggered when a device metric exceeds thresholds
-    - `anomaly_detected`: Triggered when an anomaly is detected by AI
-    - `report_generated`: Triggered when a report is generated
-  </Accordion>
-  
-  <Accordion title="Testing Webhooks">
-    You can test your webhook integration by clicking the "Test" button in the webhook configuration page. This will send a test payload to your webhook URL to verify that it's correctly configured.
-  </Accordion>
-</AccordionGroup>
-
-## Email Notifications
-
-Configure how and when you receive email notifications:
-
-<Frame>
-  <div className="bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-4">
-    <h3 className="text-lg font-medium mb-4 border-b border-gray-200 dark:border-gray-600 pb-3">Email Notification Settings</h3>
-    
-    <div className="mb-4">
-      <label className="block text-sm font-medium mb-2">Recipient Emails</label>
-      <div className="space-y-2">
-        <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-2 rounded">
-          <span className="text-sm">admin@example.com</span>
-          <div className="flex items-center">
-            <span className="px-2 py-0.5 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 rounded text-xs">Primary</span>
-            <button className="ml-2 text-gray-400 hover:text-gray-500">
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-          </div>
-        </div>
-        
-        <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-2 rounded">
-          <span className="text-sm">alerts@example.com</span>
-          <button className="text-gray-400 hover:text-gray-500">
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-        </div>
-        
-        <button className="flex items-center text-sm text-blue-600 dark:text-blue-400">
-          <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Add Recipient
-        </button>
-      </div>
-    </div>
-    
-    <div className="mb-4">
-      <label className="block text-sm font-medium mb-2">Notification Preferences</label>
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium">Critical Alerts</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Domain down, device critical issues</p>
-          </div>
-          <div className="flex items-center">
-            <label className="text-xs mr-2">Send immediately</label>
-            <div className="relative inline-block w-10 mr-2 align-middle select-none">
-              <input type="checkbox" className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked />
-              <label className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium">Warning Alerts</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Slow response, SSL warnings</p>
-          </div>
-          <div className="flex items-center">
-            <label className="text-xs mr-2">Daily digest</label>
-            <div className="relative inline-block w-10 mr-2 align-middle select-none">
-              <input type="checkbox" className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked />
-              <label className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium">Status Reports</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Uptime and performance summaries</p>
-          </div>
-          <div className="flex items-center">
-            <label className="text-xs mr-2">Weekly</label>
-            <div className="relative inline-block w-10 mr-2 align-middle select-none">
-              <input type="checkbox" className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked />
-              <label className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div className="flex justify-end">
-      <button className="bg-blue-600 text-white px-4 py-2 rounded text-sm">Save Settings</button>
-    </div>
-  </div>
-  <figcaption>Example of email notification settings</figcaption>
-</Frame>
-
-## SMS Notifications (Pro & Expert Plans)
-
-Set up SMS notifications for critical alerts:
-
-<Steps>
-  <Step title="Navigate to Integrations">
-    Go to Settings > Integrations in your PulseGuard dashboard
-  </Step>
-  <Step title="Select SMS">
-    Click on the SMS card in the available integrations
-  </Step>
-  <Step title="Add Phone Number">
-    Enter the phone number that should receive SMS alerts
-  </Step>
-  <Step title="Verify Number">
-    Enter the verification code sent to your phone
-  </Step>
-  <Step title="Configure Alert Types">
-    Select which critical alerts should be sent via SMS
-  </Step>
-  <Step title="Save Configuration">
-    Click "Save" to activate SMS notifications
-  </Step>
-</Steps>
+PulseGuard integreert met populaire cloud platforms voor automatische resource discovery en monitoring. Verbind je accounts om je volledige infrastructuur te monitoren zonder handmatig alles toe te voegen.
 
 <Note>
-  SMS notifications are only available on Pro and Expert plans and are primarily intended for critical alerts due to SMS delivery costs.
+  Cloud integraties zijn beschikbaar vanaf de Expert plannen. Elk platform heeft zijn eigen setup vereisten.
 </Note>
 
-## Coming Soon
+## Beschikbare Integraties
 
 <CardGroup cols={3}>
-  <Card title="Microsoft Teams" icon="microsoft" color="#6264A7">
-    Get PulseGuard notifications directly in your Microsoft Teams channels.
+  <Card title="Azure" icon="cloud" color="#0078D4" href="/features/integrations/azure">
+    Automatische monitoring van Azure App Services, Functions, SQL Databases, Storage Accounts en Virtual Machines.
     <div className="mt-2">
-      <span className="text-xs font-medium italic">Coming soon</span>
+      <span className="text-xs font-medium text-blue-500">Expert plan</span>
     </div>
   </Card>
-  
-  <Card title="Jira" icon="jira" color="#0052CC">
-    Automatically create Jira issues when monitoring alerts are triggered.
+
+  <Card title="Coolify" icon="docker" color="#FF6B35" href="/features/integrations/coolify">
+    Self-hosted applicatie monitoring voor Coolify-managed containers, web apps en databases.
     <div className="mt-2">
-      <span className="text-xs font-medium italic">Coming soon</span>
+      <span className="text-xs font-medium text-blue-500">Expert plan</span>
     </div>
   </Card>
-  
-  <Card title="PagerDuty" icon="bell" color="#06AC38">
-    Integrate with PagerDuty for advanced incident management and on-call scheduling.
+
+  <Card title="Vercel" icon="zap" color="#000000" href="/features/integrations/vercel">
+    Frontend deployment monitoring voor Next.js, React en andere Vercel projecten.
     <div className="mt-2">
-      <span className="text-xs font-medium italic">Coming soon</span>
-    </div>
-  </Card>
-  
-  <Card title="Zapier" icon="bolt" color="#FF4A00">
-    Connect PulseGuard to thousands of apps through Zapier integration.
-    <div className="mt-2">
-      <span className="text-xs font-medium italic">Coming soon</span>
-    </div>
-  </Card>
-  
-  <Card title="IFTTT" icon="diagram-project" color="#3861FB">
-    Create custom automation workflows with IFTTT triggers and actions.
-    <div className="mt-2">
-      <span className="text-xs font-medium italic">Coming soon</span>
-    </div>
-  </Card>
-  
-  <Card title="Google Chat" icon="comments" color="#00AC47">
-    Receive notifications in Google Chat rooms and spaces.
-    <div className="mt-2">
-      <span className="text-xs font-medium italic">Coming soon</span>
+      <span className="text-xs font-medium text-blue-500">Expert plan</span>
     </div>
   </Card>
 </CardGroup>
 
-## Custom Integrations via API
+## Waarom Cloud Integraties?
 
-For advanced integration needs, you can use our [API](/api-reference/introduction) to build custom integrations:
+### Automatische Discovery
+In plaats van handmatig elke service toe te voegen, scant PulseGuard automatisch je cloud accounts en detecteert alle monitorbare resources.
 
-```bash
-# Example API call to get domain status
-curl -X GET "https://api.pulseguard.app/v2/domains/{domain_id}/status" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json"
-```
+### Unified Monitoring
+Krijg één overzicht van al je infrastructuur, ongeacht waar het draait - Azure, Coolify, Vercel of andere platforms.
 
-<Note>
-  API access is available on Pro and Expert plans. Visit our [API Documentation](/api-reference/introduction) for more details.
-</Note> 
+### Real-time Updates
+Nieuwe resources worden automatisch toegevoegd, verwijderde resources worden automatisch verwijderd.
 
+### Native Integratie
+Elke cloud provider heeft zijn eigen specifieke monitoring mogelijkheden die PulseGuard optimaal benut.
+
+## Algemene Setup Stappen
+
+<Steps>
+  <Step title="Navigeer naar Integrations">
+    Ga naar **Settings** → **Integrations** in je PulseGuard dashboard
+  </Step>
+  <Step title="Kies Platform">
+    Selecteer de cloud provider die je wilt integreren
+  </Step>
+  <Step title="Authenticatie">
+    Voer API tokens, OAuth credentials of service account keys in
+  </Step>
+  <Step title="Permissions Verificatie">
+    PulseGuard controleert of alle benodigde permissies aanwezig zijn
+  </Step>
+  <Step title="Resource Discovery">
+    Automatische scan van je account voor monitorbare resources
+  </Step>
+  <Step title="Monitoring Activatie">
+    Kies welke resources je wilt monitoren en configureer alerts
+  </Step>
+</Steps>
+
+## Security & Access Control
+
+### Encrypted Credentials
+Alle integratie credentials worden versleuteld opgeslagen met AES-256 encryptie.
+
+### Minimal Permissions
+PulseGuard vraagt alleen de minimale benodigde permissies voor monitoring.
+
+### Audit Logging
+Alle API calls naar cloud providers worden gelogd voor security auditing.
+
+### Token Rotation
+Automatische notificaties wanneer tokens verlopen of vernieuwd moeten worden.
+
+## Cost Considerations
+
+### Cloud Provider Costs
+- **Azure**: API calls naar Azure Resource Manager (~$0.50 per 10,000 calls)
+- **Coolify**: Geen extra kosten voor Coolify API access
+- **Vercel**: API rate limits (2000 requests/uur gratis)
+
+### PulseGuard Costs
+- **Expert Plan**: Vereist voor alle cloud integraties
+- **API Monitoring**: Voor automatisch aangemaakte endpoints
+- **Data Storage**: Voor uitgebreide metrics van cloud resources
+
+## Troubleshooting
+
+### Veelvoorkomende Problemen
+
+#### "Authentication Failed"
+**Oorzaken:** Verlopen tokens, onvoldoende permissies, verkeerde credentials
+**Oplossing:** Controleer token geldigheid en permissies in cloud provider dashboard
+
+#### "No Resources Found"
+**Oorzaken:** Lege account, resources in andere regio, permissie problemen
+**Oplossing:** Controleer account inhoud en API permissies
+
+#### "Rate Limit Exceeded"
+**Oorzaken:** Te veel API calls, grote resource scans
+**Oplossing:** Wacht tot rate limit reset of upgrade plan
+
+#### "Connection Timeouts"
+**Oorzaken:** Netwerk problemen, firewall blokkades
+**Oplossing:** Controleer netwerk connectiviteit en firewall rules
+
+## Best Practices
+
+### Resource Organization
+1. **Naming Conventions**: Gebruik consistente naming voor resources
+2. **Tags**: Tag resources voor betere filtering en monitoring
+3. **Resource Groups**: Organiseer resources in logische groepen
+
+### Monitoring Strategy
+1. **Critical Resources**: Focus op business-kritieke applicaties eerst
+2. **Alert Tuning**: Stel alerts af op basis van je specifieke environment
+3. **Cost Monitoring**: Houd API usage en kosten in de gaten
+
+### Security
+1. **Regular Audits**: Controleer integratie permissies periodiek
+2. **Token Rotation**: Vernieuw API tokens regelmatig
+3. **Access Reviews**: Beoordeel wie toegang heeft tot welke resources
+
+---
+
+*Voor gedetailleerde setup instructies, zie de specifieke documentatie voor elke cloud provider.*

@@ -34,6 +34,7 @@
             "pages": [
               "monitoring/domains",
               "monitoring/devices",
+              "monitoring/services",
               "monitoring/reports"
             ]
           },
@@ -46,6 +47,14 @@
             ]
           },
           {
+            "group": "Integrations",
+            "pages": [
+              "features/integrations/azure",
+              "features/integrations/coolify",
+              "features/integrations/vercel"
+            ]
+          },
+          {
             "group": "Status Pages",
             "pages": [
               "status-pages/introduction",
@@ -53,18 +62,6 @@
               "status-pages/incidents",
               "status-pages/maintenance",
               "status-pages/customization"
-            ]
-          },
-          {
-            "group": "Security",
-            "pages": [
-              "security/overview"
-            ]
-          },
-          {
-            "group": "Accessibility",
-            "pages": [
-              "accessibility/overview"
             ]
           },
           {
@@ -83,6 +80,12 @@
             ]
           },
           {
+            "group": "Security",
+            "pages": [
+              "security/overview"
+            ]
+          },
+          {
             "group": "Accessibility",
             "pages": [
               "accessibility/overview"
@@ -96,10 +99,16 @@
             ]
           },
           {
+            "group": "Development",
+            "pages": [
+              "development",
+              "deploy-guide"
+            ]
+          },
+          {
             "group": "Updates",
             "pages": [
-              "changelog",
-              "development"
+              "changelog"
             ]
           }
         ]
@@ -108,10 +117,17 @@
         "tab": "API Reference",
         "groups": [
           {
-            "group": "API Documentation",
+            "group": "Getting Started",
             "pages": [
               "api-reference/introduction",
-              "api-reference/authentication"
+              "api-reference/authentication",
+              "api-reference/mcp"
+            ]
+          },
+          {
+            "group": "Complete API Reference",
+            "pages": [
+              "api-reference/endpoints"
             ]
           },
           {
@@ -121,66 +137,8 @@
             ]
           },
           {
-            "group": "Auto-Generated API",
+            "group": "OpenAPI Specification",
             "openapi": "openapi.yaml"
-          },
-          {
-            "group": "Manual API Pages",
-            "pages": [
-              "api-reference/domains/list",
-              "api-reference/domains/get",
-              "api-reference/domains/create",
-              "api-reference/domains/update",
-              "api-reference/domains/delete",
-              "api-reference/devices/list",
-              "api-reference/devices/create",
-              "api-reference/devices/get",
-              "api-reference/devices/update",
-              "api-reference/devices/delete",
-              "api-reference/devices/regenerate-token",
-              "api-reference/reports/get"
-            ]
-          },
-          {
-            "group": "Toolbox",
-            "pages": [
-              "api-reference/toolbox/dns-lookup",
-              "api-reference/toolbox/whois",
-              "api-reference/toolbox/ssl-check",
-              "api-reference/toolbox/port-scan",
-              "api-reference/toolbox/ip-location",
-              "api-reference/toolbox/get-ip"
-            ]
-          },
-          {
-            "group": "Statistics",
-            "pages": [
-              "api-reference/statistics/history",
-              "api-reference/statistics/stats"
-            ]
-          },
-          {
-            "group": "Service Monitors",
-            "pages": [
-              "api-reference/service-monitors/list",
-              "api-reference/service-monitors/create",
-              "api-reference/service-monitors/get",
-              "api-reference/service-monitors/update",
-              "api-reference/service-monitors/delete",
-              "api-reference/service-monitors/check"
-            ]
-          },
-          {
-            "group": "AI & Anomalies",
-            "pages": [
-              "api-reference/ai/analyze-domain",
-              "api-reference/ai/get-explanation",
-              "api-reference/ai/get-summary",
-              "api-reference/ai/get-anomalies",
-              "api-reference/ai/resolve-anomaly",
-              "api-reference/ai/mark-false-positive",
-              "api-reference/ai/device-insights"
-            ]
           }
         ]
       }
@@ -189,7 +147,7 @@
       "anchors": [
         {
           "anchor": "Dashboard",
-          "href": "https://app.pulseguard.nl",
+          "href": "https://guard.ipulse.one",
           "icon": "gauge"
         },
         {
@@ -212,13 +170,13 @@
       },
       {
         "label": "Email",
-        "href": "mailto:info@pulseguard.nl"
+        "href": "mailto:info@ipulse.one"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://app.pulseguard.nl"
+      "href": "https://guard.ipulse.one"
     }
   },
   "contextual": {

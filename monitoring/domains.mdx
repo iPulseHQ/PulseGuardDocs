@@ -5,143 +5,268 @@ description: 'Monitor your websites and API endpoints'
 
 ## Overview
 
-Domain monitoring allows you to track the uptime, SSL certificate validity, and response time of your websites and API endpoints. This ensures you're always aware of your websites' performance and can quickly respond to any issues.
+Domain monitoring stelt je in staat om de uptime, SSL certificaat geldigheid, response times en algehele gezondheid van je websites en API endpoints bij te houden. PulseGuard controleert je domeinen elke 30 seconden tot 5 minuten, afhankelijk van je abonnement.
+
+<Note>
+  Domain monitoring is beschikbaar voor alle abonnementen. Hogere plannen bieden frequentere checks en meer geavanceerde features.
+</Note>
 
 ## Key Features
 
 <CardGroup cols={3}>
   <Card title="Uptime Monitoring" icon="check-circle" color="#22C55E">
-    Monitor your website's availability with checks every 1-5 minutes from multiple locations worldwide.
+    Controleer website beschikbaarheid met checks van multiple globale locaties (NL, DE, US).
   </Card>
   <Card title="SSL Monitoring" icon="lock" color="#3B82F6">
-    Track SSL certificate validity and receive alerts before certificates expire.
+    Bewaak SSL certificaat geldigheid en ontvang alerts voordat certificaten verlopen.
   </Card>
-  <Card title="Performance" icon="bolt" color="#8B5CF6">
-    Monitor response times and page load speeds to ensure optimal performance.
+  <Card title="Performance Metrics" icon="bolt" color="#8B5CF6">
+    Monitor response times, status codes en performance trends over tijd.
+  </Card>
+  <Card title="Multi-Location Monitoring" icon="globe" color="#F59E0B">
+    Checks vanaf verschillende geografische locaties voor nauwkeurige monitoring.
+  </Card>
+  <Card title="DNS Monitoring" icon="search" color="#EC4899">
+    Optionele DNS record monitoring voor domein changes.
+  </Card>
+  <Card title="Website Change Detection" icon="eye" color="#6366F1">
+    Detecteer visuele en inhoudelijke veranderingen op websites.
   </Card>
 </CardGroup>
 
-## Adding a Domain
+## Domein Toevoegen
 
-Follow these steps to add a new domain for monitoring:
+Volg deze stappen om een nieuw domein toe te voegen voor monitoring:
 
 <Steps>
-  <Step title="Navigate to the Domains section">
-    Click on "Domains" in the main sidebar navigation.
+  <Step title="Navigeer naar Domains sectie">
+    Klik op "Domains" in de hoofdnavigatie sidebar.
   </Step>
-  <Step title="Add a new domain">
-    Click on the "Add New" button in the sidebar and select "Add New Domain".
+  <Step title="Nieuw domein toevoegen">
+    Klik op de "Add New" button en selecteer "Add New Domain".
   </Step>
-  <Step title="Enter the domain URL">
-    Enter the full URL including the protocol (e.g., https://example.com).
+  <Step title="Voer domein URL in">
+    Voer de volledige URL in inclusief protocol (bijv. https://example.com).
   </Step>
-  <Step title="Configure monitoring preferences">
-    Set check frequency, alert thresholds, and notification preferences.
+  <Step title="Configureer monitoring opties">
+    Stel check interval, timeout, authenticatie en geavanceerde opties in.
   </Step>
-  <Step title="Save to start monitoring">
-    Click the "Save" button to begin monitoring your domain.
+  <Step title="Sla op om te starten">
+    Klik "Save" om monitoring te beginnen.
   </Step>
 </Steps>
 
-## Domain Details
+## Domein Configuratie Opties
 
-For each domain, you can view detailed information such as:
+### Basis Instellingen
+- **URL**: De volledige domein URL (ondersteunt http/https)
+- **Naam**: Beschrijvende naam voor het domein
+- **Check Interval**: Hoe vaak controleren (30 sec - 5 min, afhankelijk van plan)
+- **Timeout**: Maximale wachttijd voor responses (default: 30 seconden)
 
-<AccordionGroup>
-  <Accordion title="Current Status">
-    Real-time status (up/down) with visual indicators and uptime percentage with historical data.
-  </Accordion>
-  <Accordion title="Response Time">
-    Charts showing response time performance over time and comparison against historical baselines.
-  </Accordion>
-  <Accordion title="SSL Certificate Details">
-    Certificate expiration dates, issuer information, and security rating.
-  </Accordion>
-  <Accordion title="Historical Data">
-    Detailed logs of past incidents with timestamps and duration.
-  </Accordion>
-  <Accordion title="Alert History">
-    Record of all alerts sent and notification settings configuration.
-  </Accordion>
-</AccordionGroup>
+### Authenticatie
+- **Auth Type**: none, basic, bearer, api_key
+- **Credentials**: Username/password of API key voor beveiligde endpoints
 
-## Domain Dashboard Example
+### Geavanceerde Opties
+- **Expected Response**: Verwachte JSON response voor API monitoring
+- **Custom Headers**: Extra HTTP headers
+- **User Agent**: Custom user agent string
+- **Follow Redirects**: Of redirects gevolgd moeten worden
 
-Here's an example of what the domain monitoring dashboard looks like:
+### Extra Features
+- **SSL Monitoring**: Automatische certificaat checks (default: enabled)
+- **DNS Monitoring**: Bewaak DNS record changes
+- **Website Change Monitoring**: Detecteer content/veranderingen
 
-<Frame>
-  <div className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-6">
-    <div className="flex items-center justify-between mb-4">
-      <div className="flex items-center">
-        <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-        <span className="font-medium">example.com</span>
-      </div>
-      <span className="text-sm text-gray-500">Last checked: 2 minutes ago</span>
-    </div>
-    <div className="h-32 bg-gray-100 dark:bg-gray-600 rounded-lg mb-4 flex items-center justify-center">
-      <span className="text-gray-400">Response Time Chart</span>
-    </div>
-    <div className="grid grid-cols-3 gap-4 text-center">
-      <div>
-        <div className="text-sm text-gray-500">Uptime</div>
-        <div className="font-bold">99.98%</div>
-      </div>
-      <div>
-        <div className="text-sm text-gray-500">Response</div>
-        <div className="font-bold">152ms</div>
-      </div>
-      <div>
-        <div className="text-sm text-gray-500">SSL Valid</div>
-        <div className="font-bold">75 days</div>
-      </div>
-    </div>
-  </div>
-  <figcaption>Example domain dashboard visualization</figcaption>
-</Frame>
+## Domein Dashboard
 
-## Notification Options
+Elk domein heeft een uitgebreid dashboard met real-time data:
 
-When a domain goes down or experiences issues, PulseGuard can notify you through various channels:
+### Status Indicator
+- **🟢 Up**: Domein is bereikbaar
+- **🔴 Down**: Domein is niet bereikbaar
+- **🟡 Unknown**: Status onbekend (bijv. tijdens eerste check)
 
-<CardGroup cols={2}>
-  <Card title="Email Notifications" icon="envelope">
-    Receive email alerts when issues are detected
+### Key Metrics
+- **Uptime Percentage**: Percentage tijd dat domein online was
+- **Response Time**: Gemiddelde response tijd in milliseconden
+- **Status Code**: Laatste HTTP status code
+- **SSL Status**: Certificaat geldigheid en vervaldatum
+
+### Historische Data
+- **24h Uptime Graph**: Uptime over afgelopen 24 uur
+- **Response Time Trends**: Performance trends
+- **Incident History**: Vorige downtime incidenten
+
+## Multi-Location Monitoring
+
+PulseGuard controleert je domeinen vanaf meerdere locaties wereldwijd:
+
+<CardGroup cols={3}>
+  <Card title="Amsterdam (NL)" icon="map-marker">
+    Primaire monitoring locatie in Europa
   </Card>
-  <Card title="Slack" icon="slack">
-    Get notifications directly in your Slack channels
+  <Card title="Frankfurt (DE)" icon="map-marker">
+    Secundaire Europese monitoring locatie
   </Card>
-  <Card title="Discord" icon="discord">
-    Receive alerts in Discord servers
-  </Card>
-  <Card title="Telegram" icon="telegram">
-    Get instant notifications via Telegram
+  <Card title="New York (US)" icon="map-marker">
+    Noord-Amerikaanse monitoring locatie
   </Card>
 </CardGroup>
 
-## Advanced Settings
+Elke locatie rapporteert onafhankelijk, zodat je geografische beschikbaarheidsproblemen kunt detecteren.
 
-<AccordionGroup>
-  <Accordion title="Check Frequency">
-    Set how often PulseGuard should check your domain:
-    - Free plan: Every 5 minutes
-    - Pro plan: Every 1 minute
-    - Expert plan: Every 30 seconds
-  </Accordion>
-  <Accordion title="Alert Thresholds">
-    Configure when alerts should be triggered:
-    - Response time thresholds (e.g., alert when response time > 2 seconds)
-    - SSL expiry warnings (e.g., 30, 14, and 7 days before expiration)
-    - Number of consecutive failures before alerting
-  </Accordion>
-  <Accordion title="Authentication">
-    For protected resources, you can configure:
-    - HTTP Basic Authentication
-    - Custom headers
-    - Cookie-based authentication
-  </Accordion>
-</AccordionGroup>
+## SSL Certificaat Monitoring
 
-<Note>
-  Some advanced features may only be available on Pro or Expert plans.
-</Note> 
+Automatische SSL monitoring omvat:
 
+- **Certificaat Validiteit**: Controleert of certificaat geldig is
+- **Verval Datum**: Alerts 30 dagen voordat certificaat verloopt
+- **Issuer Informatie**: Wie het certificaat heeft uitgegeven
+- **Cipher Strength**: Beveiligingssterkte van encryptie
+
+### SSL Alert Types
+- **Certificate Expiring Soon**: < 30 dagen resterend
+- **Certificate Expired**: Certificaat is verlopen
+- **Invalid Certificate**: Certificaat is ongeldig
+- **Weak Cipher**: Certificaat gebruikt verouderde encryptie
+
+## DNS Monitoring
+
+Optionele DNS monitoring voor domeinen:
+
+### Bewaakte Record Types
+- **A Records**: IPv4 adressen
+- **AAAA Records**: IPv6 adressen
+- **CNAME Records**: Canonical name records
+- **MX Records**: Mail exchange records
+- **TXT Records**: Text records (inclusief SPF/DKIM)
+
+### Change Detection
+- **Nieuwe Records**: Wanneer records worden toegevoegd
+- **Verwijderde Records**: Wanneer records verdwijnen
+- **Value Changes**: Wanneer record waarden veranderen
+- **TTL Changes**: Wanneer time-to-live waarden veranderen
+
+## Website Change Monitoring
+
+Detecteer veranderingen op websites:
+
+### Visual Changes
+- **Screenshot Vergelijking**: Pixel-perfect vergelijking
+- **Change Percentage**: Hoeveel procent van pagina is veranderd
+- **Change Severity**: Low/Medium/High/Critical classification
+
+### Content Changes
+- **HTML Hash Monitoring**: Detecteer content veranderingen
+- **Text Diff**: Gedetailleerde vergelijking van veranderingen
+- **Ignored Patterns**: Configureer welke veranderingen genegeerd moeten worden
+
+## Incident Detection & Alerts
+
+PulseGuard detecteert automatisch incidenten gebaseerd op:
+
+### Uptime Incidenten
+- **Consecutive Failures**: Aantal opeenvolgende failed checks
+- **Duration Thresholds**: Hoe lang moet het down zijn voordat het een incident wordt
+
+### Performance Incidenten
+- **Response Time Spikes**: Plotselinge vertragingen
+- **Error Rate Increases**: Toename van error responses
+
+### SSL Incidenten
+- **Certificate Issues**: Verlopen of ongeldige certificaten
+- **Security Warnings**: Verouderde cipher suites
+
+## Plan Limits
+
+<table>
+  <thead>
+    <tr>
+      <th>Plan</th>
+      <th>Domeinen</th>
+      <th>Check Interval</th>
+      <th>Historie</th>
+      <th>Locaties</th>
+      <th>DNS Monitoring</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Free</td>
+      <td>1</td>
+      <td>5 min</td>
+      <td>7 dagen</td>
+      <td>1</td>
+      <td>❌</td>
+    </tr>
+    <tr>
+      <td>Pro</td>
+      <td>10</td>
+      <td>1 min</td>
+      <td>30 dagen</td>
+      <td>2</td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td>Expert</td>
+      <td>50</td>
+      <td>30 sec</td>
+      <td>90 dagen</td>
+      <td>3</td>
+      <td>✅</td>
+    </tr>
+  </tbody>
+</table>
+
+## Troubleshooting
+
+### Veelvoorkomende Problemen
+
+**Domein toont als "Down" maar is bereikbaar**
+- Controleer firewall instellingen
+- Verificeer dat de server responses geeft binnen timeout
+- Check of er IP whitelisting actief is
+
+**SSL Certificate alerts voor interne domeinen**
+- Schakel SSL monitoring uit voor interne/development domeinen
+- Of gebruik self-signed certificates in allowlist
+
+**Website change detection geeft false positives**
+- Configureer ignored selectors voor dynamische content
+- Stel change thresholds hoger in voor drukke sites
+- Gebruik scheduled checks in plaats van real-time
+
+### Best Practices
+
+1. **Realistische Timeouts**: Stel timeouts in gebaseerd op je applicatie performance
+2. **Appropriate Check Intervals**: Gebruik niet te frequente checks voor stabiele sites
+3. **Monitor Critical Endpoints**: Focus op API endpoints die essentieel zijn voor je business
+4. **Use Multiple Locations**: Voor geografisch distributeerde applicaties
+5. **Configure Alerts Wisely**: Stel alleen alerts in voor echte problemen
+
+## API Integration
+
+Gebruik de REST API voor geautomatiseerd domein beheer:
+
+```bash
+# Alle domeinen ophalen
+curl -H "Authorization: Bearer YOUR_TOKEN" https://api.ipulse.one/domains
+
+# Nieuw domein toevoegen
+curl -X POST https://api.ipulse.one/domains \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://api.example.com",
+    "name": "API Service",
+    "checkInterval": 1,
+    "isApi": true
+  }'
+
+# Domein statistieken ophalen
+curl -H "Authorization: Bearer YOUR_TOKEN" https://api.ipulse.one/domains/stats
+```
+
+Zie de [API Reference](/api-reference/endpoints) voor complete documentatie.

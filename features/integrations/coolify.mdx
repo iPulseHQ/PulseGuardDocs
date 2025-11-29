@@ -1,0 +1,400 @@
+---
+title: 'Coolify Integratie'
+description: 'Monitor Coolify-managed applicaties en services'
+---
+
+## Overview
+
+Coolify is een self-hosted, open-source alternatief voor Heroku en Vercel voor het deployen van applicaties. De PulseGuard Coolify integratie stelt je in staat om al je Coolify-managed resources automatisch te monitoren, inclusief Docker containers, web applicaties, databases en achtergrond services.
+
+<Note>
+  Coolify integratie is beschikbaar vanaf de Expert plannen. Je hebt een Coolify instance nodig met API toegang.
+</Note>
+
+## Hoe Coolify Werkt
+
+Coolify draait als een Docker container op je eigen server en biedt:
+
+- **Container Orchestration**: Docker Compose en Kubernetes support
+- **Git Integration**: Automatische deployments vanuit Git repositories
+- **Database Management**: PostgreSQL, MySQL, Redis, MongoDB
+- **Reverse Proxy**: Traefik voor load balancing en SSL
+- **Resource Monitoring**: Basis monitoring van containers en services
+
+## Ondersteunde Coolify Resources
+
+PulseGuard kan de volgende Coolify resources monitoren:
+
+<CardGroup cols={3}>
+  <Card title="Web Applications" icon="globe" color="#FF6B35">
+    Node.js, PHP, Python, Go applicaties
+  </Card>
+  <Card title="API Services" icon="code" color="#FF6B35">
+    REST APIs, GraphQL endpoints
+  </Card>
+  <Card title="Databases" icon="database" color="#FF6B35">
+    PostgreSQL, MySQL, Redis, MongoDB
+  </Card>
+  <Card title="Background Services" icon="cogs" color="#FF6B35">
+    Workers, queues, cron jobs
+  </Card>
+  <Card title="Load Balancers" icon="network-wired" color="#FF6B35">
+    Traefik reverse proxy
+  </Card>
+  <Card title="Custom Services" icon="docker" color="#FF6B35">
+    Alle Docker containers
+  </Card>
+</CardGroup>
+
+## Coolify Instance Koppelen
+
+<Steps>
+  <Step title="API Token Genereren">
+    Ga naar je Coolify dashboard → **Settings** → **API Tokens**
+  </Step>
+  <Step title="Nieuwe Token Aanmaken">
+    Klik "Create Token" en geef een beschrijvende naam
+  </Step>
+  <Step title="Token Opslaan">
+    Kopieer de token - deze zie je maar één keer!
+  </Step>
+  <Step title="PulseGuard Configureren">
+    Ga naar **Settings** → **Integrations** → **Coolify**
+  </Step>
+  <Step title="Instance Toevoegen">
+    Voer je Coolify URL en API token in
+  </Step>
+  <Step title="Verbinden">
+    Klik "Connect" om de integratie te activeren
+  </Step>
+</Steps>
+
+## API Token Permissions
+
+De Coolify API token heeft de volgende permissies nodig:
+
+```json
+{
+  "permissions": [
+    "read:projects",
+    "read:services",
+    "read:databases",
+    "read:applications"
+  ]
+}
+```
+
+**Minimale Permissions:**
+- `read:projects` - Voor project discovery
+- `read:applications` - Voor applicatie monitoring
+- `read:databases` - Voor database monitoring
+- `read:services` - Voor service health checks
+
+## Resource Discovery
+
+Zodra je Coolify instance gekoppeld is, scant PulseGuard automatisch:
+
+### Discovery Proces
+1. **Project Scanning**: Alle Coolify projecten worden geïdentificeerd
+2. **Service Enumeration**: Applicaties, databases en services gevonden
+3. **Health Endpoint Detection**: Automatische health check endpoints
+4. **Service Creation**: PulseGuard services worden aangemaakt
+5. **Initial Monitoring**: Eerste health checks worden uitgevoerd
+
+### Resource Types
+
+#### Web Applications
+- **HTTP Health Checks**: `/health`, `/status`, `/ping` endpoints
+- **Response Time Monitoring**: Performance tracking
+- **SSL Certificate Checks**: Voor HTTPS deployments
+- **Custom Health Endpoints**: Configureerbare health checks
+
+#### Databases
+- **Connection Health**: Database connectivity tests
+- **Query Performance**: Basic query execution tests
+- **Replication Status**: Master-slave replication monitoring
+- **Resource Usage**: CPU/memory monitoring van DB containers
+
+#### Background Services
+- **Process Health**: Container status monitoring
+- **Log Monitoring**: Error detection in logs
+- **Resource Limits**: CPU/memory threshold monitoring
+- **Restart Detection**: Automatic restart alerts
+
+#### Load Balancers
+- **Traefik Health**: Reverse proxy status
+- **SSL Termination**: Certificate validity checks
+- **Backend Health**: Upstream service monitoring
+- **Traffic Routing**: Request routing verification
+
+## Monitoring Configuratie
+
+### Automatische Service Aanmaak
+
+Voor elke ontdekte Coolify resource creëert PulseGuard:
+
+1. **HTTP Service Monitors**: Voor web applicaties
+2. **TCP Service Monitors**: Voor databases en custom services
+3. **Health Check Endpoints**: Automatische detectie
+4. **Alert Rules**: Standaard alerts per resource type
+
+### Protocol Configuratie
+
+#### Web Applications
+```json
+{
+  "protocol": "http",
+  "protocolConfig": {
+    "host": "myapp.coolify.example.com",
+    "port": 80,
+    "path": "/health",
+    "expectedResponse": {
+      "status": "healthy"
+    }
+  }
+}
+```
+
+#### Databases
+```json
+{
+  "protocol": "tcp",
+  "protocolConfig": {
+    "host": "db-postgresql.coolify.internal",
+    "port": 5432
+  }
+}
+```
+
+#### Custom Services
+```json
+{
+  "protocol": "http",
+  "protocolConfig": {
+    "host": "redis.coolify.example.com",
+    "port": 6379,
+    "path": "/health"
+  }
+}
+```
+
+## Coolify Health Checks
+
+### Ingebouwde Health Endpoints
+
+Coolify applicaties hebben vaak standaard health endpoints:
+
+#### Node.js Applications
+```javascript
+// Health endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+```
+
+#### PHP Applications (Laravel)
+```php
+// Routes/web.php
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'healthy',
+        'database' => DB::connection()->getPdo() ? 'connected' : 'disconnected'
+    ]);
+});
+```
+
+#### Python Applications (FastAPI)
+```python
+# main.py
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+```
+
+### Custom Health Checks
+
+Voor applicaties zonder standaard health endpoint:
+
+```json
+{
+  "customHealthEndpoint": "/api/status",
+  "expectedStatusCodes": [200, 201],
+  "expectedResponseBody": {
+    "status": "ok"
+  },
+  "timeout": 5000
+}
+```
+
+## Deployment Monitoring
+
+### Git-based Deployments
+- **Build Status**: Deployment success/failure
+- **Build Time**: Deployment duration tracking
+- **Rollback Detection**: Automatic rollback alerts
+
+### Container Health
+- **Container Status**: Running, stopped, restarting
+- **Resource Usage**: CPU, memory, disk per container
+- **Restart Count**: Automatic restart monitoring
+- **Log Analysis**: Error detection in container logs
+
+## Security Considerations
+
+### Coolify Security
+- **API Tokens**: Gebruik dedicated monitoring tokens
+- **Network Security**: Coolify draait in isolated Docker networks
+- **Access Control**: Restrict API token permissions
+- **Token Rotation**: Vernieuw tokens regelmatig
+
+### PulseGuard Security
+- **Encrypted Credentials**: Coolify tokens worden versleuteld opgeslagen
+- **Read-only Access**: Alleen read permissies vereist
+- **Network Isolation**: Monitoring traffic blijft binnen je netwerk
+- **Audit Logging**: Alle Coolify API calls worden gelogd
+
+## Troubleshooting
+
+### Veelvoorkomende Problemen
+
+#### "Unable to connect to Coolify"
+**Oorzaken:**
+- Coolify instance is niet bereikbaar
+- Firewall blokkeert toegang
+- Incorrecte URL of port
+
+**Oplossingen:**
+```bash
+# Test connectivity
+curl -H "Authorization: Bearer YOUR_TOKEN" https://your-coolify-instance.com/api/v1/projects
+
+# Check firewall
+sudo ufw status
+sudo iptables -L
+```
+
+#### "No projects found"
+**Oorzaken:**
+- API token heeft onvoldoende permissies
+- Geen projecten in Coolify instance
+- Token is verlopen
+
+**Oplossingen:**
+1. Controleer token permissies in Coolify
+2. Creëer een nieuw token met juiste scopes
+3. Verificeer dat er projecten bestaan
+
+#### "Health check failures"
+**Oorzaken:**
+- Health endpoint niet beschikbaar
+- Applicatie is niet healthy
+- Network connectivity problemen
+
+**Oplossingen:**
+1. Controleer applicatie logs in Coolify
+2. Test health endpoint manually
+3. Configureer custom health check
+
+#### Container Status Issues
+**Oorzaken:**
+- Container crashed of gestopt
+- Resource constraints
+- Configuration errors
+
+**Oplossingen:**
+```bash
+# Check container status
+docker ps -a | grep your-container
+
+# View container logs
+docker logs your-container-name
+
+# Restart container via Coolify UI
+```
+
+## Performance Optimization
+
+### Monitoring Frequency
+- **Critical Services**: Elke 30 seconden
+- **Standard Apps**: Elke 5 minuten
+- **Background Services**: Elke 15 minuten
+
+### Resource Usage
+- **API Limits**: Coolify API rate limits respecteren
+- **Network Traffic**: Minimal monitoring traffic
+- **Storage**: Efficient metrics data storage
+
+### Alert Tuning
+- **False Positives**: Vermijd alerts voor known issues
+- **Maintenance Windows**: Plan voor deployments
+- **Graduated Alerts**: Warning → Critical escalation
+
+## Best Practices
+
+### Coolify Setup
+1. **Health Endpoints**: Implementeer health checks in al je applicaties
+2. **Consistent Naming**: Gebruik duidelijke naming conventions
+3. **Environment Separation**: Scheid development en production
+4. **Resource Limits**: Stel container limits in
+
+### Monitoring Strategy
+1. **Service Dependencies**: Monitor upstream/downstream services
+2. **Business Metrics**: Track application-specific KPIs
+3. **User Experience**: Monitor vanuit user perspective
+4. **SLA Compliance**: Stel alerts in voor SLA breaches
+
+### Maintenance
+1. **Regular Updates**: Houd Coolify en containers up-to-date
+2. **Backup Monitoring**: Monitor backup success/failure
+3. **Log Rotation**: Configureer log retention policies
+4. **Security Patches**: Apply security updates timely
+
+## API Integration
+
+Gebruik de REST API voor Coolify beheer:
+
+```bash
+# Coolify instances ophalen
+curl -H "Authorization: Bearer YOUR_TOKEN" https://api.ipulse.one/coolify/instances
+
+# Coolify instance toevoegen
+curl -X POST https://api.ipulse.one/coolify/instances \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Production Coolify",
+    "url": "https://coolify.example.com",
+    "apiKey": "coolify-api-token"
+  }'
+
+# Coolify resources ontdekken
+curl -H "Authorization: Bearer YOUR_TOKEN" https://api.ipulse.one/coolify/instances/INSTANCE_ID/resources
+```
+
+## Cost Considerations
+
+### Coolify Costs
+- **Server Hosting**: VPS of dedicated server kosten
+- **Domain/SSL**: Voor custom domains
+- **Storage**: Voor backups en logs
+
+### PulseGuard Costs
+- **Expert Plan**: Vereist voor Coolify integratie
+- **API Monitoring**: Voor health check endpoints
+- **Data Storage**: Metrics en log retention
+
+## Support & Resources
+
+### Coolify Documentation
+- [Coolify Documentation](https://coolify.io/docs)
+- [API Reference](https://coolify.io/docs/api-reference)
+- [Health Checks Guide](https://coolify.io/docs/health-checks)
+
+### PulseGuard Support
+- **Setup Guide**: Stap-voor-stap Coolify configuratie
+- **Troubleshooting**: Veelvoorkomende problemen
+- **Best Practices**: Aanbevolen monitoring setups
+
+---
+
+*Coolify integratie vereist een actief Coolify instance en Expert abonnement. Voor hulp bij de setup, contact onze support.*

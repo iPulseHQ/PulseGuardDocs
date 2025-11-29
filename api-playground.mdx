@@ -31,7 +31,7 @@ The playground supports all PulseGuard authentication methods:
 ## Getting Started
 
 ### 1. Obtain Your API Token
-1. Log into your [PulseGuard Dashboard](https://app.pulseguard.nl)
+1. Log into your [PulseGuard Dashboard](https://guard.ipulse.one)
 2. Navigate to **Settings** → **API Tokens**
 3. Generate a new token with appropriate permissions
 4. Copy the token for use in the playground
@@ -53,11 +53,11 @@ In any API endpoint playground:
 ### Domain Monitoring
 ```bash
 # List all domains
-curl -X GET "https://app.pulseguard.nl/api/v2/domains" \
+curl -X GET "https://api.ipulse.one/domains" \
   -H "Authorization: Bearer YOUR_API_TOKEN"
 
 # Create a new domain monitor
-curl -X POST "https://app.pulseguard.nl/api/v2/domains" \
+curl -X POST "https://api.ipulse.one/domains" \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -70,31 +70,23 @@ curl -X POST "https://app.pulseguard.nl/api/v2/domains" \
 ### Device Management
 ```bash
 # Get device metrics
-curl -X GET "https://app.pulseguard.nl/api/v2/devices/DEVICE-UUID" \
+curl -X GET "https://api.ipulse.one/devices/DEVICE-UUID" \
   -H "Authorization: Bearer YOUR_API_TOKEN"
 
 # Regenerate device token
-curl -X POST "https://app.pulseguard.nl/api/v2/devices/DEVICE-UUID/regenerate-token" \
+curl -X POST "https://api.ipulse.one/devices/DEVICE-UUID/regenerate-token" \
   -H "Authorization: Bearer YOUR_API_TOKEN"
 ```
 
 ### Toolbox Utilities
 ```bash
 # DNS lookup
-curl -X POST "https://app.pulseguard.nl/api/v2/toolbox/dns-lookup" \
+curl -X POST "https://api.ipulse.one/toolbox/dns-lookup" \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "domain": "example.com",
     "record_type": "A"
-  }'
-
-# SSL certificate check
-curl -X POST "https://app.pulseguard.nl/api/v2/toolbox/ssl-check" \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "url": "https://example.com"
   }'
 ```
 
@@ -185,7 +177,7 @@ Rate limit information is shown in response headers:
 ### Getting Help
 - Check our [Troubleshooting Guide](/resources/support)
 - Review response error messages
-- Contact support at [info@pulseguard.nl](mailto:info@pulseguard.nl)
+- Contact support at [info@ipulse.one](mailto:info@ipulse.one)
 - Join our [Discord Community](https://discord.gg/pulseguard)
 
 ---

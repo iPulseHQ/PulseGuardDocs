@@ -1,0 +1,1019 @@
+---
+title: 'API Endpoints'
+description: 'Complete reference of all PulseGuard API endpoints'
+---
+
+# API Endpoints Reference
+
+Dit document bevat een complete referentie van alle beschikbare PulseGuard API endpoints, georganiseerd per module.
+
+## Authenticatie
+
+Alle API requests vereisen authenticatie via Bearer tokens. Zie de [Authentication guide](/api-reference/authentication) voor details.
+
+## Base URL
+
+```
+https://api.ipulse.one/
+```
+
+## Domeinen (Domains)
+
+### Domein Beheer
+
+#### GET /api/domains
+Haal alle domeinen op voor de geauthenticeerde gebruiker.
+
+**Query Parameters:**
+- `page` (number, optional): Pagina nummer (default: 1)
+- `limit` (number, optional): Aantal resultaten per pagina (default: 20)
+- `organization` (string, optional): Filter op organisatie ID
+- `search` (string, optional): Zoekterm voor domein naam/URL
+- `status` (string, optional): Filter op status (up, down, unknown)
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "domain-uuid",
+      "url": "https://example.com",
+      "name": "My Website",
+      "status": "up",
+      "uptimePercentage": 99.9,
+      "responseTime": 245,
+      "createdAt": "2024-01-01T00:00:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 150,
+    "totalPages": 8
+  }
+}
+```
+
+#### POST /api/domains
+Creëer een nieuw domein voor monitoring.
+
+**Request Body:**
+```json
+{
+  "url": "https://example.com",
+  "name": "My Website",
+  "checkInterval": 5,
+  "timeout": 30,
+  "isApi": false,
+  "authType": "none"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "domain-uuid",
+    "url": "https://example.com",
+    "name": "My Website",
+    "checkInterval": 5,
+    "enabled": true,
+    "createdAt": "2024-01-01T00:00:00Z"
+  }
+}
+```
+
+#### GET /api/domains/:id
+Haal details van een specifiek domein op.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "domain-uuid",
+    "url": "https://example.com",
+    "name": "My Website",
+    "status": "up",
+    "uptimePercentage": 99.9,
+    "lastCheck": "2024-01-01T12:00:00Z",
+    "checkInterval": 5,
+    "certificate": {
+      "valid": true,
+      "expiresAt": "2024-12-31T00:00:00Z",
+      "issuer": "Let's Encrypt"
+    }
+  }
+}
+```
+
+#### PUT /api/domains/:id
+Update een domein.
+
+**Request Body:**
+```json
+{
+  "name": "Updated Website Name",
+  "checkInterval": 10,
+  "timeout": 60,
+  "enabled": true
+}
+```
+
+#### DELETE /api/domains/:id
+Verwijder een domein.
+
+### Domein Statistieken
+
+#### GET /api/domains/stats
+Haal overzichtsstatistieken voor alle domeinen.
+
+**Query Parameters:**
+- `organization` (string, optional): Filter op organisatie
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "total": 25,
+    "up": 23,
+    "down": 2,
+    "unknown": 0,
+    "avgResponseTime": 245,
+    "avgUptime": 99.7
+  }
+}
+```
+
+#### GET /api/domains/response-time-trends
+Haal response time trends voor alle domeinen.
+
+**Query Parameters:**
+- `organization` (string, optional): Filter op organisatie
+- `range` (string, optional): Tijdsbereik (1h, 24h, 7d, 30d) - default: 24h
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "domainId": "domain-uuid",
+      "domainName": "example.com",
+      "avgResponseTime": 245,
+      "minResponseTime": 120,
+      "maxResponseTime": 890,
+      "dataPoints": [
+        {
+          "timestamp": "2024-01-01T10:00:00Z",
+          "responseTime": 250
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Domein Monitoring
+
+#### GET /api/domains/:id/monitoring/history
+Haal monitoring geschiedenis voor een domein.
+
+**Query Parameters:**
+- `range` (string, optional): Tijdsbereik (1h, 24h, 7d, 30d) - default: 24h
+- `limit` (number, optional): Max aantal resultaten - default: 100
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "history-uuid",
+      "domainId": "domain-uuid",
+      "status": "up",
+      "responseTime": 245,
+      "statusCode": 200,
+      "timestamp": "2024-01-01T12:00:00Z"
+    }
+  ]
+}
+```
+
+#### GET /api/domains/:id/monitoring/locations
+Haal monitoring data per locatie voor een domein.
+
+**Query Parameters:**
+- `range` (string, optional): Tijdsbereik (1h, 24h, 7d, 30d) - default: 24h
+- `limit` (number, optional): Max aantal resultaten per locatie - default: 100
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "NL": [
+      {
+        "timestamp": "2024-01-01T12:00:00Z",
+        "status": "up",
+        "responseTime": 245
+      }
+    ],
+    "DE": [
+      {
+        "timestamp": "2024-01-01T12:00:00Z",
+        "status": "up",
+        "responseTime": 267
+      }
+    ]
+  }
+}
+```
+
+### Domein Hulpmiddelen
+
+#### GET /api/domains/fetch-title
+Haal de pagina titel op van een URL.
+
+**Query Parameters:**
+- `url` (string, required): URL om titel van op te halen
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "title": "Example Website - Home Page",
+    "url": "https://example.com"
+  }
+}
+```
+
+#### GET /api/domains/:id/icon
+Haal het favicon op van een domein.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "iconUrl": "https://example.com/favicon.ico"
+  }
+}
+```
+
+#### GET /api/domains/:id/summary
+Haal een samenvatting op van domein statistieken.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "domain": {
+      "id": "domain-uuid",
+      "name": "My Website",
+      "url": "https://example.com"
+    },
+    "stats": {
+      "uptime24h": 100,
+      "uptime7d": 99.9,
+      "uptime30d": 99.7,
+      "avgResponseTime": 245,
+      "totalChecks": 2880,
+      "failedChecks": 12
+    },
+    "certificate": {
+      "valid": true,
+      "expiresAt": "2024-12-31T00:00:00Z"
+    }
+  }
+}
+```
+
+## Devices
+
+### Device Beheer
+
+#### GET /api/devices
+Haal alle devices op.
+
+**Query Parameters:**
+- `organizationId` (string, optional): Organisatie ID voor filtering
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "device-uuid",
+      "name": "Production Server",
+      "hostname": "server01.example.com",
+      "platform": "linux",
+      "isOnline": true,
+      "lastSeen": "2024-01-01T12:00:00Z",
+      "healthStatus": "healthy"
+    }
+  ]
+}
+```
+
+#### GET /api/devices/stats
+Haal device statistieken op.
+
+**Query Parameters:**
+- `organizationId` (string, optional): Organisatie ID voor filtering
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "total": 5,
+    "online": 4,
+    "offline": 1,
+    "healthy": 3,
+    "warning": 1,
+    "critical": 1,
+    "activeIncidents": 2
+  }
+}
+```
+
+#### GET /api/devices/:deviceId
+Haal details van een specifiek device op.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "device-uuid",
+    "name": "Production Server",
+    "hostname": "server01.example.com",
+    "platform": "linux",
+    "architecture": "x64",
+    "cpu": "Intel Xeon",
+    "cpuCores": 8,
+    "totalMemory": 16,
+    "totalDisk": 500,
+    "isOnline": true,
+    "lastSeen": "2024-01-01T12:00:00Z",
+    "healthStatus": "healthy",
+    "agentVersion": "1.0.0"
+  }
+}
+```
+
+#### POST /api/devices/:deviceId/regenerate-token
+Genereer een nieuw agent token voor een device.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "token": "new-agent-token-here"
+  }
+}
+```
+
+### Device Metrics
+
+#### GET /api/devices/:deviceId/metrics
+Haal recente metrics voor een device op.
+
+**Query Parameters:**
+- `type` (string, optional): Filter op metric type (cpu, memory, disk, network)
+- `limit` (number, optional): Max aantal resultaten - default: 100
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "metric-uuid",
+      "deviceId": "device-uuid",
+      "type": "cpu",
+      "name": "usage",
+      "value": 35.5,
+      "unit": "%",
+      "timestamp": "2024-01-01T12:00:00Z"
+    }
+  ]
+}
+```
+
+#### GET /api/devices/:deviceId/processes
+Haal actieve processen voor een device op.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "pid": 1234,
+      "name": "nginx",
+      "command": "/usr/sbin/nginx",
+      "cpuPercent": 2.1,
+      "memoryMB": 45.6,
+      "status": "running",
+      "user": "www-data"
+    }
+  ]
+}
+```
+
+#### GET /api/devices/:deviceId/applications
+Haal geïnstalleerde applicaties voor een device op.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "name": "nginx",
+      "version": "1.20.1",
+      "publisher": "nginx.org",
+      "installPath": "/usr/sbin/nginx",
+      "size": 2048000,
+      "isRunning": true
+    }
+  ]
+}
+```
+
+#### GET /api/devices/:deviceId/network
+Haal netwerkverbindingen voor een device op.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "localAddress": "192.168.1.100",
+      "localPort": 80,
+      "remoteAddress": null,
+      "remotePort": null,
+      "protocol": "tcp",
+      "status": "listen",
+      "processName": "nginx"
+    }
+  ]
+}
+```
+
+## Services
+
+### Service Beheer
+
+#### GET /api/services
+Haal alle services op.
+
+**Query Parameters:**
+- `organizationId` (string, optional): Organisatie ID voor filtering
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "service-uuid",
+      "name": "API Service",
+      "protocol": "http",
+      "status": "up",
+      "lastCheck": "2024-01-01T12:00:00Z",
+      "checkInterval": 5,
+      "consecutiveFailures": 0
+    }
+  ]
+}
+```
+
+#### POST /api/services
+Creëer een nieuwe service voor monitoring.
+
+**Request Body:**
+```json
+{
+  "name": "API Service",
+  "protocol": "http",
+  "protocolConfig": {
+    "host": "api.example.com",
+    "port": 443,
+    "path": "/health"
+  },
+  "checkInterval": 5,
+  "timeout": 30
+}
+```
+
+#### GET /api/services/:id
+Haal details van een specifieke service op.
+
+#### PUT /api/services/:id
+Update een service.
+
+#### DELETE /api/services/:id
+Verwijder een service.
+
+#### POST /api/services/:id/check
+Voer handmatig een check uit voor een service.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "status": "up",
+    "responseTime": 145,
+    "message": "Service is responding normally"
+  }
+}
+```
+
+### Service History
+
+#### GET /api/services/:id/history
+Haal monitoring geschiedenis voor een service op.
+
+**Query Parameters:**
+- `limit` (number, optional): Max aantal resultaten - default: 100
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "history-uuid",
+      "serviceId": "service-uuid",
+      "status": "up",
+      "responseTime": 145,
+      "timestamp": "2024-01-01T12:00:00Z",
+      "message": "HTTP 200 OK"
+    }
+  ]
+}
+```
+
+## Integraties
+
+### Azure
+
+#### GET /api/azure/accounts
+Haal gekoppelde Azure accounts op.
+
+#### POST /api/azure/accounts
+Koppel een nieuw Azure account.
+
+**Request Body:**
+```json
+{
+  "tenantId": "azure-tenant-id",
+  "clientId": "azure-client-id",
+  "clientSecret": "azure-client-secret",
+  "subscriptionId": "azure-subscription-id"
+}
+```
+
+#### GET /api/azure/accounts/:accountId/services
+Haal Azure services op voor monitoring.
+
+#### POST /api/azure/accounts/:accountId/services/:serviceId/monitor
+Start monitoring van een Azure service.
+
+### Coolify
+
+#### GET /api/coolify/instances
+Haal gekoppelde Coolify instances op.
+
+#### POST /api/coolify/instances
+Koppel een nieuwe Coolify instance.
+
+**Request Body:**
+```json
+{
+  "name": "My Coolify Instance",
+  "url": "https://coolify.example.com",
+  "apiKey": "coolify-api-key"
+}
+```
+
+#### GET /api/coolify/instances/:instanceId/resources
+Haal Coolify resources op voor monitoring.
+
+### Vercel
+
+#### GET /api/vercel/accounts
+Haal gekoppelde Vercel accounts op.
+
+#### POST /api/vercel/accounts
+Koppel een nieuw Vercel account via OAuth.
+
+#### GET /api/vercel/accounts/:accountId/projects
+Haal Vercel projecten op voor monitoring.
+
+## Toolbox
+
+### DNS Lookup
+
+#### POST /api/toolbox/dns-lookup
+Voer een DNS lookup uit.
+
+**Request Body:**
+```json
+{
+  "domain": "example.com",
+  "record_type": "A"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "domain": "example.com",
+    "records": [
+      {
+        "type": "A",
+        "name": "example.com",
+        "value": "93.184.216.34",
+        "ttl": 3600
+      }
+    ],
+    "total": 1
+  }
+}
+```
+
+### Port Scanner
+
+#### POST /api/toolbox/port-scanner
+Scan poorten op een host.
+
+**Request Body:**
+```json
+{
+  "target": "example.com",
+  "scanType": "quick",
+  "protocol": "tcp",
+  "timeout": 30
+}
+```
+
+**Response:** (streaming NDJSON)
+```json
+{"type": "progress", "progress": 25}
+{"type": "progress", "progress": 50}
+{"type": "progress", "progress": 75}
+{"type": "result", "results": {"openPorts": [80, 443], "totalScanned": 100}}
+```
+
+### IP Geolocation
+
+#### POST /api/toolbox/ip-scanner
+Haal geolocation informatie op voor een IP.
+
+**Request Body:**
+```json
+{
+  "ip": "8.8.8.8"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "ip": "8.8.8.8",
+    "country": "United States",
+    "city": "Mountain View",
+    "region": "California",
+    "isp": "Google LLC",
+    "organization": "Google LLC"
+  }
+}
+```
+
+## Status Pages
+
+### Status Page Beheer
+
+#### GET /api/status-pages
+Haal alle status pages op.
+
+#### POST /api/status-pages
+Creëer een nieuwe status page.
+
+**Request Body:**
+```json
+{
+  "name": "Company Status",
+  "slug": "status",
+  "description": "Service status and incident updates",
+  "isPublic": true
+}
+```
+
+#### GET /api/status-pages/:id
+Haal details van een status page op.
+
+#### PUT /api/status-pages/:id
+Update een status page.
+
+#### DELETE /api/status-pages/:id
+Verwijder een status page.
+
+### Status Page Content
+
+#### GET /api/status-pages/:slug/public
+Haal publieke status page data op (voor bezoekers).
+
+#### POST /api/status-pages/:id/domains
+Voeg een domein toe aan een status page.
+
+**Request Body:**
+```json
+{
+  "domainId": "domain-uuid",
+  "displayName": "Main Website"
+}
+```
+
+#### POST /api/status-pages/:id/devices
+Voeg een device toe aan een status page.
+
+#### POST /api/status-pages/:id/services
+Voeg een service toe aan een status page.
+
+## Incidenten
+
+### Incident Beheer
+
+#### GET /api/incidents
+Haal alle incidenten op.
+
+**Query Parameters:**
+- `status` (string, optional): Filter op status
+- `severity` (string, optional): Filter op severity
+- `organizationId` (string, optional): Filter op organisatie
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "incident-uuid",
+      "title": "Website Down",
+      "description": "Main website is experiencing downtime",
+      "status": "investigating",
+      "severity": "high",
+      "impact": "major",
+      "detectedAt": "2024-01-01T10:00:00Z",
+      "affectedServices": ["website", "api"]
+    }
+  ]
+}
+```
+
+#### POST /api/incidents
+Creëer een nieuw incident.
+
+#### GET /api/incidents/:id
+Haal details van een incident op.
+
+#### PUT /api/incidents/:id
+Update een incident.
+
+### Incident Updates
+
+#### GET /api/incidents/:id/updates
+Haal alle updates voor een incident op.
+
+#### POST /api/incidents/:id/updates
+Voeg een update toe aan een incident.
+
+**Request Body:**
+```json
+{
+  "message": "We are investigating the issue",
+  "status": "investigating"
+}
+```
+
+### Incident Comments
+
+#### GET /api/incidents/:id/comments
+Haal alle comments voor een incident op.
+
+#### POST /api/incidents/:id/comments
+Voeg een comment toe aan een incident.
+
+**Request Body:**
+```json
+{
+  "content": "Any updates on the ETA?",
+  "isInternal": false
+}
+```
+
+## Notificaties
+
+### Notification Settings
+
+#### GET /api/notifications/settings
+Haal notification instellingen op.
+
+#### PUT /api/notifications/settings
+Update notification instellingen.
+
+**Request Body:**
+```json
+{
+  "emailNotifications": true,
+  "browserNotifications": true,
+  "emailIncidents": true,
+  "emailDowntime": true,
+  "emailWeeklyReports": true,
+  "slackEnabled": false,
+  "webhookUrl": "https://example.com/webhook"
+}
+```
+
+### Notification History
+
+#### GET /api/notifications
+Haal notification geschiedenis op.
+
+**Query Parameters:**
+- `limit` (number, optional): Max aantal resultaten - default: 50
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "notification-uuid",
+      "message": "Domain example.com is down",
+      "type": "error",
+      "isRead": false,
+      "createdAt": "2024-01-01T10:00:00Z"
+    }
+  ]
+}
+```
+
+#### PUT /api/notifications/:id/read
+Markeer een notification als gelezen.
+
+## Dashboard
+
+### Dashboard Data
+
+#### GET /api/dashboard/stats
+Haal dashboard statistieken op.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "domains": {
+      "total": 25,
+      "up": 23,
+      "down": 2,
+      "uptime": 99.7
+    },
+    "devices": {
+      "total": 5,
+      "online": 4,
+      "offline": 1
+    },
+    "services": {
+      "total": 15,
+      "up": 14,
+      "down": 1
+    },
+    "incidents": {
+      "active": 3,
+      "critical": 1
+    }
+  }
+}
+```
+
+#### GET /api/dashboard/recent-activity
+Haal recente activiteit op voor het dashboard.
+
+## API Keys
+
+### API Key Beheer
+
+#### GET /api-keys
+Haal alle API keys op.
+
+#### POST /api-keys
+Creëer een nieuwe API key.
+
+**Request Body:**
+```json
+{
+  "name": "Production API Key",
+  "scopes": ["read:domains", "write:domains"]
+}
+```
+
+#### DELETE /api-keys/:id
+Verwijder een API key.
+
+## Chat
+
+### Chat Conversaties
+
+#### GET /api/chat/conversations
+Haal chat conversaties op.
+
+#### POST /api/chat/conversations
+Sla een nieuwe conversatie op.
+
+**Request Body:**
+```json
+{
+  "conversationId": "optional-existing-id",
+  "userMessage": "Show me my dashboard",
+  "assistantMessage": "Here's your dashboard overview...",
+  "organizationId": "optional-org-id"
+}
+```
+
+#### GET /api/chat/conversations/:id
+Haal een specifieke conversatie op.
+
+## MCP (Model Context Protocol)
+
+### MCP Server
+
+#### POST /api/mcp
+MCP protocol endpoint voor ChatGPT integratie.
+
+**Request Body:** (JSON-RPC 2.0)
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/list",
+  "params": {}
+}
+```
+
+Zie de [MCP documentatie](/api-reference/mcp) voor volledige details.
+
+## Rapporten
+
+### Rapporten Genereren
+
+#### GET /api/reports/domains
+Genereer een domeinen rapport.
+
+**Query Parameters:**
+- `organizationId` (string, optional): Organisatie ID
+- `range` (string, optional): Tijdsbereik (24h, 7d, 30d)
+
+#### GET /api/reports/devices
+Genereer een devices rapport.
+
+#### GET /api/reports/incidents
+Genereer een incidenten rapport.
+
+## Health Check
+
+### Systeem Health
+
+#### GET /api/health
+Basis health check endpoint.
+
+**Response:**
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-01-01T12:00:00Z"
+}
+```
+
+---
+
+*Voor meer gedetailleerde informatie over request/response formats, zie de OpenAPI specificatie in onze [API Reference](/api-reference/introduction).*

@@ -1,0 +1,395 @@
+---
+title: 'Vercel Integratie'
+description: 'Monitor Vercel deployments en serverless functions'
+---
+
+## Overview
+
+Vercel is een platform voor frontend frameworks en static sites met serverless functions. De PulseGuard Vercel integratie stelt je in staat om je Vercel projecten, deployments en functions automatisch te monitoren, inclusief performance metrics, error tracking en deployment status.
+
+<Note>
+  Vercel integratie is beschikbaar vanaf de Expert plannen. Je hebt een Vercel account nodig met API toegang.
+</Note>
+
+## Hoe Vercel Werkt
+
+Vercel biedt:
+
+- **Frontend Deployment**: Next.js, React, Vue.js, etc.
+- **Serverless Functions**: API routes en serverless functions
+- **Edge Functions**: Worldwide edge computing
+- **Preview Deployments**: Per-branch deployments
+- **Analytics**: Real-time performance metrics
+- **Global CDN**: Worldwide content delivery
+
+## Ondersteunde Vercel Resources
+
+PulseGuard kan de volgende Vercel resources monitoren:
+
+<CardGroup cols={3}>
+  <Card title="Production Deployments" icon="globe" color="#000000">
+    Live production websites en APIs
+  </Card>
+  <Card title="Preview Deployments" icon="eye" color="#000000">
+    Branch-based preview deployments
+  </Card>
+  <Card title="API Routes" icon="code" color="#000000">
+    Serverless API endpoints
+  </Card>
+  <Card title="Edge Functions" icon="zap" color="#000000">
+    Worldwide edge computing functions
+  </Card>
+  <Card title="Custom Domains" icon="link" color="#000000">
+    Custom domain configurations
+  </Card>
+  <Card title="Build Status" icon="cogs" color="#000000">
+    Deployment build processes
+  </Card>
+</CardGroup>
+
+## Vercel Account Koppelen
+
+<Steps>
+  <Step title="Vercel Token Genereren">
+    Ga naar **Vercel Dashboard** → **Settings** → **Tokens**
+  </Step>
+  <Step title="Nieuwe Token Aanmaken">
+    Klik "Create Token" en geef een naam (bijv. "PulseGuard")
+  </Step>
+  <Step title="Token Scope Selecteren">
+    Selecteer minimaal "Read" permissions voor je projecten
+  </Step>
+  <Step title="Token Opslaan">
+    Kopieer de token onmiddellijk - deze zie je niet meer!
+  </Step>
+  <Step title="PulseGuard Configureren">
+    Ga naar **Settings** → **Integrations** → **Vercel**
+  </Step>
+  <Step title="Account Koppelen">
+    Voer je Vercel token in en klik "Connect"
+  </Step>
+</Steps>
+
+## Token Permissions
+
+De Vercel API token heeft de volgende permissies nodig:
+
+```json
+{
+  "scopes": [
+    "read:project",
+    "read:deployment",
+    "read:team",
+    "read:user"
+  ]
+}
+```
+
+**Minimale Permissions:**
+- `read:project` - Voor project discovery en configuratie
+- `read:deployment` - Voor deployment status en metrics
+- `read:team` - Voor team-based project access
+- `read:user` - Voor user account informatie
+
+## Resource Discovery
+
+Zodra je Vercel account gekoppeld is, scant PulseGuard automatisch:
+
+### Discovery Proces
+1. **Project Scanning**: Alle Vercel projecten worden geïdentificeerd
+2. **Deployment Analysis**: Actieve deployments worden geanalyseerd
+3. **Function Detection**: API routes en edge functions gevonden
+4. **Domain Mapping**: Custom domains worden gekoppeld
+5. **Service Creation**: PulseGuard services worden aangemaakt
+
+### Resource Types
+
+#### Production Deployments
+- **HTTP Health Checks**: Homepage en API endpoints
+- **Response Time Monitoring**: Performance tracking
+- **SSL Certificate Checks**: Vercel SSL status
+- **Uptime Monitoring**: 24/7 availability checks
+
+#### Preview Deployments
+- **Branch-based Monitoring**: Per Git branch monitoring
+- **Pull Request Checks**: PR-based deployment monitoring
+- **Temporary URLs**: Vercel preview URL monitoring
+
+#### Serverless Functions
+- **Function Execution**: Cold start en execution time monitoring
+- **Error Rates**: Function failure rate tracking
+- **Timeout Detection**: Function timeout alerts
+- **Request Volume**: Function invocation frequency
+
+#### Edge Functions
+- **Global Performance**: Worldwide execution metrics
+- **Latency Monitoring**: Edge-to-user latency
+- **Error Tracking**: Global error rate monitoring
+- **Geographic Distribution**: Performance per region
+
+## Monitoring Configuratie
+
+### Automatische Service Aanmaak
+
+Voor elke ontdekte Vercel resource creëert PulseGuard:
+
+1. **HTTP Service Monitors**: Voor websites en API endpoints
+2. **Function Monitors**: Voor serverless function health
+3. **Deployment Monitors**: Voor build en deployment status
+4. **Domain Monitors**: Voor custom domain availability
+
+### Protocol Configuratie
+
+#### Production Websites
+```json
+{
+  "protocol": "https",
+  "protocolConfig": {
+    "host": "myapp.vercel.app",
+    "port": 443,
+    "path": "/",
+    "expectedStatusCodes": [200, 301, 302]
+  }
+}
+```
+
+#### API Routes
+```json
+{
+  "protocol": "https",
+  "protocolConfig": {
+    "host": "myapp.vercel.app",
+    "port": 443,
+    "path": "/api/health",
+    "expectedResponse": {
+      "status": "ok"
+    }
+  }
+}
+```
+
+#### Preview Deployments
+```json
+{
+  "protocol": "https",
+  "protocolConfig": {
+    "host": "myapp-git-feature.vercel.app",
+    "port": 443,
+    "path": "/",
+    "deploymentType": "preview"
+  }
+}
+```
+
+## Vercel Analytics Integration
+
+### Performance Metrics
+- **Core Web Vitals**: FCP, LCP, CLS, FID, TTFB
+- **Response Times**: Page load times per region
+- **Error Rates**: JavaScript errors en failed requests
+- **User Experience**: Real User Monitoring (RUM)
+
+### Function Metrics
+- **Execution Duration**: Function runtime tracking
+- **Memory Usage**: Function memory consumption
+- **Cold Starts**: Serverless cold start frequency
+- **Error Rates**: Function failure percentages
+
+### Deployment Metrics
+- **Build Times**: Deployment duration tracking
+- **Build Success Rate**: Success/failure ratio
+- **Rollback Frequency**: Deployment rollback alerts
+- **Downtime Impact**: Deployment-related outages
+
+## Deployment Monitoring
+
+### Git Integration
+- **Branch Deployments**: Automatic preview deployment monitoring
+- **Pull Request Status**: PR deployment health checks
+- **Merge Monitoring**: Production deployment tracking
+- **Rollback Alerts**: Failed deployment notifications
+
+### Build Process
+- **Build Status**: Success, failed, cancelled states
+- **Build Duration**: Time-to-deploy metrics
+- **Build Logs**: Error detection in build output
+- **Dependency Issues**: Package installation failures
+
+### Environment Management
+- **Production Monitoring**: Live site availability
+- **Staging Monitoring**: Staging environment health
+- **Development Monitoring**: Development deployment checks
+- **Environment Switching**: Deployment environment changes
+
+## Custom Domains
+
+### Domain Monitoring
+- **DNS Propagation**: Domain pointing status
+- **SSL Certificate**: Vercel SSL provisioning status
+- **Domain Health**: A record en CNAME validation
+- **Redirect Rules**: Custom redirect functionality
+
+### Domain Configuration
+```json
+{
+  "domain": "myapp.com",
+  "vercelDomain": "myapp.vercel.app",
+  "sslStatus": "valid",
+  "redirectRules": [
+    {
+      "source": "/old-path",
+      "destination": "/new-path",
+      "type": "rewrite"
+    }
+  ]
+}
+```
+
+## Security Considerations
+
+### Vercel Security
+- **Token Management**: Gebruik dedicated monitoring tokens
+- **Scope Limitation**: Beperk token toegang tot benodigde projecten
+- **Token Rotation**: Vernieuw tokens regelmatig
+- **Audit Logging**: Vercel API call logging
+
+### PulseGuard Security
+- **Encrypted Storage**: Vercel tokens worden versleuteld opgeslagen
+- **Read-only Access**: Alleen read permissies vereist
+- **API Rate Limiting**: Vercel API limits worden gerespecteerd
+- **Audit Trail**: Alle Vercel API calls worden gelogd
+
+## Troubleshooting
+
+### Veelvoorkomende Problemen
+
+#### "Invalid Vercel token"
+**Oorzaken:**
+- Token is verlopen of ingetrokken
+- Token heeft onvoldoende permissies
+- Token is voor verkeerd account
+
+**Oplossingen:**
+1. Creëer nieuwe token in Vercel dashboard
+2. Controleer token permissies
+3. Verificeer account ownership
+
+#### "No projects found"
+**Oorzaken:**
+- Geen Vercel projecten in account
+- Token heeft geen toegang tot projecten
+- Team permissions ontbreken
+
+**Oplossingen:**
+1. Controleer Vercel dashboard voor projecten
+2. Verificeer token scopes
+3. Check team membership permissions
+
+#### "Deployment monitoring fails"
+**Oorzaken:**
+- Deployment is verwijderd in Vercel
+- Project permissions gewijzigd
+- API rate limits bereikt
+
+**Oplossingen:**
+1. Re-sync Vercel integration
+2. Controleer project permissions
+3. Monitor API usage limits
+
+#### Function timeout errors
+**Oorzaken:**
+- Vercel function timeouts
+- Network connectivity issues
+- Function code errors
+
+**Oplossingen:**
+1. Controleer Vercel function logs
+2. Verificeer function configuration
+3. Test function endpoints manually
+
+## Performance Optimization
+
+### Monitoring Frequency
+- **Critical APIs**: Elke 30 seconden - 1 minuut
+- **Production Sites**: Elke 1 - 5 minuten
+- **Preview Deployments**: Elke 5 - 15 minuten
+- **Functions**: Elke 1 - 5 minuten
+
+### Vercel API Limits
+- **Rate Limits**: 2000 requests per uur per token
+- **Analytics Limits**: 100,000 events per maand gratis
+- **Function Limits**: 100GB-hours per maand gratis
+
+### Cost Management
+- **API Usage**: Monitor Vercel API call volume
+- **Analytics Costs**: Premium analytics pricing
+- **Function Costs**: Serverless execution costs
+
+## Best Practices
+
+### Vercel Setup
+1. **Health Endpoints**: Implementeer API health checks
+2. **Error Handling**: Proper error handling in functions
+3. **Logging**: Structured logging voor debugging
+4. **Environment Variables**: Secure environment configuration
+
+### Monitoring Strategy
+1. **Business Critical**: Focus op revenue-generating endpoints
+2. **User Experience**: Monitor vanuit user perspective
+3. **Performance Budgets**: Stel performance thresholds in
+4. **Error Tracking**: Implementeer comprehensive error monitoring
+
+### Deployment Workflow
+1. **Preview Deployments**: Test in preview environments eerst
+2. **Gradual Rollouts**: Gebruik Vercel traffic splitting
+3. **Rollback Strategy**: Automatische rollback bij failures
+4. **Monitoring Integration**: CI/CD pipeline integratie
+
+## API Integration
+
+Gebruik de REST API voor Vercel account beheer:
+
+```bash
+# Vercel accounts ophalen
+curl -H "Authorization: Bearer YOUR_TOKEN" https://api.ipulse.one/vercel/accounts
+
+# Vercel account koppelen
+curl -X POST https://api.ipulse.one/vercel/accounts \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "accessToken": "vercel-access-token"
+  }'
+
+# Vercel projecten ontdekken
+curl -H "Authorization: Bearer YOUR_TOKEN" https://api.ipulse.one/vercel/accounts/ACCOUNT_ID/projects
+```
+
+## Cost Considerations
+
+### Vercel Costs
+- **Hobby Plan**: Gratis voor personal projects
+- **Pro Plan**: $20/maand voor professional features
+- **Enterprise**: Custom pricing voor large teams
+- **Analytics**: Premium analytics add-on kosten
+
+### PulseGuard Costs
+- **Expert Plan**: Vereist voor Vercel integratie
+- **API Monitoring**: Voor endpoint health checks
+- **Function Monitoring**: Voor serverless function tracking
+
+## Support & Resources
+
+### Vercel Documentation
+- [Vercel API Reference](https://vercel.com/docs/api)
+- [Analytics Documentation](https://vercel.com/docs/analytics)
+- [Deployment Documentation](https://vercel.com/docs/deployments)
+
+### PulseGuard Support
+- **Setup Guide**: Stap-voor-stap Vercel configuratie
+- **Troubleshooting**: Veelvoorkomende integratie problemen
+- **Best Practices**: Aanbevolen monitoring configuraties
+
+---
+
+*Vercel integratie vereist een actief Vercel account en Expert abonnement. Voor hulp bij de setup, contact onze support.*

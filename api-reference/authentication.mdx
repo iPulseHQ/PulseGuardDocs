@@ -3,25 +3,34 @@ title: 'Authentication'
 description: 'How to authenticate with the PulseGuard API.'
 ---
 
-The PulseGuard API supports multiple authentication methods:
+PulseGuard gebruikt Clerk voor authenticatie, wat moderne token-based toegang mogelijk maakt via JWT tokens.
 
-1. **Token-based authentication** via Laravel Sanctum (recommended)
-2. **OAuth authentication** via popular providers (Google, GitHub, Discord)
+## Clerk Authentication
 
-## Token Authentication
+Alle API requests gebruiken JWT tokens die worden uitgegeven door Clerk:
 
-All API requests use modern token-based authentication via Laravel Sanctum. You can generate and manage your API tokens on your [profile page](https://app.pulseguard.nl/profile) by clicking "API Tokens".
+1. **JWT Bearer Tokens** - Moderne token-based authenticatie
+2. **Session Tokens** - Voor web applicatie toegang
+3. **API Keys** - Voor service-to-service communicatie
 
-### Token Features
-- **Named Tokens** - Give meaningful names to your tokens
-- **Granular Permissions** - Control what each token can access
-- **Multiple Tokens** - Create separate tokens for different applications
-- **Secure Storage** - Tokens are securely hashed and stored
-- **Easy Management** - View, create, and revoke tokens from your profile
+### Token Types
 
-## OAuth Authentication
+#### JWT Tokens (Aanbevolen)
+- Uitgegeven door Clerk na succesvolle authenticatie
+- Bevat user context en permissies
+- Automatisch verlengd door Clerk SDK
 
-For seamless integration, PulseGuard supports OAuth authentication. See the [OAuth guide](/api-reference/oauth) for detailed implementation instructions.
+#### API Keys
+- Voor automatisering en integraties
+- Beheerbaar via je [PulseGuard Dashboard](https://guard.ipulse.one)
+- Met granular permissions en scopes
+
+### API Key Features
+- **Genoemde Keys** - Geef betekenisvolle namen aan je keys
+- **Granulaire Permissies** - Controleer wat elke key kan benaderen
+- **Meerdere Keys** - Creëer aparte keys voor verschillende applicaties
+- **Veilige Opslag** - Keys zijn veilig gehashed en opgeslagen
+- **Eenvoudig Beheer** - Bekijk, creëer en trek keys in via je dashboard
 
 ## Headers
 
@@ -35,7 +44,7 @@ All API requests must include the following headers:
 Here is an example of how to make an authenticated request using `cURL`:
 
 ```bash
-curl -X GET "https://app.pulseguard.nl/api/v2/domains" \\
+curl -X GET "https://api.ipulse.one/domains" \\
   -H "Authorization: Bearer your_token_here" \\
   -H "Accept: application/json"
 ``` 

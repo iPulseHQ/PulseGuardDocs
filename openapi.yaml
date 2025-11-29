@@ -25,22 +25,22 @@ info:
     
     ## Base URL
     
-    **Production**: `https://app.pulseguard.nl/api`
+    **Production**: `https://api.ipulse.one`
     
     ## Support
     
-    For API support, visit our [documentation](https://docs.pulseguard.nl) or contact us at info@pulseguard.nl.
+    For API support, visit our [documentation](https://docs.ipulse.one) or contact us at info@ipulse.one.
   version: 1.0.0
   contact:
     name: PulseGuard Support
-    url: https://docs.pulseguard.nl
-    email: info@pulseguard.nl
+    url: https://docs.ipulse.one
+    email: info@ipulse.one
   license:
     name: Proprietary
-    url: https://pulseguard.nl/terms
+    url: https://ipulse.one/terms
 
 servers:
-  - url: https://app.pulseguard.nl/api
+  - url: https://api.ipulse.one
     description: Production server
 
 security:

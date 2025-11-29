@@ -1,326 +1,162 @@
 ---
-title: 'AI Insights'
-description: 'AI-powered analytics and predictive monitoring'
+title: 'AI Chat Integratie'
+description: 'ChatGPT integratie via Model Context Protocol'
 ---
 
 ## Overview
 
-PulseGuard's AI Insights feature provides intelligent analysis of your monitoring data to identify patterns, predict issues, and provide recommendations. Our AI engine helps you stay ahead of potential problems and optimize your web resources through advanced analytics.
+PulseGuard integreert met ChatGPT via het Model Context Protocol (MCP), waardoor je je monitoring data kunt opvragen via natuurlijke taal. Stel vragen over je dashboard, incidenten, domeinen en devices in gewone taal.
 
 <Note>
-  AI insights are available on Pro plans (limited) and Expert plans (full access). The AI features require at least 7 days of monitoring data to provide meaningful insights.
+  MCP integratie is beschikbaar voor alle betaalde plannen. Je hebt een ChatGPT account nodig om deze feature te gebruiken.
 </Note>
 
 ## Key Features
 
 <CardGroup cols={2}>
-  <Card title="Performance Analysis" icon="chart-line" color="#8B5CF6">
+  <Card title="Natuurlijke Taal Queries" icon="message-bot" color="#8B5CF6">
     <div className="mb-2">
-      Detailed analysis of your domains' performance patterns, identifying peak usage times and potential bottlenecks.
+      Stel vragen over je monitoring data in gewone taal.
     </div>
     <ul className="text-sm text-gray-600 dark:text-gray-400 list-disc pl-4 space-y-1">
-      <li>Identify performance trends over time</li>
-      <li>Compare against industry benchmarks</li>
-      <li>Receive optimization recommendations</li>
+      <li>"Laat mijn dashboard zien"</li>
+      <li>"Welke domeinen liggen eruit?"</li>
+      <li>"Scan DNS voor example.com"</li>
     </ul>
   </Card>
-  
-  <Card title="Anomaly Detection" icon="triangle-exclamation" color="#8B5CF6">
+
+  <Card title="Real-time Data Access" icon="bolt" color="#8B5CF6">
     <div className="mb-2">
-      Identification of unusual patterns or behavior that might indicate security issues or performance problems.
+      Krijg direct toegang tot live monitoring data.
     </div>
     <ul className="text-sm text-gray-600 dark:text-gray-400 list-disc pl-4 space-y-1">
-      <li>Detect unusual traffic patterns</li>
-      <li>Identify potential security threats</li>
-      <li>Get alerted about unusual response times</li>
+      <li>Huidige uptime statistieken</li>
+      <li>Actieve incidenten overzicht</li>
+      <li>Device health status</li>
     </ul>
   </Card>
-  
-  <Card title="Predictive Monitoring" icon="bolt" color="#8B5CF6">
+
+  <Card title="Interactieve Widgets" icon="chart-pie" color="#8B5CF6">
     <div className="mb-2">
-      Prediction of potential issues before they occur, allowing proactive maintenance and optimization.
+      Visuele weergave van data direct in ChatGPT.
     </div>
     <ul className="text-sm text-gray-600 dark:text-gray-400 list-disc pl-4 space-y-1">
-      <li>Forecast resource utilization</li>
-      <li>Predict potential downtime windows</li>
-      <li>Schedule maintenance optimally</li>
+      <li>Dashboard samenvattingen</li>
+      <li>Incident lijsten</li>
+      <li>Domein status overzichten</li>
     </ul>
   </Card>
-  
-  <Card title="AI Chat" icon="message-bot" color="#8B5CF6">
+
+  <Card title="Network Tools" icon="network-wired" color="#8B5CF6">
     <div className="mb-2">
-      Ask questions about your monitoring data in natural language and receive intelligent responses.
+      Voer netwerk scans uit via natuurlijke taal commando's.
     </div>
     <ul className="text-sm text-gray-600 dark:text-gray-400 list-disc pl-4 space-y-1">
-      <li>Get instant insights with natural language</li>
-      <li>Analyze complex data patterns easily</li>
-      <li>Generate custom reports through conversation</li>
+      <li>"Scan DNS voor example.com"</li>
+      <li>"Controleer poort 443 op mijn server"</li>
+      <li>"Wat is mijn IP adres?"</li>
     </ul>
   </Card>
 </CardGroup>
 
-## AI Insights Dashboard
+## Setup in ChatGPT
 
-The AI Insights dashboard provides a centralized view of all AI-generated recommendations and analyses for your monitored resources.
+### Stap 1: Custom Action Aanmaken
+
+1. Ga naar **ChatGPT Settings** → **Actions** → **Create new action**
+
+2. **Server Details invullen:**
+   ```
+   Server URL: https://api.ipulse.one/mcp
+   Authentication: Bearer token (optioneel)
+   ```
+
+3. **Schema importeren** of gebruik de beschikbare tools
+
+4. **Verbinding testen:**
+   Vraag ChatGPT: "Laat me mijn PulseGuard dashboard zien"
+
+### Stap 2: Voorbeeld Queries
+
+Probeer deze voorbeeld vragen in ChatGPT:
+
+<CardGroup cols={2}>
+  <Card title="Dashboard Overzicht" icon="gauge">
+    "Laat me mijn PulseGuard dashboard zien"
+  </Card>
+  <Card title="Incident Controle" icon="exclamation-triangle">
+    "Zijn er actieve incidenten?"
+  </Card>
+  <Card title="Domein Status" icon="satellite-dish">
+    "Welke domeinen liggen eruit?"
+  </Card>
+  <Card title="Device Monitoring" icon="server">
+    "Laat offline devices zien"
+  </Card>
+  <Card title="DNS Lookup" icon="search">
+    "Scan DNS records voor example.com"
+  </Card>
+  <Card title="Port Scanning" icon="network-wired">
+    "Controleer poort 443 op mijn server"
+  </Card>
+</CardGroup>
+
+## Beschikbare Tools
+
+De MCP server biedt deze tools aan ChatGPT:
+
+### 1. Dashboard Statistieken
+Haalt live monitoring data op voor domeinen, devices en services.
+
+### 2. Incident Management
+Bekijk en beheer incidenten met filtering op status en severity.
+
+### 3. Domein Monitoring
+Controleer uptime, response times en certificaat status.
+
+### 4. Device Monitoring
+Bekijk server metrics, processen en health status.
+
+### 5. Netwerk Tools
+- DNS lookup voor domeinen
+- Port scanning op hosts
+- IP geolocation informatie
+
+## Voorbeelden van Interactieve Widgets
 
 <Frame>
   <div className="bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-6">
-    <h3 className="text-lg font-medium mb-4">AI Insights Dashboard</h3>
-    
-    <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 mb-6 border border-purple-100 dark:border-purple-800/50">
-      <div className="flex items-start">
-        <div className="bg-purple-100 dark:bg-purple-800/50 p-2 rounded mr-3 mt-1">
-          <svg className="h-5 w-5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <div>
-          <h4 className="font-medium mb-1">Key Insight</h4>
-          <p className="text-sm text-gray-600 dark:text-gray-300">Your website example.com shows a 35% increase in response time during peak hours (14:00-16:00). Consider optimizing database queries or increasing server resources during this window.</p>
-        </div>
+    <h3 className="text-lg font-medium mb-4">ChatGPT met PulseGuard MCP</h3>
+
+    <div className="space-y-4">
+      <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+        <p className="text-sm"><strong>User:</strong> Laat mijn dashboard zien</p>
       </div>
-    </div>
-    
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-        <h4 className="font-medium mb-3">Performance Trend Analysis</h4>
-        <div className="h-40 bg-white dark:bg-gray-700 rounded flex items-center justify-center mb-3">
-          <span className="text-gray-400">Performance Trend Chart</span>
-        </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400">Response times have been steadily increasing over the past week, particularly during business hours.</p>
-      </div>
-      
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-        <h4 className="font-medium mb-3">Anomaly Detection</h4>
-        <div className="h-40 bg-white dark:bg-gray-700 rounded flex items-center justify-center mb-3">
-          <span className="text-gray-400">Anomaly Detection Chart</span>
-        </div>
-        <div className="flex items-start">
-          <svg className="h-5 w-5 text-amber-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Anomaly detected on July 15th at 10:45 AM. Unusual spike in server CPU usage.</p>
-        </div>
-      </div>
-    </div>
-    
-    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6">
-      <h4 className="font-medium mb-3">AI Recommendations</h4>
-      <div className="space-y-3">
-        <div className="flex items-start">
-          <div className="bg-green-100 dark:bg-green-900/30 p-1.5 rounded-full mr-3">
-            <svg className="h-4 w-4 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <div>
-            <p className="text-sm font-medium">Optimize database queries</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Detected slow queries during peak hours that could be optimized.</p>
-          </div>
-          <div className="ml-auto">
-            <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full">High Impact</span>
-          </div>
-        </div>
-        
-        <div className="flex items-start">
-          <div className="bg-green-100 dark:bg-green-900/30 p-1.5 rounded-full mr-3">
-            <svg className="h-4 w-4 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <div>
-            <p className="text-sm font-medium">Enable SSL caching</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">SSL handshake times could be reduced by implementing proper caching.</p>
-          </div>
-          <div className="ml-auto">
-            <span className="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 rounded-full">Medium Impact</span>
-          </div>
-        </div>
-        
-        <div className="flex items-start">
-          <div className="bg-green-100 dark:bg-green-900/30 p-1.5 rounded-full mr-3">
-            <svg className="h-4 w-4 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <div>
-            <p className="text-sm font-medium">Implement CDN for static assets</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Static content delivery could be optimized with a CDN.</p>
-          </div>
-          <div className="ml-auto">
-            <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full">High Impact</span>
-          </div>
+
+      <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
+        <p className="text-sm"><strong>Assistant:</strong> Hier is je PulseGuard dashboard overzicht:</p>
+        <div className="bg-white dark:bg-gray-800 p-2 rounded mt-2 text-xs">
+          📊 <strong>Domeinen:</strong> 8/10 online (95% uptime)<br/>
+          🖥️ <strong>Devices:</strong> 4/5 online<br/>
+          🔧 <strong>Services:</strong> 14/15 operationeel<br/>
+          🚨 <strong>Incidenten:</strong> 2 actief, 1 kritiek
         </div>
       </div>
     </div>
   </div>
-  <figcaption>Example of the AI Insights Dashboard</figcaption>
+  <figcaption>Voorbeeld van ChatGPT interactie met PulseGuard MCP</figcaption>
 </Frame>
 
-## PulseAI Chat
+## Authenticatie
 
-Ask questions about your monitoring data in natural language using PulseAI Chat:
+De MCP server gebruikt Clerk JWT tokens voor authenticatie. Deze worden automatisch doorgegeven vanuit je ChatGPT sessie naar PulseGuard.
 
-<Frame>
-  <div className="bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm p-4">
-    <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-600 pb-3 mb-4">
-      <h3 className="font-medium">PulseAI Chat</h3>
-      <span className="text-xs text-gray-500 dark:text-gray-400">Powered by AI</span>
-    </div>
-    
-    <div className="space-y-4 mb-4">
-      <div className="flex">
-        <div className="bg-gray-100 dark:bg-gray-600 rounded-lg p-3 max-w-[75%] text-sm">
-          <p>What was my website's average uptime last month?</p>
-        </div>
-      </div>
-      
-      <div className="flex justify-end">
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 max-w-[75%] text-sm">
-          <p>In the last month (June 1-30), your website example.com had an average uptime of 99.92%. This is a slight improvement from the previous month which was 99.87%. There were 2 brief outages, totaling 5 hours and 47 minutes of downtime.</p>
-        </div>
-      </div>
-      
-      <div className="flex">
-        <div className="bg-gray-100 dark:bg-gray-600 rounded-lg p-3 max-w-[75%] text-sm">
-          <p>When do we see the most traffic?</p>
-        </div>
-      </div>
-      
-      <div className="flex justify-end">
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 max-w-[75%] text-sm">
-          <p>Based on your monitoring data, your peak traffic occurs between 2:00 PM and 4:00 PM UTC on weekdays. Wednesday shows the highest activity, with approximately 35% more requests than the daily average.</p>
-          <div className="h-24 bg-white dark:bg-gray-700 rounded mt-2 flex items-center justify-center">
-            <span className="text-xs text-gray-400">Traffic Distribution Chart</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
-      <div className="relative">
-        <input type="text" className="w-full p-2 pl-4 pr-10 border border-gray-300 dark:border-gray-600 rounded-full bg-gray-50 dark:bg-gray-800" placeholder="Ask a question about your monitoring data..." />
-        <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-blue-600 dark:text-blue-400">
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  </div>
-  <figcaption>Example of PulseAI Chat interaction</figcaption>
-</Frame>
+## Plan Beschikbaarheid
 
-## Common Use Cases
+MCP integratie is beschikbaar voor alle betaalde plannen:
+- **Pro Plan**: Basis dashboard toegang
+- **Expert Plan**: Volledige toegang tot alle tools en data
 
-<AccordionGroup>
-  <Accordion title="Performance Optimization">
-    Identify bottlenecks in your websites or APIs and receive AI-recommended optimizations:
-    
-    - Slow database queries detection
-    - Caching opportunity identification
-    - Resource allocation recommendations
-    - Server configuration optimization suggestions
-  </Accordion>
-  
-  <Accordion title="Anomaly Detection and Security">
-    Detect unusual patterns that could indicate security issues or performance problems:
-    
-    - Unusual traffic spikes detection
-    - Suspicious request patterns identification
-    - Performance degradation early warning
-    - Potential security vulnerability alerts
-  </Accordion>
-  
-  <Accordion title="Capacity Planning">
-    Plan resource allocation based on AI predictions:
-    
-    - Traffic growth forecasts
-    - Resource utilization predictions
-    - Scaling recommendations
-    - Peak demand period identification
-  </Accordion>
-  
-  <Accordion title="Business Intelligence">
-    Extract meaningful business insights from your monitoring data:
-    
-    - User behavior patterns
-    - Geographic traffic analysis
-    - Performance impact on conversions
-    - Seasonal trend identification
-  </Accordion>
-</AccordionGroup>
+---
 
-## Technology Behind the AI
-
-PulseGuard's AI is powered by a combination of machine learning technologies specifically designed for monitoring data analysis:
-
-<CardGroup cols={2}>
-  <Card title="Time Series Analysis" icon="chart-line">
-    Advanced algorithms detect patterns, trends, and anomalies in your monitoring data over time.
-  </Card>
-  
-  <Card title="Natural Language Processing" icon="comments">
-    Understand natural language queries about your monitoring data and provide meaningful responses.
-  </Card>
-  
-  <Card title="Predictive Models" icon="brain">
-    Forecast future performance and potential issues based on historical data and trends.
-  </Card>
-  
-  <Card title="Recommendation Systems" icon="lightbulb">
-    Provide actionable recommendations for optimizing your websites and infrastructure.
-  </Card>
-</CardGroup>
-
-## Available on Pro and Expert Plans
-
-<table>
-  <thead>
-    <tr>
-      <th>Feature</th>
-      <th>Free Plan</th>
-      <th>Pro Plan</th>
-      <th>Expert Plan</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Basic Performance Analysis</td>
-      <td>❌</td>
-      <td>✅</td>
-      <td>✅</td>
-    </tr>
-    <tr>
-      <td>Anomaly Detection</td>
-      <td>❌</td>
-      <td>✅</td>
-      <td>✅</td>
-    </tr>
-    <tr>
-      <td>Predictive Monitoring</td>
-      <td>❌</td>
-      <td>Limited</td>
-      <td>✅</td>
-    </tr>
-    <tr>
-      <td>PulseAI Chat</td>
-      <td>❌</td>
-      <td>Limited</td>
-      <td>✅</td>
-    </tr>
-    <tr>
-      <td>Advanced Recommendations</td>
-      <td>❌</td>
-      <td>❌</td>
-      <td>✅</td>
-    </tr>
-    <tr>
-      <td>Custom AI Reporting</td>
-      <td>❌</td>
-      <td>❌</td>
-      <td>✅</td>
-    </tr>
-  </tbody>
-</table> 
-
+*Voor meer informatie over MCP, zie de [MCP documentatie](/api-reference/mcp).*

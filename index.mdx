@@ -5,52 +5,89 @@ description: "Welcome to the PulseGuard documentation"
 
 <img
   className="block"
-  src="https://pulseguard.nl/images/dashboard.png"
+  src="https://ipulse.one/images/dashboard.png"
   alt="PulseGuard Dashboard"
 />
 
 
-## Welcome to PulseGuard
+## Welkom bij PulseGuard
 
-PulseGuard is a comprehensive monitoring solution designed to help you keep track of your websites, APIs, and devices. This documentation will guide you through all the features and functionalities of the application.
+PulseGuard is een allesomvattend monitoring platform dat deel uitmaakt van het Ipulse ecosysteem. Het is ontworpen om je te helpen bij het monitoren van websites, APIs, servers, diensten en applicaties met behulp van AI-gedreven inzichten en geautomatiseerde monitoring.
+
+Deze documentatie is bedoeld voor gebruikers van PulseGuard dat draait op [guard.ipulse.one](https://guard.ipulse.one).
 
 <Note>
-  This documentation assumes you are using the latest version of PulseGuard. Some features may not be available in older versions.
+  Deze documentatie gaat uit van de nieuwste versie van PulseGuard. Sommige functies zijn mogelijk niet beschikbaar in oudere versies.
 </Note>
 
-## Key Features
+## Belangrijkste Features
 
-PulseGuard offers a range of tools and features to ensure your digital assets are always performing optimally:
+PulseGuard biedt een uitgebreid scala aan tools en functies om ervoor te zorgen dat je digitale assets optimaal presteren:
 
-<CardGroup cols={2}>
-  <Card title="Real-time Monitoring" icon="satellite-dish" href="/monitoring/domains">
-    Monitor websites and APIs with checks every 30 seconds to 5 minutes depending on your plan
+<CardGroup cols={3}>
+  <Card title="Website & API Monitoring" icon="satellite-dish" href="/monitoring/domains">
+    Monitor websites en APIs met checks elke 30 seconden tot 5 minuten, afhankelijk van je plan. Inclusief uptime monitoring, response times en SSL certificaat tracking.
   </Card>
-  <Card title="SSL Certificate Monitoring" icon="shield-check" href="/monitoring/domains">
-    Track SSL certificate validity and receive alerts before certificates expire
+  <Card title="Server & Device Monitoring" icon="server" href="/monitoring/devices">
+    Uitgebreide server monitoring met CPU, geheugen, schijfruimte, processen, applicaties, netwerkverbindingen en systeemlogs.
   </Card>
-  <Card title="Server Monitoring" icon="server" href="/monitoring/devices">
-    Monitor server and device performance including CPU, memory, and disk space
+  <Card title="Service Monitoring" icon="cogs" href="/monitoring">
+    Monitor diverse diensten via meerdere protocollen: HTTP/HTTPS, TCP, IMAP, SMTP, DNS, FTP, SSH, POP3 en UDP.
   </Card>
-  <Card title="AI-powered Insights" icon="brain" href="/features/ai-insights">
-    Get intelligent analysis and anomaly detection with our AI engine
+  <Card title="AI Chat Integratie" icon="brain" href="/features/ai-insights">
+    ChatGPT integratie via MCP voor natuurlijke taal monitoring queries en dashboard inzichten.
+  </Card>
+  <Card title="Cloud Integraties" icon="cloud" href="/features/integrations">
+    Integraties met Azure, Coolify, Vercel en andere cloud platforms voor automatische service discovery en monitoring.
+  </Card>
+  <Card title="Status Pages" icon="globe" href="/status-pages">
+    Publieke status pagina's voor transparante communicatie met je gebruikers tijdens incidenten.
+  </Card>
+  <Card title="Incident Management" icon="exclamation-triangle" href="/monitoring">
+    Geautomatiseerde incident detectie, escalatie en beheer met tijdlijnen, updates en betrokken partijen.
+  </Card>
+  <Card title="Multi-Channel Notificaties" icon="bell" href="/account/notifications">
+    Uitgebreide notificatie opties via email, browser, webhooks, Slack, Teams, Discord en Telegram.
+  </Card>
+  <Card title="Toolbox Utilities" icon="toolbox" href="/features/toolbox">
+    Handige netwerk tools: DNS lookup, IP geolocation, port scanning.
+  </Card>
+  <Card title="Accessibility Testing" icon="universal-access" href="/features/accessibility">
+    Automatische toegankelijkheidstests voor websites met WCAG compliance rapporten.
+  </Card>
+  <Card title="Organisatie & Teams" icon="users" href="/organizations">
+    Multi-tenancy ondersteuning met organisaties, teamleden, rollen en gedeelde resources.
+  </Card>
+  <Card title="REST API" icon="code" href="/api-reference">
+    Volledige REST API voor integratie met externe systemen en automatisering.
   </Card>
 </CardGroup>
 
-## Getting Started
+## Aan de slag
 
-Get started with PulseGuard in just a few simple steps by following our [Quickstart Guide](/quickstart).
+Ga aan de slag met PulseGuard in een paar eenvoudige stappen door onze [Quickstart Guide](/quickstart) te volgen.
 
-## Need Help?
-
-Our support team is available to assist you with any questions or issues you may encounter.
+## Platform Links
 
 <CardGroup cols={2}>
-  <Card title="Knowledge Base" icon="book-open" href="/">
-    Browse articles and guides to help you make the most of PulseGuard
+  <Card title="PulseGuard App" icon="monitor" href="https://guard.ipulse.one">
+    Open de PulseGuard monitoring applicatie
+  </Card>
+  <Card title="Ipulse Landing" icon="globe" href="https://ipulse.one">
+    Bezoek de Ipulse hoofdpagina
+  </Card>
+</CardGroup>
+
+## Hulp nodig?
+
+Ons support team staat klaar om je te helpen met vragen of problemen.
+
+<CardGroup cols={2}>
+  <Card title="Documentatie" icon="book-open" href="/">
+    Bekijk artikelen en handleidingen om optimaal gebruik te maken van PulseGuard
   </Card>
   <Card title="Contact Support" icon="life-ring" href="/resources/support">
-    Reach out to our support team for personalized assistance
+    Neem contact op met ons support team voor persoonlijke hulp
   </Card>
 </CardGroup>
 
