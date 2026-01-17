@@ -52,20 +52,11 @@
             ]
           },
           {
-            "group": "Integrations",
-            "pages": [
-              "pulseguard/integrations/overview",
-              "pulseguard/integrations/vercel",
-              "pulseguard/integrations/coolify",
-              "pulseguard/integrations/azure",
-              "pulseguard/integrations/notifications"
-            ]
-          },
-          {
             "group": "API",
             "pages": [
               "pulseguard/api/introduction",
               "pulseguard/api/authentication",
+              "pulseguard/api/api-keys",
               "pulseguard/api/playground"
             ]
           },

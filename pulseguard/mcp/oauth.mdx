@@ -1,0 +1,533 @@
+---
+title: "MCP OAuth"
+description: "OAuth authentication for MCP integrations"
+---
+
+# MCP OAuth Authentication
+
+## Overzicht
+
+Voor geavanceerde MCP integraties ondersteunt PulseGuard OAuth 2.0 authenticatie. Dit biedt een veiliger alternatief voor API keys en stelt gebruikers in staat om gedetailleerde permissions te verlenen aan specifieke applicaties.
+
+## OAuth Flow
+
+### Authorization Code Flow
+
+1. **Authorization Request**
+   ```
+   GET /mcp/oauth/authorize
+   ?response_type=code
+   &client_id=YOUR_CLIENT_ID
+   &redirect_uri=YOUR_REDIRECT_URI
+   &scope=read:domains read:incidents
+   &state=RANDOM_STATE_STRING
+   ```
+
+2. **User Consent**
+   - Gebruiker wordt doorgestuurd naar PulseGuard login
+   - Gebruiker geeft toestemming voor requested scopes
+   - PulseGuard stuurt authorization code terug
+
+3. **Token Exchange**
+   ```
+   POST /mcp/oauth/token
+   Content-Type: application/x-www-form-urlencoded
+
+   grant_type=authorization_code
+   &code=AUTHORIZATION_CODE
+   &redirect_uri=YOUR_REDIRECT_URI
+   &client_id=YOUR_CLIENT_ID
+   &client_secret=YOUR_CLIENT_SECRET
+   ```
+
+4. **Token Response**
+   ```json
+   {
+     "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+     "token_type": "Bearer",
+     "expires_in": 3600,
+     "refresh_token": "refresh_token_here",
+     "scope": "read:domains read:incidents"
+   }
+   ```
+
+## Client Registration
+
+### Development Clients
+
+Voor development kun je een development client registreren:
+
+```bash
+POST /mcp/oauth/register
+Content-Type: application/json
+
+{
+  "name": "My MCP Client",
+  "type": "development",
+  "redirect_uris": ["http://localhost:3000/callback"],
+  "scopes": ["read:domains", "read:incidents"]
+}
+```
+
+**Response:**
+```json
+{
+  "client_id": "dev_client_123",
+  "client_secret": "dev_secret_456",
+  "redirect_uris": ["http://localhost:3000/callback"],
+  "scopes": ["read:domains", "read:incidents"]
+}
+```
+
+### Production Clients
+
+Voor productie applicaties:
+
+```bash
+POST /mcp/oauth/register
+Content-Type: application/json
+
+{
+  "name": "My Production App",
+  "type": "production",
+  "description": "MCP integration for AI assistant",
+  "website": "https://myapp.com",
+  "redirect_uris": ["https://myapp.com/oauth/callback"],
+  "scopes": ["read:domains", "read:incidents", "read:devices"],
+  "logo_url": "https://myapp.com/logo.png"
+}
+```
+
+## Scopes
+
+### Beschikbare Scopes
+
+- `read:domains` - Domein status en monitoring data lezen
+- `read:incidents` - Incidenten en updates bekijken
+- `read:devices` - Device metrics en status bekijken
+- `read:services` - Service monitoring data bekijken
+- `write:incidents` - Incidenten aanmaken en bijwerken
+- `read:reports` - Rapporten en analytics bekijken
+- `admin` - Volledige administratieve toegang
+
+### Scope Combinations
+
+**Basic Monitoring:**
+```
+read:domains read:incidents
+```
+
+**Full Monitoring:**
+```
+read:domains read:incidents read:devices read:services
+```
+
+**Incident Management:**
+```
+read:incidents write:incidents read:domains
+```
+
+## Token Management
+
+### Access Tokens
+
+Access tokens zijn JWT tokens die 1 uur geldig zijn:
+
+```json
+{
+  "sub": "user_123",
+  "client_id": "client_456",
+  "scopes": ["read:domains", "read:incidents"],
+  "iat": 1640995200,
+  "exp": 1640998800,
+  "iss": "https://api.ipulse.one"
+}
+```
+
+### Refresh Tokens
+
+Refresh tokens zijn 30 dagen geldig en kunnen worden gebruikt om nieuwe access tokens te verkrijgen:
+
+```bash
+POST /mcp/oauth/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=refresh_token
+&refresh_token=YOUR_REFRESH_TOKEN
+&client_id=YOUR_CLIENT_ID
+&client_secret=YOUR_CLIENT_SECRET
+```
+
+### Token Introspection
+
+Controleer of een token nog geldig is:
+
+```bash
+POST /mcp/oauth/introspect
+Authorization: Bearer YOUR_ACCESS_TOKEN
+Content-Type: application/x-www-form-urlencoded
+
+token=TOKEN_TO_CHECK
+```
+
+**Response:**
+```json
+{
+  "active": true,
+  "sub": "user_123",
+  "client_id": "client_456",
+  "scopes": ["read:domains"],
+  "exp": 1640998800
+}
+```
+
+## User Info Endpoint
+
+Haal informatie op over de geauthenticeerde gebruiker:
+
+```bash
+GET /mcp/oauth/userinfo
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+**Response:**
+```json
+{
+  "sub": "user_123",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "organization": {
+    "id": "org_456",
+    "name": "Example Corp",
+    "role": "admin"
+  },
+  "permissions": ["read:domains", "write:incidents"]
+}
+```
+
+## Client Management
+
+### List Clients
+
+Bekijk alle geregistreerde clients:
+
+```bash
+GET /mcp/oauth/clients
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+
+### Update Client
+
+Update client configuratie:
+
+```bash
+PUT /mcp/oauth/clients/{client_id}
+Authorization: Bearer YOUR_JWT_TOKEN
+Content-Type: application/json
+
+{
+  "name": "Updated Client Name",
+  "redirect_uris": ["https://newapp.com/callback"],
+  "scopes": ["read:domains", "read:devices"]
+}
+```
+
+### Delete Client
+
+Verwijder een client:
+
+```bash
+DELETE /mcp/oauth/clients/{client_id}
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+
+## Security Best Practices
+
+### Client Secrets
+- **Nooit hardcoden** in client-side code
+- **Bewaar veilig** in environment variables
+- **Roteer regelmatig** voor security
+- **Gebruik verschillende secrets** voor dev/prod
+
+### Redirect URIs
+- **Gebruik HTTPS** voor alle redirect URIs
+- **Wees specifiek** - vermijd wildcard domains
+- **Valideer exact** - geen partial matches
+- **Update regelmatig** bij domain changes
+
+### Token Storage
+- **Gebruik secure storage** (HttpOnly cookies, secure storage)
+- **Implementeer refresh logic** automatisch
+- **Handle token expiration** gracefully
+- **Clear tokens** bij logout
+
+### Scope Management
+- **Principle of least privilege** - geef alleen noodzakelijke toegang
+- **Regular audits** van client permissions
+- **Revoke access** bij security incidents
+- **Monitor usage** voor anomalies
+
+## Troubleshooting
+
+### Common OAuth Errors
+
+**invalid_client:**
+```
+{
+  "error": "invalid_client",
+  "error_description": "Client authentication failed"
+}
+```
+**Oplossing:** Controleer client_id en client_secret
+
+**invalid_grant:**
+```
+{
+  "error": "invalid_grant",
+  "error_description": "The provided authorization grant is invalid"
+}
+```
+**Oplossing:** Authorization code is verlopen of al gebruikt
+
+**invalid_scope:**
+```
+{
+  "error": "invalid_scope",
+  "error_description": "The requested scope is invalid"
+}
+```
+**Oplossing:** Controleer beschikbare scopes
+
+**access_denied:**
+```
+{
+  "error": "access_denied",
+  "error_description": "The user denied the authorization request"
+}
+```
+**Oplossing:** Gebruiker heeft toestemming geweigerd
+
+### Debug Tools
+
+**OAuth Metadata:**
+```bash
+GET /mcp/oauth/.well-known/oauth-authorization-server
+```
+
+**Token Debug:**
+```bash
+# Decode JWT token (header.payload.signature)
+echo "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..." | cut -d'.' -f2 | base64 -d
+```
+
+**Client Debug:**
+```bash
+curl -X POST "https://api.ipulse.one/mcp/oauth/dev-token" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"client_id": "your_client_id"}'
+```
+
+## Examples
+
+### JavaScript OAuth Flow
+
+```javascript
+class PulseGuardOAuth {
+  constructor(clientId, clientSecret, redirectUri) {
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
+    this.redirectUri = redirectUri;
+  }
+
+  // Start authorization flow
+  authorize(scopes = ['read:domains']) {
+    const params = new URLSearchParams({
+      response_type: 'code',
+      client_id: this.clientId,
+      redirect_uri: this.redirectUri,
+      scope: scopes.join(' '),
+      state: this.generateState()
+    });
+
+    window.location.href = `https://api.ipulse.one/mcp/oauth/authorize?${params}`;
+  }
+
+  // Handle callback
+  async handleCallback(code, state) {
+    const response = await fetch('https://api.ipulse.one/mcp/oauth/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: this.redirectUri,
+        client_id: this.clientId,
+        client_secret: this.clientSecret,
+      }),
+    });
+
+    const tokens = await response.json();
+    this.storeTokens(tokens);
+    return tokens;
+  }
+
+  // Refresh token
+  async refreshToken(refreshToken) {
+    const response = await fetch('https://api.ipulse.one/mcp/oauth/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+        client_id: this.clientId,
+        client_secret: this.clientSecret,
+      }),
+    });
+
+    const tokens = await response.json();
+    this.storeTokens(tokens);
+    return tokens;
+  }
+
+  generateState() {
+    return Math.random().toString(36).substring(2);
+  }
+
+  storeTokens(tokens) {
+    localStorage.setItem('pulseguard_access_token', tokens.access_token);
+    localStorage.setItem('pulseguard_refresh_token', tokens.refresh_token);
+  }
+
+  getAccessToken() {
+    return localStorage.getItem('pulseguard_access_token');
+  }
+}
+
+// Usage
+const oauth = new PulseGuardOAuth(
+  'your_client_id',
+  'your_client_secret',
+  'https://yourapp.com/oauth/callback'
+);
+
+// Start flow
+oauth.authorize(['read:domains', 'read:incidents']);
+```
+
+### Python OAuth Client
+
+```python
+import requests
+from urllib.parse import urlencode, parse_qs
+import secrets
+import json
+
+class PulseGuardOAuthClient:
+    def __init__(self, client_id, client_secret, redirect_uri):
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.redirect_uri = redirect_uri
+        self.base_url = "https://api.ipulse.one"
+
+    def get_authorization_url(self, scopes=None):
+        if scopes is None:
+            scopes = ['read:domains']
+
+        state = secrets.token_urlsafe(32)
+
+        params = {
+            'response_type': 'code',
+            'client_id': self.client_id,
+            'redirect_uri': self.redirect_uri,
+            'scope': ' '.join(scopes),
+            'state': state
+        }
+
+        url = f"{self.base_url}/mcp/oauth/authorize?{urlencode(params)}"
+        return url, state
+
+    def exchange_code_for_token(self, code):
+        data = {
+            'grant_type': 'authorization_code',
+            'code': code,
+            'redirect_uri': self.redirect_uri,
+            'client_id': self.client_id,
+            'client_secret': self.client_secret
+        }
+
+        response = requests.post(
+            f"{self.base_url}/mcp/oauth/token",
+            data=data,
+            headers={'Content-Type': 'application/x-www-form-urlencoded'}
+        )
+
+        return response.json()
+
+    def refresh_access_token(self, refresh_token):
+        data = {
+            'grant_type': 'refresh_token',
+            'refresh_token': refresh_token,
+            'client_id': self.client_id,
+            'client_secret': self.client_secret
+        }
+
+        response = requests.post(
+            f"{self.base_url}/mcp/oauth/token",
+            data=data,
+            headers={'Content-Type': 'application/x-www-form-urlencoded'}
+        )
+
+        return response.json()
+
+    def get_user_info(self, access_token):
+        response = requests.get(
+            f"{self.base_url}/mcp/oauth/userinfo",
+            headers={'Authorization': f'Bearer {access_token}'}
+        )
+
+        return response.json()
+
+# Usage example
+client = PulseGuardOAuthClient(
+    client_id='your_client_id',
+    client_secret='your_client_secret',
+    redirect_uri='https://yourapp.com/callback'
+)
+
+# Get authorization URL
+auth_url, state = client.get_authorization_url(['read:domains', 'read:incidents'])
+print(f"Go to: {auth_url}")
+
+# After user authorizes, exchange code for token
+# code = get_code_from_callback()
+tokens = client.exchange_code_for_token(code)
+
+# Use access token
+user_info = client.get_user_info(tokens['access_token'])
+print(f"Authenticated as: {user_info['name']}")
+
+# Later, refresh token if needed
+new_tokens = client.refresh_access_token(tokens['refresh_token'])
+```
+
+## Support
+
+### Documentation
+- [OAuth 2.0 RFC](https://tools.ietf.org/html/rfc6749)
+- [JWT Best Practices](https://tools.ietf.org/html/rfc8725)
+- [PulseGuard MCP Setup](/pulseguard/mcp/setup)
+
+### Getting Help
+- **Email**: oauth-support@pulseguard.com
+- **API Status**: [status.ipulse.one](https://status.ipulse.one)
+- **Security Issues**: security@pulseguard.com
+
+### Rate Limits
+- **Authorization requests**: 100 per uur per client
+- **Token requests**: 1000 per uur per client
+- **Introspection requests**: 5000 per uur per client

@@ -1,0 +1,375 @@
+---
+title: "MCP Overview"
+description: "Model Context Protocol integration for AI assistants"
+---
+
+# Model Context Protocol (MCP) Integration
+
+## Overzicht
+
+PulseGuard ondersteunt het **Model Context Protocol (MCP)**, een open protocol dat AI modellen in staat stelt om veilig te communiceren met externe tools en data bronnen. Met MCP kunnen AI assistenten zoals ChatGPT, Claude, en andere LLM-gebaseerde tools direct communiceren met PulseGuard om monitoring data op te halen en acties uit te voeren.
+
+## Wat is MCP?
+
+MCP is een protocol ontwikkeld door Anthropic dat AI modellen de mogelijkheid geeft om:
+
+- **Data op te halen** van externe systemen
+- **Acties uit te voeren** op die systemen
+- **Context te delen** tussen verschillende tools
+- **Beveiligd te communiceren** via gestandaardiseerde interfaces
+
+## PulseGuard MCP Server
+
+> Connect your documentation and API endpoints to AI tools with a hosted MCP server.
+
+PulseGuard genereert automatisch een MCP server van de documentatie, zodat AI tools zoals Claude, Cursor, en ChatGPT direct toegang hebben tot PulseGuard informatie.
+
+### Hoe MCP Servers Werken
+
+Wanneer een AI tool zoals Claude of Cursor verbonden is met je PulseGuard MCP server, kan de AI tool direct je documentatie doorzoeken tijdens het genereren van responses, in plaats van een generieke web search te doen.
+
+- De LLM kan proactief je documentatie doorzoeken tijdens het genereren van een response
+- De LLM bepaalt wanneer de search tool gebruikt moet worden gebaseerd op de context
+- Elke tool call gebeurt tijdens het generatieproces voor real-time informatie
+
+### Toegang tot je MCP Server
+
+<Note>
+  MCP servers zijn alleen beschikbaar voor publieke documentatie. Documentatie achter authenticatie kan geen MCP server genereren.
+</Note>
+
+Mintlify genereert automatisch een MCP server voor je documentatie en host deze op je documentatie URL met het `/mcp` pad. Bijvoorbeeld: `https://docs.ipulse.one/mcp`.
+
+Bekijk en kopieer je MCP server URL op de [MCP server pagina](https://dashboard.mintlify.com/products/mcp) in je dashboard.
+
+<Note>
+  Hosted MCP servers gebruiken het `/mcp` pad in hun URLs. Andere navigation elementen kunnen dit pad niet gebruiken.
+</Note>
+
+### Content Filtering en Indexing
+
+Je MCP server doorzoekt content die Mintlify indexeert van je documentatie repository. File processing en search indexing bepalen welke content beschikbaar is via je MCP server.
+
+#### File Processing met `.mintignore`
+
+Als bestanden matchen met [.mintignore](/organize/mintignore) patterns, worden ze niet verwerkt of geïndexeerd door Mintlify. Deze bestanden zijn niet beschikbaar via je MCP server.
+
+#### Search Indexing met `docs.json`
+
+Na verwerking bepaalt Mintlify welke pagina's geïndexeerd worden voor search. Standaard worden alleen pagina's die in je `docs.json` navigation staan geïndexeerd en doorzoekbaar via je MCP server.
+
+### Gebruik je MCP Server
+
+Je gebruikers moeten je MCP server verbinden met hun favoriete AI tools.
+
+<Tabs>
+  <Tab title="Claude">
+    <Steps>
+      <Step title="Haal je MCP server URL op.">
+        Navigeer naar je [dashboard](https://dashboard.mintlify.com/products/mcp) en vind je MCP server URL.
+      </Step>
+
+      <Step title="Publiceer je MCP server URL voor je gebruikers.">
+        Maak een guide voor je gebruikers met je MCP server URL en de stappen om deze te verbinden met Claude.
+
+        1. Navigeer naar de [Connectors](https://claude.ai/settings/connectors) pagina in de Claude settings.
+        2. Selecteer **Add custom connector**.
+        3. Voeg je MCP server naam en URL toe.
+        4. Selecteer **Add**.
+        5. Wanneer je Claude gebruikt, selecteer de attachments button (de plus icon).
+        6. Selecteer je MCP server.
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="Cursor">
+    <Steps>
+      <Step title="Haal je MCP server URL op.">
+        Navigeer naar je [dashboard](https://dashboard.mintlify.com/products/mcp) en vind je MCP server URL.
+      </Step>
+
+      <Step title="Publiceer je MCP server URL voor je gebruikers.">
+        Maak een guide voor je gebruikers met je MCP server URL en de stappen om deze te verbinden met Cursor.
+
+        1. Gebruik <kbd>Command</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> op Windows) om de command palette te openen.
+        2. Zoek naar "Open MCP settings".
+        3. Selecteer **Add custom MCP**. Dit opent het `mcp.json` bestand.
+        4. Configureer je server in `mcp.json`:
+
+        ```json
+        {
+          "mcpServers": {
+            "<your-mcp-server-name>": {
+              "url": "<your-mcp-server-url>"
+            }
+          }
+        }
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="VS Code">
+    <Steps>
+      <Step title="Haal je MCP server URL op.">
+        Navigeer naar je [dashboard](https://dashboard.mintlify.com/products/mcp) en vind je MCP server URL.
+      </Step>
+
+      <Step title="Publiceer je MCP server URL voor je gebruikers.">
+        Maak een guide voor je gebruikers met je MCP server URL en de stappen om deze te verbinden met VS Code.
+
+        1. Maak een `.vscode/mcp.json` bestand.
+        2. Configureer je server in `mcp.json`:
+
+        ```json
+        {
+          "servers": {
+            "<your-mcp-server-name>": {
+              "type": "http",
+              "url": "<your-mcp-server-url>"
+            }
+          }
+        }
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+## PulseGuard MCP Features
+
+### Beschikbare Tools
+
+#### Dashboard Statistieken
+- **Naam**: `get_dashboard_stats`
+- **Beschrijving**: Haalt algemene dashboard statistieken op
+- **Parameters**: Geen
+- **Response**: Uptime percentages, aantal monitoren, actieve incidenten
+
+#### Domain Status
+- **Naam**: `get_domain_status`
+- **Beschrijving**: Controleert de status van een specifieke domein
+- **Parameters**: `domain_id` of `domain_url`
+- **Response**: Huidige status, response tijd, uptime percentage
+
+#### Incident Overzicht
+- **Naam**: `list_incidents`
+- **Beschrijving**: Toont lijst van actieve incidenten
+- **Parameters**: `status`, `limit`, `severity`
+- **Response**: Incident lijst met details
+
+#### DNS Lookup
+- **Naam**: `dns_lookup`
+- **Beschrijving**: Voert DNS lookup uit voor een domein
+- **Parameters**: `domain`, `record_type`
+- **Response**: DNS records
+
+#### SSL Check
+- **Naam**: `ssl_check`
+- **Beschrijving**: Controleert SSL certificaat van een domein
+- **Parameters**: `domain`, `port`
+- **Response**: Certificaat details, vervaldatum, issuer
+
+## Hoe MCP Werkt
+
+### 1. Authenticatie
+```json
+{
+  "type": "oauth2",
+  "flow": "authorization_code",
+  "authorization_url": "https://api.ipulse.one/mcp/oauth/authorize",
+  "token_url": "https://api.ipulse.one/mcp/oauth/token",
+  "scopes": ["read:domains", "read:incidents", "read:devices"]
+}
+```
+
+### 2. Tool Discovery
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/list",
+  "params": {}
+}
+```
+
+### 3. Tool Execution
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "tools/call",
+  "params": {
+    "name": "get_domain_status",
+    "arguments": {
+      "domain_id": "domain_123"
+    }
+  }
+}
+```
+
+## MCP Server URL
+
+Je PulseGuard MCP server is beschikbaar op: `https://docs.ipulse.one/mcp`
+
+Deze server stelt AI tools in staat om direct je PulseGuard documentatie te doorzoeken en relevante informatie te vinden tijdens gesprekken.
+
+## API Endpoints
+
+### MCP Protocol
+```
+POST /mcp
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "get_dashboard_stats"
+  }
+}
+```
+
+### OAuth Authenticatie
+```
+GET /mcp/oauth/authorize
+POST /mcp/oauth/token
+GET /mcp/oauth/userinfo
+```
+
+### Token Management
+```
+GET /mcp/tokens
+POST /mcp/tokens
+DELETE /mcp/tokens/{id}
+```
+
+### Server-Sent Events (SSE)
+```
+GET /mcp/sse
+POST /mcp/sse/message
+GET /mcp/sse/stats
+```
+
+## Voorbeelden
+
+### ChatGPT Conversatie
+```
+User: Is mijn website down?
+
+Assistant: Laat me de status van je domeinen controleren.
+
+[Tool Call: get_dashboard_stats]
+{
+  "total_domains": 5,
+  "active_domains": 4,
+  "uptime_percentage": 98.5,
+  "active_incidents": 1
+}
+
+Assistant: Er is 1 actief incident. Laat me de details bekijken.
+
+[Tool Call: list_incidents]
+{
+  "incidents": [
+    {
+      "id": "inc_123",
+      "title": "API Response Slow",
+      "status": "investigating",
+      "severity": "medium",
+      "affected_domains": ["api.example.com"]
+    }
+  ]
+}
+
+Assistant: Er is een incident met trage API responses. Het incident wordt onderzocht.
+```
+
+### Direct API Gebruik
+```bash
+# Dashboard stats ophalen
+curl -X POST "https://api.ipulse.one/mcp" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/call",
+    "params": {
+      "name": "get_dashboard_stats"
+    }
+  }'
+```
+
+## Beveiliging
+
+### OAuth 2.0 Flow
+1. **Authorization Request**: Gebruiker wordt doorgestuurd naar PulseGuard
+2. **Consent**: Gebruiker geeft toestemming voor MCP toegang
+3. **Token Exchange**: Client ontvangt access token
+4. **API Calls**: Token wordt gebruikt voor geauthenticeerde requests
+
+### Scope-based Permissions
+- `read:domains` - Domein status lezen
+- `read:incidents` - Incidenten bekijken
+- `read:devices` - Device metrics bekijken
+- `write:incidents` - Incidenten aanmaken/bijwerken
+- `admin` - Volledige toegang
+
+### Rate Limiting
+- **Per gebruiker**: 1000 requests per uur
+- **Per tool**: 100 calls per minuut
+- **Burst limit**: 50 requests per minuut
+
+## Troubleshooting
+
+### Veelvoorkomende Problemen
+
+#### Authenticatie Fouten
+```
+Error: "Invalid OAuth token"
+```
+**Oplossing**: Ververs je access token of herautoriseer de applicatie.
+
+#### Tool Niet Gevonden
+```
+Error: "Tool 'unknown_tool' not found"
+```
+**Oplossing**: Controleer de tool naam in de documentatie.
+
+#### Rate Limit Overschreden
+```
+Error: "Rate limit exceeded"
+```
+**Oplossing**: Verminder het aantal requests of upgrade je plan.
+
+### Debug Modus
+```bash
+# SSE debug informatie
+curl -X GET "https://api.ipulse.one/mcp/sse/stats" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+# MCP health check
+curl -X GET "https://api.ipulse.one/mcp/health"
+```
+
+## Best Practices
+
+### Voor AI Clients
+1. **Batch Requests**: Gebruik meerdere tools in één gesprek
+2. **Cache Data**: Sla frequente data op om rate limits te vermijden
+3. **Error Handling**: Implementeer proper error handling
+4. **User Context**: Gebruik user ID voor personalized responses
+
+### Voor Ontwikkelaars
+1. **Tool Discovery**: Implementeer tools/list voor discovery
+2. **Schema Validation**: Valideer alle input/output
+3. **Logging**: Log alle MCP interacties voor debugging
+4. **Versioning**: Gebruik versioning voor API compatibility
+
+### Voor Beheerders
+1. **Access Control**: Stel scopes zorgvuldig in
+2. **Monitoring**: Monitor MCP usage patterns
+3. **Updates**: Blijf op de hoogte van MCP protocol updates
+4. **Security**: Regelmatig tokens roteren

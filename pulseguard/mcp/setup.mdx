@@ -1,0 +1,305 @@
+---
+title: "MCP Setup"
+description: "Configure Model Context Protocol for AI assistants"
+---
+
+# MCP Setup Guide
+
+## Vereisten
+
+- PulseGuard account met API toegang
+- MCP-compatible AI client (ChatGPT, Claude Desktop, etc.)
+- API key of OAuth tokens
+
+## Stap 1: API Key Aanmaken
+
+### Via Dashboard
+1. Ga naar **Settings → API Keys**
+2. Klik op **"Generate New Key"**
+3. Geef de key een naam (bijv. "MCP Integration")
+4. Selecteer de juiste permissions:
+   - `read:domains` - Voor domain monitoring
+   - `read:incidents` - Voor incident data
+   - `read:devices` - Voor device metrics
+5. Stel een expiration date in (aanbevolen)
+6. Klik **"Create"**
+
+### Via API
+```bash
+POST /api-keys
+Authorization: Bearer YOUR_JWT_TOKEN
+Content-Type: application/json
+
+{
+  "name": "MCP Integration Key",
+  "permissions": ["read:domains", "read:incidents", "read:devices"],
+  "expires_at": "2024-12-31T23:59:59Z"
+}
+```
+
+**Belangrijk**: Bewaar de API key veilig - deze wordt slechts één keer getoond!
+
+## Stap 2: Client Configuratie
+
+### ChatGPT MCP Setup
+
+1. **Open ChatGPT** en ga naar instellingen
+2. **Zoek naar MCP** in de instellingen
+3. **Klik "Add MCP Server"**
+4. **Vul de details in:**
+
+```json
+{
+  "name": "PulseGuard",
+  "type": "http",
+  "url": "https://api.ipulse.one/mcp",
+  "headers": {
+    "Authorization": "Bearer YOUR_API_KEY"
+  }
+}
+```
+
+5. **Test de verbinding** met een simpele query
+6. **Sla op** en begin met chatten
+
+### Claude Desktop Setup
+
+Voor lokale Claude installatie:
+
+1. **Open Claude Desktop**
+2. **Ga naar instellingen**
+3. **Voeg MCP server toe:**
+
+```json
+{
+  "mcpServers": {
+    "pulseguard": {
+      "command": "npx",
+      "args": ["-y", "@pulseguard/mcp-client"],
+      "env": {
+        "PULSEGUARD_API_KEY": "your_api_key_here"
+      }
+    }
+  }
+}
+```
+
+### Cursor Setup
+
+1. **Open Cursor settings**
+2. **Zoek naar MCP**
+3. **Voeg server configuratie toe:**
+
+```json
+{
+  "pulseguard": {
+    "type": "http",
+    "url": "https://api.ipulse.one/mcp",
+    "headers": {
+      "Authorization": "Bearer YOUR_API_KEY"
+    }
+  }
+}
+```
+
+## Stap 3: OAuth Authenticatie (Alternatief)
+
+Voor meer geavanceerde integraties kun je OAuth gebruiken:
+
+### OAuth Flow
+1. **Ga naar** `https://api.ipulse.one/mcp/oauth/authorize`
+2. **Log in** met je PulseGuard account
+3. **Geef toestemming** voor MCP toegang
+4. **Ontvang authorization code**
+5. **Exchange voor access token:**
+
+```bash
+POST /mcp/oauth/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code
+&code=YOUR_AUTH_CODE
+&redirect_uri=YOUR_REDIRECT_URI
+&client_id=YOUR_CLIENT_ID
+&client_secret=YOUR_CLIENT_SECRET
+```
+
+## Stap 4: Testing
+
+### Basis Test
+```bash
+# Test MCP verbinding
+curl -X POST "https://api.ipulse.one/mcp" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/list"
+  }'
+```
+
+### Verwachte Response
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "tools": [
+      {
+        "name": "get_dashboard_stats",
+        "description": "Get general dashboard statistics"
+      },
+      {
+        "name": "get_domain_status",
+        "description": "Check status of a specific domain"
+      },
+      {
+        "name": "list_incidents",
+        "description": "List active incidents"
+      }
+    ]
+  }
+}
+```
+
+## Stap 5: Gebruik
+
+### In ChatGPT
+```
+"Jouw website lijkt down te zijn. Kun je de status controleren?"
+
+[ChatGPT gebruikt MCP tool om PulseGuard data op te halen]
+"Volgens PulseGuard is je website momenteel operationeel met 99.8% uptime deze maand."
+```
+
+### In Claude
+```
+/check my domains
+
+[Claude gebruikt MCP tools]
+- api.example.com: UP (245ms response time)
+- blog.example.com: UP (189ms response time)
+- shop.example.com: DOWN (Incident #123)
+```
+
+## Troubleshooting
+
+### Verbindingsproblemen
+
+**"Connection refused"**
+- Controleer of API key correct is
+- Verificeer dat je internetverbinding werkt
+- Check of PulseGuard API online is
+
+**"Invalid JSON-RPC version"**
+- Zorg ervoor dat je `jsonrpc: "2.0"` gebruikt
+- Controleer JSON syntax
+
+### Authenticatie Fouten
+
+**"Unauthorized"**
+- Controleer API key spelling
+- Zorg ervoor dat key niet verlopen is
+- Verificeer permissions
+
+**"Invalid scope"**
+- Controleer of je API key de juiste permissions heeft
+- Genereer nieuwe key indien nodig
+
+### Tool Fouten
+
+**"Tool not found"**
+- Controleer tool naam (case-sensitive)
+- Update naar nieuwste MCP versie
+
+**"Rate limit exceeded"**
+- Verminder aantal requests
+- Wacht even voordat je opnieuw probeert
+- Upgrade naar hoger plan indien nodig
+
+## Advanced Configuratie
+
+### Custom Headers
+```json
+{
+  "headers": {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "X-API-Version": "2024-01",
+    "User-Agent": "MyMCPClient/1.0"
+  }
+}
+```
+
+### Environment Variables
+```bash
+export PULSEGUARD_API_KEY="your_key_here"
+export MCP_SERVER_URL="https://api.ipulse.one/mcp"
+export MCP_DEBUG="true"
+```
+
+### Proxy Configuratie
+```json
+{
+  "proxy": {
+    "host": "your-proxy.company.com",
+    "port": 8080,
+    "auth": {
+      "username": "proxy_user",
+      "password": "proxy_pass"
+    }
+  }
+}
+```
+
+## Security Best Practices
+
+### API Key Management
+- **Regelmatig roteren**: Update keys elke 90 dagen
+- **Minimal permissions**: Geef alleen noodzakelijke toegang
+- **Monitor usage**: Controleer API key usage logs
+
+### OAuth Security
+- **Secure storage**: Bewaar tokens veilig
+- **Token refresh**: Implementeer automatic token refresh
+- **Revoke access**: Trek toegang in bij security issues
+
+### Network Security
+- **HTTPS only**: Gebruik altijd HTTPS
+- **Certificate pinning**: Pin SSL certificaten indien mogelijk
+- **Firewall rules**: Restrict access tot trusted IPs
+
+## Monitoring & Logging
+
+### MCP Metrics
+```bash
+# Bekijk MCP usage statistics
+GET /mcp/sse/stats
+Authorization: Bearer YOUR_API_KEY
+```
+
+### Debug Logging
+```bash
+# Enable debug mode
+export MCP_DEBUG=true
+
+# Check logs voor troubleshooting
+tail -f /path/to/mcp/logs/client.log
+```
+
+## Support
+
+### Documentatie
+- [MCP Protocol Specification](https://modelcontextprotocol.io/specification)
+- [PulseGuard MCP Tools Reference](/pulseguard/mcp/tools)
+- [API Reference](/pulseguard/api/reference/domains-api)
+
+### Community Support
+- [GitHub Issues](https://github.com/iPulseHQ/PulseGuard/issues)
+- [Community Forum](https://community.pulseguard.com)
+- [Discord Channel](https://discord.gg/pulseguard)
+
+### Professional Support
+- **Email**: mcp-support@pulseguard.com
+- **Priority Support**: Voor Enterprise klanten
+- **Custom Integrations**: Voor complexe implementaties

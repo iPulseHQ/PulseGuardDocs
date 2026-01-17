@@ -1,0 +1,560 @@
+---
+title: "MCP Tools Reference"
+description: "Complete reference of available MCP tools"
+---
+
+# MCP Tools Reference
+
+## Overzicht
+
+Deze pagina bevat een complete referentie van alle beschikbare MCP tools in PulseGuard. Elke tool wordt beschreven met parameters, responses, en gebruiksvoorbeelden.
+
+## Dashboard Tools
+
+### get_dashboard_stats
+
+Haalt algemene dashboard statistieken op.
+
+**Parameters:** Geen
+
+**Response:**
+```json
+{
+  "total_domains": 25,
+  "active_domains": 23,
+  "total_devices": 8,
+  "active_devices": 7,
+  "total_incidents": 12,
+  "active_incidents": 2,
+  "uptime_percentage": 99.8,
+  "avg_response_time_ms": 245
+}
+```
+
+**Voorbeeld:**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "get_dashboard_stats"
+  }
+}
+```
+
+## Domain Tools
+
+### get_domain_status
+
+Controleert de status van een specifieke domein.
+
+**Parameters:**
+- `domain_id` (string, required): ID van het domein
+- `include_history` (boolean, optional): Inclusief recente historie
+
+**Response:**
+```json
+{
+  "domain_id": "domain_123",
+  "url": "https://example.com",
+  "status": "up",
+  "response_time_ms": 245,
+  "last_check": "2024-01-17T10:30:00Z",
+  "uptime_percentage": 99.9,
+  "ssl_expires_at": "2024-03-15T00:00:00Z",
+  "dns_records": {
+    "A": ["93.184.216.34"]
+  },
+  "recent_incidents": [
+    {
+      "id": "inc_456",
+      "title": "Slow Response",
+      "status": "resolved",
+      "started_at": "2024-01-16T14:00:00Z"
+    }
+  ]
+}
+```
+
+**Voorbeeld:**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "tools/call",
+  "params": {
+    "name": "get_domain_status",
+    "arguments": {
+      "domain_id": "domain_123",
+      "include_history": true
+    }
+  }
+}
+```
+
+### get_domain_uptime
+
+Haalt uptime statistieken voor een domein.
+
+**Parameters:**
+- `domain_id` (string, required): ID van het domein
+- `period` (string, optional): Tijdsperiode (1h, 24h, 7d, 30d, 90d)
+
+**Response:**
+```json
+{
+  "domain_id": "domain_123",
+  "period": "30d",
+  "uptime_percentage": 99.87,
+  "total_checks": 14400,
+  "successful_checks": 14358,
+  "failed_checks": 42,
+  "average_response_time_ms": 245,
+  "downtime_minutes": 156,
+  "longest_incident_minutes": 78
+}
+```
+
+### list_domains
+
+Toont lijst van alle domeinen.
+
+**Parameters:**
+- `status` (string, optional): Filter op status (active, inactive, pending)
+- `limit` (integer, optional): Maximaal aantal resultaten (default: 50)
+- `offset` (integer, optional): Pagination offset (default: 0)
+
+**Response:**
+```json
+{
+  "domains": [
+    {
+      "id": "domain_123",
+      "url": "https://example.com",
+      "name": "Main Website",
+      "status": "up",
+      "uptime_percentage": 99.9
+    }
+  ],
+  "pagination": {
+    "total": 25,
+    "limit": 50,
+    "offset": 0,
+    "has_more": false
+  }
+}
+```
+
+## Incident Tools
+
+### list_incidents
+
+Toont lijst van incidenten.
+
+**Parameters:**
+- `status` (string, optional): Filter op status (investigating, identified, monitoring, resolved)
+- `severity` (string, optional): Filter op severity (low, medium, high, critical)
+- `limit` (integer, optional): Maximaal aantal resultaten (default: 20)
+
+**Response:**
+```json
+{
+  "incidents": [
+    {
+      "id": "inc_123",
+      "title": "Website Down",
+      "status": "investigating",
+      "severity": "critical",
+      "started_at": "2024-01-17T09:00:00Z",
+      "affected_domains": ["domain_123"],
+      "description": "Main website is not responding",
+      "updates": [
+        {
+          "timestamp": "2024-01-17T09:05:00Z",
+          "message": "Investigating database connection issues",
+          "author": "DevOps Team"
+        }
+      ]
+    }
+  ],
+  "total_count": 3,
+  "active_count": 1
+}
+```
+
+### get_incident_details
+
+Haalt gedetailleerde informatie over een incident.
+
+**Parameters:**
+- `incident_id` (string, required): ID van het incident
+
+**Response:**
+```json
+{
+  "id": "inc_123",
+  "title": "Database Connection Issues",
+  "status": "resolved",
+  "severity": "high",
+  "started_at": "2024-01-17T08:30:00Z",
+  "resolved_at": "2024-01-17T10:15:00Z",
+  "duration_minutes": 105,
+  "root_cause": "Database server overload",
+  "solution": "Scaled database instances and optimized queries",
+  "affected_domains": ["api.example.com", "app.example.com"],
+  "timeline": [
+    {
+      "timestamp": "2024-01-17T08:30:00Z",
+      "event": "Incident detected",
+      "details": "Monitoring alert triggered"
+    },
+    {
+      "timestamp": "2024-01-17T08:35:00Z",
+      "event": "Investigation started",
+      "details": "DevOps team notified"
+    },
+    {
+      "timestamp": "2024-01-17T10:15:00Z",
+      "event": "Incident resolved",
+      "details": "Database scaled successfully"
+    }
+  ]
+}
+```
+
+## Device Tools
+
+### get_device_status
+
+Controleert de status van een device.
+
+**Parameters:**
+- `device_id` (string, required): ID van het device
+
+**Response:**
+```json
+{
+  "device_id": "device_456",
+  "name": "Web Server 01",
+  "status": "online",
+  "last_seen": "2024-01-17T10:25:00Z",
+  "cpu_usage": 45.2,
+  "memory_usage": 68.5,
+  "disk_usage": 75.3,
+  "network_rx_mbps": 12.5,
+  "network_tx_mbps": 8.9,
+  "uptime_seconds": 345600,
+  "active_processes": 45
+}
+```
+
+### list_devices
+
+Toont lijst van alle devices.
+
+**Parameters:**
+- `status` (string, optional): Filter op status (online, offline, unknown)
+
+**Response:**
+```json
+{
+  "devices": [
+    {
+      "id": "device_456",
+      "name": "Web Server 01",
+      "status": "online",
+      "cpu_usage": 45.2,
+      "last_seen": "2024-01-17T10:25:00Z"
+    },
+    {
+      "id": "device_789",
+      "name": "Database Server",
+      "status": "online",
+      "cpu_usage": 78.1,
+      "last_seen": "2024-01-17T10:24:00Z"
+    }
+  ]
+}
+```
+
+## Network Tools
+
+### dns_lookup
+
+Voert DNS lookup uit.
+
+**Parameters:**
+- `domain` (string, required): Domein naam
+- `record_type` (string, optional): Record type (A, AAAA, CNAME, MX, TXT, etc.)
+
+**Response:**
+```json
+{
+  "domain": "example.com",
+  "record_type": "A",
+  "records": [
+    {
+      "value": "93.184.216.34",
+      "ttl": 3600,
+      "priority": null
+    }
+  ],
+  "nameservers": ["ns1.example.com", "ns2.example.com"],
+  "query_time_ms": 45
+}
+```
+
+### ssl_check
+
+Controleert SSL certificaat.
+
+**Parameters:**
+- `domain` (string, required): Domein naam
+- `port` (integer, optional): Poort nummer (default: 443)
+
+**Response:**
+```json
+{
+  "domain": "example.com",
+  "port": 443,
+  "certificate": {
+    "subject": "CN=example.com",
+    "issuer": "CN=R3, O=Let's Encrypt",
+    "valid_from": "2024-01-01T00:00:00Z",
+    "valid_until": "2024-03-31T23:59:59Z",
+    "days_until_expiry": 74,
+    "grade": "A+"
+  },
+  "validation": {
+    "is_valid": true,
+    "chain_complete": true,
+    "trusted_issuer": true
+  }
+}
+```
+
+### port_scan
+
+Scant poorten op een host.
+
+**Parameters:**
+- `host` (string, required): Host naam of IP
+- `ports` (string, optional): Poorten om te scannen (bijv. "80,443,8080")
+
+**Response:**
+```json
+{
+  "host": "example.com",
+  "ports_scanned": ["80", "443", "8080"],
+  "results": [
+    {
+      "port": 80,
+      "state": "open",
+      "service": "http",
+      "banner": "Apache/2.4.29 (Ubuntu)"
+    },
+    {
+      "port": 443,
+      "state": "open",
+      "service": "https"
+    },
+    {
+      "port": 8080,
+      "state": "closed",
+      "service": "unknown"
+    }
+  ],
+  "scan_duration_ms": 1250
+}
+```
+
+## Service Tools
+
+### get_service_status
+
+Controleert de status van een service.
+
+**Parameters:**
+- `service_id` (string, required): ID van de service
+
+**Response:**
+```json
+{
+  "service_id": "service_789",
+  "name": "User API",
+  "type": "http",
+  "host": "api.example.com",
+  "port": 443,
+  "status": "up",
+  "response_time_ms": 245,
+  "last_check": "2024-01-17T10:25:00Z",
+  "uptime_percentage": 99.8
+}
+```
+
+### list_services
+
+Toont lijst van services.
+
+**Parameters:**
+- `type` (string, optional): Filter op type (http, tcp, smtp, etc.)
+- `status` (string, optional): Filter op status (up, down)
+
+**Response:**
+```json
+{
+  "services": [
+    {
+      "id": "service_789",
+      "name": "User API",
+      "type": "http",
+      "status": "up",
+      "response_time_ms": 245
+    },
+    {
+      "id": "service_101",
+      "name": "PostgreSQL",
+      "type": "tcp",
+      "status": "up",
+      "response_time_ms": 12
+    }
+  ]
+}
+```
+
+## Utility Tools
+
+### website_analyzer
+
+Analyseert een website voor technologie en security.
+
+**Parameters:**
+- `url` (string, required): Website URL
+
+**Response:**
+```json
+{
+  "url": "https://example.com",
+  "technologies": {
+    "server": "nginx/1.21.3",
+    "cms": "WordPress 6.1",
+    "javascript": ["jQuery 3.6.1", "React 18.2.0"],
+    "analytics": ["Google Analytics 4"]
+  },
+  "security": {
+    "ssl_enabled": true,
+    "security_headers": {
+      "content_security_policy": true,
+      "x_frame_options": "DENY",
+      "hsts": true
+    }
+  },
+  "performance": {
+    "load_time": "1.8 seconds",
+    "size": "2.3 MB",
+    "requests": 45
+  }
+}
+```
+
+## Error Handling
+
+### Common Error Responses
+
+**Invalid Parameters:**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "error": {
+    "code": -32602,
+    "message": "Invalid params",
+    "data": {
+      "field": "domain_id",
+      "reason": "Domain ID is required"
+    }
+  }
+}
+```
+
+**Resource Not Found:**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "error": {
+    "code": -32001,
+    "message": "Resource not found",
+    "data": {
+      "resource_type": "domain",
+      "resource_id": "domain_999"
+    }
+  }
+}
+```
+
+**Rate Limit Exceeded:**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "error": {
+    "code": -32002,
+    "message": "Rate limit exceeded",
+    "data": {
+      "limit": 100,
+      "window": "1h",
+      "reset_in_seconds": 1800
+    }
+  }
+}
+```
+
+**Authentication Failed:**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "error": {
+    "code": -32003,
+    "message": "Authentication failed",
+    "data": {
+      "reason": "Invalid API key"
+    }
+  }
+}
+```
+
+## Rate Limits
+
+- **Per gebruiker**: 1000 tool calls per uur
+- **Per tool**: 100 calls per minuut
+- **Burst limit**: 50 calls per minuut
+
+Rate limit headers worden toegevoegd aan responses:
+```
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 999
+X-RateLimit-Reset: 1640995200
+```
+
+## Best Practices
+
+### Tool Usage
+1. **Batch requests** waar mogelijk om rate limits te vermijden
+2. **Cache resultaten** voor frequente queries
+3. **Handle errors gracefully** met retry logic
+4. **Use appropriate parameters** voor optimale results
+
+### Error Handling
+1. **Check error codes** voor specifieke handling
+2. **Implement exponential backoff** bij rate limits
+3. **Validate parameters** voordat je tools aanroept
+4. **Log errors** voor debugging
+
+### Performance
+1. **Limit result sets** met pagination parameters
+2. **Use specific filters** om data te beperken
+3. **Monitor response times** voor optimization
+4. **Cache frequently used data** in je applicatie
