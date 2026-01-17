@@ -1,0 +1,530 @@
+---
+title: "PulseQR API"
+description: "API for generating and managing dynamic QR codes"
+---
+
+# PulseQR API Reference
+
+## Overzicht
+
+De PulseQR API stelt je in staat om dynamische QR codes te genereren, beheren en analyseren. Alle QR codes zijn volledig geïntegreerd met PulseGuard voor status pagina's en incident communicatie.
+
+## Authenticatie
+
+```bash
+# API Key authenticatie
+Authorization: Bearer YOUR_API_KEY
+
+# Of PulseGuard JWT token
+Authorization: Bearer YOUR_PULSEGUARD_JWT
+```
+
+## QR Code Generatie
+
+### QR Code Aanmaken
+
+**Endpoint:** `POST /api/pulseqr/generate`
+
+**Request Body:**
+```json
+{
+  "content": {
+    "type": "url",
+    "value": "https://status.company.com"
+  },
+  "design": {
+    "size": 300,
+    "error_correction": "M",
+    "logo_url": "https://company.com/logo.png",
+    "primary_color": "#007acc",
+    "background_color": "#ffffff",
+    "margin": 4
+  },
+  "pulseguard_integration": {
+    "incident_id": "incident_123",
+    "status_page_id": "page_456",
+    "dynamic_updates": true
+  },
+  "metadata": {
+    "name": "Status Page QR",
+    "description": "QR code voor huidige status",
+    "tags": ["status", "pulseguard"],
+    "expires_at": "2024-12-31T23:59:59Z"
+  },
+  "security": {
+    "max_scans": 1000,
+    "password_protected": false,
+    "allowed_domains": ["company.com"]
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "qr_id": "qr_123456",
+  "qr_code_url": "https://qr.pulseqr.com/qr/qr_123456.png",
+  "short_url": "https://pq.rs/abc123",
+  "expires_at": "2024-12-31T23:59:59Z",
+  "created_at": "2024-01-17T10:00:00Z"
+}
+```
+
+### QR Code Bijwerken
+
+**Endpoint:** `PUT /api/pulseqr/{qr_id}`
+
+**Request Body:**
+```json
+{
+  "content": {
+    "value": "https://status.company.com/incident/123"
+  },
+  "design": {
+    "primary_color": "#ff4444"
+  },
+  "metadata": {
+    "name": "Incident QR - Updated"
+  }
+}
+```
+
+### QR Code Verwijderen
+
+**Endpoint:** `DELETE /api/pulseqr/{qr_id}`
+
+**Response:** `204 No Content`
+
+## QR Code Beheer
+
+### QR Codes Lijst
+
+**Endpoint:** `GET /api/pulseqr`
+
+**Query Parameters:**
+- `status` (string): `active`, `expired`, `disabled`
+- `tags` (array): Filter op tags
+- `limit` (number): Max resultaten (default: 50)
+- `offset` (number): Pagination offset
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "qr_id": "qr_123456",
+      "name": "Status Page QR",
+      "qr_code_url": "https://qr.pulseqr.com/qr/qr_123456.png",
+      "short_url": "https://pq.rs/abc123",
+      "total_scans": 145,
+      "last_scan": "2024-01-17T09:30:00Z",
+      "expires_at": "2024-12-31T23:59:59Z",
+      "status": "active",
+      "tags": ["status", "pulseguard"]
+    }
+  ],
+  "pagination": {
+    "total": 23,
+    "limit": 50,
+    "offset": 0
+  }
+}
+```
+
+### QR Code Details
+
+**Endpoint:** `GET /api/pulseqr/{qr_id}`
+
+**Response:**
+```json
+{
+  "qr_id": "qr_123456",
+  "content": {
+    "type": "url",
+    "value": "https://status.company.com"
+  },
+  "design": {
+    "size": 300,
+    "error_correction": "M",
+    "logo_url": "https://company.com/logo.png"
+  },
+  "analytics": {
+    "total_scans": 145,
+    "unique_scans": 98,
+    "last_scan": "2024-01-17T09:30:00Z"
+  },
+  "metadata": {
+    "name": "Status Page QR",
+    "created_at": "2024-01-15T08:00:00Z",
+    "expires_at": "2024-12-31T23:59:59Z"
+  },
+  "status": "active"
+}
+```
+
+## Analytics & Tracking
+
+### Scan Analytics
+
+**Endpoint:** `GET /api/pulseqr/{qr_id}/analytics`
+
+**Query Parameters:**
+- `period` (string): `1h`, `24h`, `7d`, `30d`
+- `group_by` (string): `hour`, `day`, `country`
+
+**Response:**
+```json
+{
+  "qr_id": "qr_123456",
+  "period": "30d",
+  "total_scans": 145,
+  "unique_scans": 98,
+  "scan_trends": [
+    {"date": "2024-01-17", "scans": 12},
+    {"date": "2024-01-16", "scans": 8}
+  ],
+  "geographic_data": [
+    {"country": "Netherlands", "scans": 67},
+    {"country": "Germany", "scans": 34},
+    {"country": "Belgium", "scans": 23}
+  ],
+  "device_types": {
+    "mobile": {"scans": 89, "percentage": 61.4},
+    "desktop": {"scans": 45, "percentage": 31.0},
+    "tablet": {"scans": 11, "percentage": 7.6}
+  },
+  "referrer_sources": [
+    {"source": "direct", "scans": 78},
+    {"source": "pulseguard_email", "scans": 45},
+    {"source": "social_media", "scans": 22}
+  ]
+}
+```
+
+## Bulk Operaties
+
+### Bulk QR Generatie
+
+**Endpoint:** `POST /api/pulseqr/batch/generate`
+
+**Request Body:**
+```json
+{
+  "qrs": [
+    {
+      "content": {"type": "url", "value": "https://status.company.com"},
+      "metadata": {"name": "Main Status QR"}
+    },
+    {
+      "content": {"type": "url", "value": "https://status.company.com/api"},
+      "metadata": {"name": "API Status QR"}
+    }
+  ],
+  "default_design": {
+    "size": 300,
+    "logo_url": "https://company.com/logo.png"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "created": [
+    {
+      "qr_id": "qr_123456",
+      "name": "Main Status QR",
+      "qr_code_url": "https://qr.pulseqr.com/qr/qr_123456.png"
+    },
+    {
+      "qr_id": "qr_123457",
+      "name": "API Status QR",
+      "qr_code_url": "https://qr.pulseqr.com/qr/qr_123457.png"
+    }
+  ]
+}
+```
+
+## Content Types
+
+### Ondersteunde Content Types
+
+**URL:**
+```json
+{
+  "type": "url",
+  "value": "https://example.com"
+}
+```
+
+**Text:**
+```json
+{
+  "type": "text",
+  "value": "Scan voor meer informatie over onze service status"
+}
+```
+
+**Email:**
+```json
+{
+  "type": "email",
+  "value": "support@company.com",
+  "subject": "Service Status Inquiry"
+}
+```
+
+**Phone:**
+```json
+{
+  "type": "phone",
+  "value": "+31201234567"
+}
+```
+
+**Location:**
+```json
+{
+  "type": "location",
+  "latitude": 52.3676,
+  "longitude": 4.9041,
+  "name": "Company HQ"
+}
+```
+
+**WiFi:**
+```json
+{
+  "type": "wifi",
+  "ssid": "CompanyGuest",
+  "password": "guest123",
+  "encryption": "WPA2"
+}
+```
+
+## Design Opties
+
+### Basis Design
+```json
+{
+  "size": 300,
+  "error_correction": "M",
+  "margin": 4,
+  "format": "PNG"
+}
+```
+
+### Geavanceerd Design
+```json
+{
+  "primary_color": "#007acc",
+  "background_color": "#ffffff",
+  "corner_style": "rounded",
+  "logo_url": "https://company.com/logo.png",
+  "logo_size": 50,
+  "gradient": {
+    "enabled": true,
+    "start_color": "#007acc",
+    "end_color": "#005999",
+    "direction": "vertical"
+  }
+}
+```
+
+## Security Features
+
+### Access Control
+```json
+{
+  "max_scans": 1000,
+  "password_protected": true,
+  "password": "secure_password",
+  "expiration_hours": 168,
+  "allowed_ips": ["192.168.1.0/24"],
+  "allowed_countries": ["NL", "BE", "DE"]
+}
+```
+
+### Audit Logging
+```json
+{
+  "audit_logs": [
+    {
+      "timestamp": "2024-01-17T10:30:00Z",
+      "action": "scan",
+      "ip_address": "192.168.1.100",
+      "user_agent": "Mozilla/5.0...",
+      "location": {
+        "country": "Netherlands",
+        "city": "Amsterdam"
+      }
+    }
+  ]
+}
+```
+
+## Webhook Integratie
+
+### Webhook Configuratie
+
+**Endpoint:** `POST /api/pulseqr/webhooks`
+
+**Request Body:**
+```json
+{
+  "url": "https://api.company.com/webhooks/pulseqr",
+  "events": ["qr_scanned", "qr_expired", "qr_updated"],
+  "secret": "webhook_secret"
+}
+```
+
+### Webhook Events
+
+```json
+{
+  "event": "qr_scanned",
+  "qr_id": "qr_123456",
+  "scan_data": {
+    "timestamp": "2024-01-17T10:30:00Z",
+    "ip_address": "192.168.1.100",
+    "user_agent": "Mozilla/5.0...",
+    "location": {
+      "country": "Netherlands",
+      "city": "Amsterdam"
+    },
+    "device_type": "mobile",
+    "scan_count": 5
+  }
+}
+```
+
+## Rate Limits & Quotas
+
+### API Limits (per uur)
+- **Generate**: 100 QR codes
+- **Update**: 500 updates
+- **Analytics**: 1000 requests
+- **Bulk operations**: 10 batches
+
+### Plan Quotas
+```json
+{
+  "free": {
+    "max_qr_codes": 100,
+    "max_scans_per_qr": 1000,
+    "analytics_retention_days": 7
+  },
+  "pro": {
+    "max_qr_codes": 1000,
+    "max_scans_per_qr": 10000,
+    "analytics_retention_days": 30,
+    "custom_branding": true
+  },
+  "enterprise": {
+    "max_qr_codes": 10000,
+    "max_scans_per_qr": 100000,
+    "analytics_retention_days": 90,
+    "white_label": true
+  }
+}
+```
+
+## SDKs & Tools
+
+### JavaScript SDK
+```javascript
+import { PulseQR } from '@pulseqr/sdk';
+
+const client = new PulseQR({ apiKey: 'your_key' });
+
+// QR code genereren
+const qr = await client.generate({
+  content: { type: 'url', value: 'https://status.company.com' },
+  design: { logo: 'logo.png' }
+});
+
+// Analytics ophalen
+const analytics = await client.getAnalytics(qr.qr_id);
+```
+
+### cURL Examples
+```bash
+# QR code genereren
+curl -X POST "https://api.pulseqr.com/api/generate" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": {"type": "url", "value": "https://example.com"}
+  }'
+
+# QR details ophalen
+curl -X GET "https://api.pulseqr.com/api/qr_123456" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+# Analytics ophalen
+curl -X GET "https://api.pulseqr.com/api/qr_123456/analytics" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## Error Handling
+
+### Error Responses
+
+**400 Bad Request:**
+```json
+{
+  "error": "INVALID_CONTENT",
+  "message": "Content value is required for URL type"
+}
+```
+
+**401 Unauthorized:**
+```json
+{
+  "error": "INVALID_API_KEY",
+  "message": "API key is missing or invalid"
+}
+```
+
+**404 Not Found:**
+```json
+{
+  "error": "QR_NOT_FOUND",
+  "message": "QR code with ID 'qr_999' not found"
+}
+```
+
+**429 Too Many Requests:**
+```json
+{
+  "error": "RATE_LIMIT_EXCEEDED",
+  "message": "API rate limit exceeded",
+  "reset_in_seconds": 3600
+}
+```
+
+## Best Practices
+
+### QR Code Design
+1. **Error Correction**: Gebruik level M of H voor drukwerk
+2. **Size**: Minimaal 200x200 pixels voor goede scanbaarheid
+3. **Contrast**: Zorg voor voldoende contrast tussen voor- en achtergrond
+4. **Logo**: Logo mag niet meer dan 30% van QR code oppervlak bedekken
+
+### Content Management
+1. **Short URLs**: Gebruik korte URLs voor betere QR density
+2. **Dynamic Content**: Update QR content bij status veranderingen
+3. **Expiration**: Stel redelijke expiration tijden in
+4. **Backup Content**: Zorg voor fallback als primary content faalt
+
+### Analytics & Optimization
+1. **Monitor Scans**: Track scan rates en locations
+2. **A/B Testing**: Test verschillende designs
+3. **Optimize Placement**: Plaats QR codes waar ze zichtbaar zijn
+4. **Update Regularly**: Vernieuw QR codes bij content changes
+
+### Security Considerations
+1. **Password Protection**: Gebruik voor gevoelige QR codes
+2. **Scan Limits**: Stel maximum aantal scans in
+3. **IP Restrictions**: Limiteer toegang tot specifieke netwerken
+4. **Audit Logging**: Monitor alle scan activiteiten

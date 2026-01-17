@@ -1,0 +1,1805 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "PulseGuard API",
+    "description": "Complete API for PulseGuard monitoring platform",
+    "version": "1.0.0",
+    "contact": {
+      "name": "PulseGuard Support",
+      "email": "support@pulseguard.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.ipulse.one",
+      "description": "Production server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/domains": {
+      "post": {
+        "summary": "Create a new domain",
+        "tags": ["Domains"],
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DomainCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Domain created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Domain"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List domains",
+        "tags": ["Domains"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["active", "inactive", "pending"]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of domains",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/domains/{id}": {
+      "get": {
+        "summary": "Get domain details",
+        "tags": ["Domains"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Domain details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Domain"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Domain not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update domain",
+        "tags": ["Domains"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DomainUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Domain updated successfully"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete domain",
+        "tags": ["Domains"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Domain deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/domains/{id}/stats": {
+      "get": {
+        "summary": "Get domain uptime statistics",
+        "tags": ["Domains", "Statistics"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["1h", "24h", "7d", "30d", "90d"],
+              "default": "30d"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Domain statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainStats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/domains/{id}/response-time-trends": {
+      "get": {
+        "summary": "Get response time trends",
+        "tags": ["Domains", "Statistics"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["1h", "24h", "7d", "30d", "90d"],
+              "default": "24h"
+            }
+          },
+          {
+            "name": "resolution",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["1m", "5m", "1h", "1d"],
+              "default": "5m"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response time trends",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseTimeTrends"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/domains/{id}/incidents/recent": {
+      "get": {
+        "summary": "Get recent incidents for domain",
+        "tags": ["Domains", "Incidents"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recent incidents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/domains/{id}/monitoring/history": {
+      "get": {
+        "summary": "Get monitoring history",
+        "tags": ["Domains", "Monitoring"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["1h", "24h", "7d", "30d"],
+              "default": "24h"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Monitoring history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonitoringHistory"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/domains/{id}/uptime-tracker": {
+      "get": {
+        "summary": "Get uptime tracker data",
+        "tags": ["Domains", "Uptime"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Uptime tracker data"
+          }
+        }
+      }
+    },
+    "/api/domains/{id}/accessibility": {
+      "get": {
+        "summary": "Get accessibility report",
+        "tags": ["Domains", "Accessibility"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Accessibility report"
+          }
+        }
+      },
+      "post": {
+        "summary": "Run accessibility scan",
+        "tags": ["Domains", "Accessibility"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "standards": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": ["WCAG2A", "WCAG2AA", "WCAG2AAA"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accessibility scan started"
+          }
+        }
+      }
+    },
+    "/api/domains/{id}/generate-qr": {
+      "post": {
+        "summary": "Generate QR code for domain status",
+        "tags": ["Domains", "QR Codes"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "QR code generated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QRCode"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/services": {
+      "post": {
+        "summary": "Create a new service",
+        "tags": ["Services"],
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Service created successfully"
+          }
+        }
+      },
+      "get": {
+        "summary": "List services",
+        "tags": ["Services"],
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "List of services"
+          }
+        }
+      }
+    },
+    "/api/services/{id}": {
+      "get": {
+        "summary": "Get service details",
+        "tags": ["Services"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service details"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update service",
+        "tags": ["Services"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service updated successfully"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete service",
+        "tags": ["Services"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Service deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/services/{id}/stats": {
+      "get": {
+        "summary": "Get service statistics",
+        "tags": ["Services", "Statistics"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service statistics"
+          }
+        }
+      }
+    },
+    "/devices": {
+      "post": {
+        "summary": "Register a new device",
+        "tags": ["Devices"],
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Device registered successfully"
+          }
+        }
+      },
+      "get": {
+        "summary": "List devices",
+        "tags": ["Devices"],
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "List of devices"
+          }
+        }
+      }
+    },
+    "/devices/{id}": {
+      "get": {
+        "summary": "Get device details",
+        "tags": ["Devices"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Device details"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update device",
+        "tags": ["Devices"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Device updated successfully"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete device",
+        "tags": ["Devices"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Device deleted successfully"
+          }
+        }
+      }
+    },
+    "/devices/{id}/metrics": {
+      "get": {
+        "summary": "Get device metrics",
+        "tags": ["Devices", "Metrics"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["1h", "24h", "7d", "30d"],
+              "default": "24h"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Device metrics"
+          }
+        }
+      }
+    },
+    "/agent": {
+      "post": {
+        "summary": "Agent heartbeat",
+        "tags": ["Agent"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentHeartbeat"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Heartbeat acknowledged"
+          }
+        }
+      }
+    },
+    "/incidents": {
+      "post": {
+        "summary": "Create incident",
+        "tags": ["Incidents"],
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IncidentCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Incident created successfully"
+          }
+        }
+      },
+      "get": {
+        "summary": "List incidents",
+        "tags": ["Incidents"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["investigating", "identified", "monitoring", "resolved"]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of incidents"
+          }
+        }
+      }
+    },
+    "/incidents/{id}": {
+      "get": {
+        "summary": "Get incident details",
+        "tags": ["Incidents"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Incident details"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update incident",
+        "tags": ["Incidents"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Incident updated successfully"
+          }
+        }
+      }
+    },
+    "/incidents/{id}/comments": {
+      "post": {
+        "summary": "Add comment to incident",
+        "tags": ["Incidents"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Comment added successfully"
+          }
+        }
+      }
+    },
+    "/status-pages": {
+      "post": {
+        "summary": "Create status page",
+        "tags": ["Status Pages"],
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatusPageCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Status page created successfully"
+          }
+        }
+      },
+      "get": {
+        "summary": "List status pages",
+        "tags": ["Status Pages"],
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "List of status pages"
+          }
+        }
+      }
+    },
+    "/status-pages/{id}": {
+      "get": {
+        "summary": "Get status page details",
+        "tags": ["Status Pages"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status page details"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update status page",
+        "tags": ["Status Pages"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status page updated successfully"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete status page",
+        "tags": ["Status Pages"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Status page deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/toolbox/dns-lookup": {
+      "get": {
+        "summary": "DNS lookup",
+        "tags": ["Toolbox"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["A", "AAAA", "CNAME", "MX", "TXT", "SRV", "PTR", "NS", "SOA"],
+              "default": "A"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "DNS lookup results"
+          }
+        }
+      }
+    },
+    "/api/toolbox/port-scan": {
+      "get": {
+        "summary": "Port scan",
+        "tags": ["Toolbox"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "host",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ports",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "21,22,23,25,53,80,110,143,443,993,995"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Port scan results"
+          }
+        }
+      }
+    },
+    "/api/toolbox/ssl-check": {
+      "get": {
+        "summary": "SSL certificate check",
+        "tags": ["Toolbox"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "host",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "port",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 443
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SSL certificate information"
+          }
+        }
+      }
+    },
+    "/api/toolbox/analyze": {
+      "post": {
+        "summary": "Website analysis",
+        "tags": ["Toolbox"],
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Website analysis results"
+          }
+        }
+      }
+    },
+    "/api/toolbox/ip-scanner": {
+      "get": {
+        "summary": "IP geolocation lookup",
+        "tags": ["Toolbox"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "ip",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ipv4"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "IP geolocation information"
+          }
+        }
+      }
+    },
+    "/dashboard/stats": {
+      "get": {
+        "summary": "Get dashboard statistics",
+        "tags": ["Dashboard"],
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "Dashboard statistics"
+          }
+        }
+      }
+    },
+    "/api/reports": {
+      "get": {
+        "summary": "List reports",
+        "tags": ["Reports"],
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "List of reports"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create report",
+        "tags": ["Reports"],
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Report created successfully"
+          }
+        }
+      }
+    },
+    "/api/predictions/summary": {
+      "get": {
+        "summary": "Get AI predictions summary",
+        "tags": ["AI", "Predictions"],
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "AI predictions summary"
+          }
+        }
+      }
+    },
+    "/api/accessibility": {
+      "post": {
+        "summary": "Run accessibility audit",
+        "tags": ["Accessibility"],
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "standards": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": ["WCAG2A", "WCAG2AA", "WCAG2AAA"]
+                    },
+                    "default": ["WCAG2AA"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accessibility audit started"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "JWT Bearer token authentication"
+      }
+    },
+    "schemas": {
+      "DomainCreateRequest": {
+        "type": "object",
+        "required": ["url"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://example.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "My Website"
+          },
+          "check_interval": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 86400,
+            "default": 300,
+            "example": 300
+          },
+          "timeout": {
+            "type": "integer",
+            "minimum": 5,
+            "maximum": 300,
+            "default": 30,
+            "example": 30
+          },
+          "expected_status_codes": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "default": [200, 201, 301, 302],
+            "example": [200, 201, 301, 302]
+          },
+          "follow_redirects": {
+            "type": "boolean",
+            "default": true
+          },
+          "ssl_check": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "default": true
+              },
+              "warn_days_before_expiry": {
+                "type": "integer",
+                "default": 30
+              }
+            }
+          },
+          "dns_check": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "default": true
+              },
+              "record_types": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": ["A", "AAAA", "CNAME", "MX", "TXT", "SRV", "PTR", "NS", "SOA"]
+                },
+                "default": ["A", "AAAA", "CNAME", "MX"]
+              }
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["production", "website"]
+          }
+        }
+      },
+      "Domain": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "domain_123"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://example.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "My Website"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "inactive", "pending"],
+            "example": "active"
+          },
+          "check_interval": {
+            "type": "integer",
+            "example": 300
+          },
+          "last_check": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "uptime_percentage": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "nullable": true
+          },
+          "response_time_ms": {
+            "type": "integer",
+            "nullable": true
+          },
+          "ssl_expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "DomainList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Domain"
+            }
+          },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer"
+              },
+              "limit": {
+                "type": "integer"
+              },
+              "offset": {
+                "type": "integer"
+              },
+              "has_more": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "DomainStats": {
+        "type": "object",
+        "properties": {
+          "domain_id": {
+            "type": "string"
+          },
+          "period": {
+            "type": "string"
+          },
+          "uptime_percentage": {
+            "type": "number"
+          },
+          "total_checks": {
+            "type": "integer"
+          },
+          "successful_checks": {
+            "type": "integer"
+          },
+          "failed_checks": {
+            "type": "integer"
+          },
+          "average_response_time_ms": {
+            "type": "number"
+          },
+          "min_response_time_ms": {
+            "type": "number"
+          },
+          "max_response_time_ms": {
+            "type": "number"
+          },
+          "p95_response_time_ms": {
+            "type": "number"
+          },
+          "incidents_count": {
+            "type": "integer"
+          },
+          "total_downtime_seconds": {
+            "type": "integer"
+          },
+          "longest_incident_seconds": {
+            "type": "integer"
+          }
+        }
+      },
+      "ResponseTimeTrends": {
+        "type": "object",
+        "properties": {
+          "domain_id": {
+            "type": "string"
+          },
+          "period": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "data_points": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "response_time_ms": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["up", "down"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "QRCode": {
+        "type": "object",
+        "properties": {
+          "qr_id": {
+            "type": "string"
+          },
+          "qr_code_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "short_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ServiceCreateRequest": {
+        "type": "object",
+        "required": ["name", "type"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "API Service"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["http", "tcp", "smtp", "imap", "dns"],
+            "example": "http"
+          },
+          "host": {
+            "type": "string",
+            "example": "api.example.com"
+          },
+          "port": {
+            "type": "integer",
+            "example": 443
+          },
+          "check_interval": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 86400,
+            "default": 300
+          }
+        }
+      },
+      "DeviceCreateRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Web Server 01"
+          },
+          "description": {
+            "type": "string",
+            "example": "Production web server"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["production", "web"]
+          }
+        }
+      },
+      "AgentHeartbeat": {
+        "type": "object",
+        "required": ["device_id", "metrics"],
+        "properties": {
+          "device_id": {
+            "type": "string"
+          },
+          "metrics": {
+            "type": "object",
+            "properties": {
+              "cpu": {
+                "type": "object",
+                "properties": {
+                  "usage_percent": {
+                    "type": "number"
+                  },
+                  "cores": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "memory": {
+                "type": "object",
+                "properties": {
+                  "total_gb": {
+                    "type": "number"
+                  },
+                  "used_gb": {
+                    "type": "number"
+                  },
+                  "usage_percent": {
+                    "type": "number"
+                  }
+                }
+              },
+              "disk": {
+                "type": "object",
+                "properties": {
+                  "total_gb": {
+                    "type": "number"
+                  },
+                  "used_gb": {
+                    "type": "number"
+                  },
+                  "usage_percent": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "IncidentCreateRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Website down"
+          },
+          "description": {
+            "type": "string",
+            "example": "The main website is not responding"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"],
+            "default": "medium"
+          },
+          "affected_domains": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "affected_services": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CommentCreateRequest": {
+        "type": "object",
+        "required": ["content"],
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "Investigating the database connection issue"
+          },
+          "internal_only": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "StatusPageCreateRequest": {
+        "type": "object",
+        "required": ["name", "slug"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Company Status"
+          },
+          "slug": {
+            "type": "string",
+            "example": "status"
+          },
+          "description": {
+            "type": "string",
+            "example": "Real-time status of our services"
+          },
+          "custom_domain": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://status.company.com"
+          }
+        }
+      },
+      "ReportCreateRequest": {
+        "type": "object",
+        "required": ["name", "type"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Monthly Uptime Report"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["uptime", "performance", "incidents"],
+            "example": "uptime"
+          },
+          "period": {
+            "type": "string",
+            "enum": ["7d", "30d", "90d"],
+            "default": "30d"
+          },
+          "domains": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "format": {
+            "type": "string",
+            "enum": ["pdf", "csv", "json"],
+            "default": "pdf"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object"
+          }
+        }
+      },
+      "IncidentList": {
+        "type": "object",
+        "properties": {
+          "incidents": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "severity": {
+                  "type": "string"
+                },
+                "started_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "resolved_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true
+                },
+                "duration_seconds": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "MonitoringHistory": {
+        "type": "object",
+        "properties": {
+          "domain_id": {
+            "type": "string"
+          },
+          "period": {
+            "type": "string"
+          },
+          "checks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["up", "down"]
+                },
+                "response_time_ms": {
+                  "type": "integer",
+                  "nullable": true
+                },
+                "error": {
+                  "type": "string",
+                  "nullable": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "DomainUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "check_interval": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 86400
+          },
+          "timeout": {
+            "type": "integer",
+            "minimum": 5,
+            "maximum": 300
+          },
+          "expected_status_codes": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "follow_redirects": {
+            "type": "boolean"
+          },
+          "ssl_check": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "warn_days_before_expiry": {
+                "type": "integer"
+              }
+            }
+          },
+          "dns_check": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "record_types": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

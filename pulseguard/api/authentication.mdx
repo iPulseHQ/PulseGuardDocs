@@ -1,0 +1,111 @@
+---
+title: "Authentication"
+description: "Learn how to authenticate with the PulseGuard API"
+---
+
+## Overview
+
+The PulseGuard API uses Bearer token authentication. You can obtain an API key from your dashboard or use Clerk JWT tokens for authenticated requests.
+
+## Authentication Methods
+
+### API Key Authentication
+
+Include your API key in the Authorization header:
+
+<CodeGroup>
+```bash cURL
+curl -X GET "https://api.ipulse.one/api/domains" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+</CodeGroup>
+
+### JWT Token Authentication
+
+Use Clerk JWT tokens for user-specific requests:
+
+<CodeGroup>
+```bash cURL
+curl -X GET "https://api.ipulse.one/api/domains" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+</CodeGroup>
+
+## API Key Management
+
+### Create API Key
+
+<CodeGroup>
+```bash Create API Key
+POST /api-keys
+Authorization: Bearer YOUR_JWT_TOKEN
+Content-Type: application/json
+
+{
+  "name": "Production API Key",
+  "permissions": ["domains:read", "domains:write"],
+  "expires_at": "2024-12-31T23:59:59Z"
+}
+```
+</CodeGroup>
+
+### List API Keys
+
+<CodeGroup>
+```bash List API Keys
+GET /api-keys
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+</CodeGroup>
+
+### Delete API Key
+
+<CodeGroup>
+```bash Delete API Key
+DELETE /api-keys/{keyId}
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+</CodeGroup>
+
+## Rate Limits
+
+- **API Keys**: 1000 requests per hour
+- **JWT Tokens**: 5000 requests per hour
+- **Bulk Operations**: 10 per hour
+
+Rate limit headers are included in all responses:
+
+```
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 999
+X-RateLimit-Reset: 1640995200
+```
+
+## Error Responses
+
+### 401 Unauthorized
+
+```json
+{
+  "error": "UNAUTHORIZED",
+  "message": "Invalid or missing authentication token"
+}
+```
+
+### 429 Too Many Requests
+
+```json
+{
+  "error": "RATE_LIMIT_EXCEEDED",
+  "message": "API rate limit exceeded",
+  "retry_after": 3600
+}
+```
+
+## Best Practices
+
+1. **Secure Storage**: Store API keys securely, never in version control
+2. **Regular Rotation**: Rotate API keys regularly for security
+3. **Minimal Permissions**: Use the principle of least privilege
+4. **Monitor Usage**: Track API usage to detect abuse
+5. **Error Handling**: Implement proper error handling for rate limits

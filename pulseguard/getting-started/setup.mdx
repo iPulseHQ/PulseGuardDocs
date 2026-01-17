@@ -1,0 +1,204 @@
+---
+title: "Getting Started"
+description: "Set up your PulseGuard account and start monitoring"
+---
+
+# Aan de slag met PulseGuard
+
+## Account Setup
+
+### 1. Registratie
+Bezoek [guard.ipulse.one](https://guard.ipulse.one) en klik op "Sign Up" om een nieuw account aan te maken.
+
+**Vereiste informatie:**
+- Email adres
+- Bedrijfsnaam (voor organisaties)
+- Wachtwoord
+
+### 2. Email Verificatie
+Controleer uw inbox voor een verificatie email en klik op de bevestigingslink.
+
+### 3. Organisatie Setup (Optioneel)
+Voor team gebruik kunt u een organisatie aanmaken:
+1. Ga naar Settings → Organization
+2. Klik "Create Organization"
+3. Voeg teamleden uit via email invites
+
+## Eerste Monitoring Setup
+
+### Domain Monitoring
+```bash
+# Via de web interface:
+1. Ga naar Dashboard
+2. Klik "Add Domain"
+3. Voer uw domeinnaam in (bijv. example.com)
+4. Kies monitoring opties:
+   - Uptime checks (elke 5 minuten)
+   - SSL certificaat monitoring
+   - DNS monitoring
+   - Website change detection
+5. Configureer notificaties
+6. Klik "Save"
+```
+
+### Device Monitoring
+```bash
+# Download de agent:
+1. Ga naar Dashboard → Devices
+2. Klik "Download Agent"
+3. Kies uw besturingssysteem (Windows/Linux/macOS)
+4. Download het installatiebestand
+
+# Installatie op Windows:
+1. Voer het .exe bestand uit
+2. Volg de installatie wizard
+3. De agent registreert zich automatisch
+4. Controleer status in het dashboard
+```
+
+### Service Monitoring
+```bash
+# Voor API monitoring:
+1. Ga naar Dashboard → Services
+2. Klik "Add Service"
+3. Kies protocol (HTTP/TCP/IMAP/SMTP/DNS)
+4. Voer endpoint URL in
+5. Stel monitoring interval in
+6. Configureer verwacht gedrag
+7. Klik "Save"
+```
+
+## Notificatie Configuratie
+
+### Email Notificaties
+```bash
+# Standaard ingeschakeld voor:
+- Critical alerts (downtime)
+- SSL certificate expiration (30 dagen voor)
+- Domain expiration warnings
+
+# Aanpassen:
+1. Ga naar Settings → Notifications
+2. Kies "Email" tab
+3. Stel frequentie in (Immediate/Daily/Weekly)
+4. Kies severity levels
+```
+
+### Slack Integratie
+```bash
+# Setup stappen:
+1. Ga naar Settings → Integrations
+2. Klik "Add Slack"
+3. Authorize PulseGuard in Slack
+4. Kies kanaal voor notificaties
+5. Configureer bericht format
+6. Test de integratie
+```
+
+### Webhook Notificaties
+```bash
+# Voor custom integraties:
+1. Ga naar Settings → Integrations → Webhooks
+2. Klik "Add Webhook"
+3. Voer webhook URL in
+4. Kies events om te triggeren:
+   - domain_up
+   - domain_down
+   - incident_created
+   - incident_resolved
+5. Configureer headers (indien nodig)
+6. Test webhook
+```
+
+## API Key Aanmaken
+
+### Voor Programmatic Access
+```bash
+# Via dashboard:
+1. Ga naar Settings → API Keys
+2. Klik "Generate New Key"
+3. Geef de key een naam (bijv. "Production API")
+4. Stel permissions in:
+   - Read domains
+   - Write domains
+   - Read devices
+   - Read incidents
+5. Stel rate limits in (requests per uur)
+6. Klik "Create"
+7. Kopieer de API key (toont slechts één keer!)
+```
+
+### API Key gebruiken
+```bash
+# Voorbeeld curl request:
+curl -X GET "https://api.ipulse.one/api/domains" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json"
+```
+
+## Troubleshooting
+
+### Database Connectie Falen
+```bash
+# Controleer PostgreSQL:
+docker compose ps
+
+# Check logs:
+docker compose logs postgres
+
+# Reset database:
+docker compose down -v
+docker compose up -d postgres
+```
+
+### Agent Registratie Falen
+```bash
+# Controleer internet connectie
+ping api.ipulse.one
+
+# Check agent logs (Windows):
+# Logs staan in %APPDATA%\PulseGuard\logs
+
+# Manual registratie:
+pulse-agent.exe --register --server https://api.ipulse.one
+```
+
+### SSL Certificaat Issues
+```bash
+# Voor lokale development:
+# Download mkcert: https://github.com/FiloSottile/mkcert
+mkcert -install
+mkcert localhost
+
+# Plaats certificaten in apps/frontend/certs/
+```
+
+## Volgende Stappen
+
+Na succesvolle setup:
+
+1. **Verken het Dashboard**: Bekijk uw monitoring data
+2. **Stel Alerts In**: Configureer notificaties voor kritische events
+3. **Voeg Meer Assets Toe**: Breid monitoring uit naar meer domeinen/services
+4. **Configureer Integraties**: Verbind met uw favoriete tools
+5. **Bekijk Rapporten**: Genereer uw eerste uptime rapport
+
+### Handige Links
+- [Dashboard](https://guard.ipulse.one/dashboard)
+- [API Documentatie](/pulseguard/api/authentication)
+- [Community Forums](https://community.pulseguard.com)
+- [Support Portal](https://support.pulseguard.com)
+
+### Veelgestelde Vragen Setup
+
+**Q: Hoe vaak worden checks uitgevoerd?**
+A: Standaard elke 5 minuten voor domeinen, elke 30 seconden voor devices.
+
+**Q: Kan ik historische data importeren?**
+A: Nee, PulseGuard start monitoring vanaf het moment van toevoeging.
+
+**Q: Wat zijn de rate limits voor de API?**
+A: 1000 requests per uur voor free tier, hoger voor betaalde plannen.
+
+**Q: Ondersteunt PulseGuard IPv6?**
+A: Ja, zowel IPv4 als IPv6 worden ondersteund voor alle monitoring types.

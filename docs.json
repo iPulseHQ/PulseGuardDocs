@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "willow",
-  "name": "PulseGuard Documentation",
+  "name": "iPulse Documentation",
   "colors": {
     "primary": "#3B82F6",
     "light": "#60A5FA",
@@ -20,125 +20,95 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "PulseGuard",
         "groups": [
+          {
+            "group": "Introduction",
+            "pages": [
+              "pulseguard/introduction/overview"
+            ]
+          },
           {
             "group": "Getting Started",
             "pages": [
-              "index",
-              "quickstart"
+              "pulseguard/getting-started/setup"
             ]
           },
           {
             "group": "Monitoring",
             "pages": [
-              "monitoring/domains",
-              "monitoring/devices",
-              "monitoring/services",
-              "monitoring/reports"
+              "pulseguard/monitoring/domains/overview",
+              "pulseguard/monitoring/devices/overview",
+              "pulseguard/monitoring/services/overview",
+              "pulseguard/monitoring/incidents/overview",
+              "pulseguard/monitoring/status-pages/overview"
             ]
           },
           {
             "group": "Features",
             "pages": [
-              "features/toolbox",
-              "features/ai-insights",
-              "features/integrations"
+              "pulseguard/features/ai-insights/overview",
+              "pulseguard/features/toolbox/overview"
             ]
           },
           {
             "group": "Integrations",
             "pages": [
-              "features/integrations/azure",
-              "features/integrations/coolify",
-              "features/integrations/vercel"
+              "pulseguard/integrations/overview",
+              "pulseguard/integrations/vercel",
+              "pulseguard/integrations/coolify",
+              "pulseguard/integrations/azure",
+              "pulseguard/integrations/notifications"
             ]
           },
           {
-            "group": "Status Pages",
+            "group": "API",
             "pages": [
-              "status-pages/introduction",
-              "status-pages/setup",
-              "status-pages/incidents",
-              "status-pages/maintenance",
-              "status-pages/customization"
+              "pulseguard/api/introduction",
+              "pulseguard/api/authentication",
+              "pulseguard/api/playground"
             ]
           },
           {
-            "group": "Organizations",
-            "pages": [
-              "organizations/overview",
-              "organizations/members"
-            ]
+            "group": "API Reference",
+            "openapi": "pulseguard/api/openapi.json"
           },
           {
-            "group": "Account",
+            "group": "MCP Integration",
             "pages": [
-              "account/profile",
-              "account/notifications",
-              "account/two-factor-auth"
-            ]
-          },
-          {
-            "group": "Security",
-            "pages": [
-              "security/overview"
-            ]
-          },
-          {
-            "group": "Accessibility",
-            "pages": [
-              "accessibility/overview"
-            ]
-          },
-          {
-            "group": "Resources",
-            "pages": [
-              "resources/subscription-plans",
-              "resources/support"
-            ]
-          },
-          {
-            "group": "Development",
-            "pages": [
-              "development",
-              "deploy-guide"
-            ]
-          },
-          {
-            "group": "Updates",
-            "pages": [
-              "changelog"
+              "pulseguard/mcp/overview",
+              "pulseguard/mcp/setup",
+              "pulseguard/mcp/tools",
+              "pulseguard/mcp/oauth"
             ]
           }
         ]
       },
       {
-        "tab": "API Reference",
+        "tab": "PulseQR",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Introduction",
             "pages": [
-              "api-reference/introduction",
-              "api-reference/authentication",
-              "api-reference/mcp"
+              "pulseqr/introduction/overview"
             ]
           },
           {
-            "group": "Complete API Reference",
+            "group": "API",
             "pages": [
-              "api-reference/endpoints"
+              "pulseqr/api/overview"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "PulseFiles",
+        "groups": [
           {
-            "group": "Interactive Playground",
+            "group": "Introduction",
             "pages": [
-              "api-playground"
+              "pulsefiles/introduction/overview"
             ]
-          },
-          {
-            "group": "OpenAPI Specification",
-            "openapi": "openapi.yaml"
           }
         ]
       }
@@ -146,27 +116,37 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Dashboard",
+          "anchor": "iPulse.one",
+          "href": "https://ipulse.one",
+          "icon": "home"
+        },
+        {
+          "anchor": "PulseGuard",
           "href": "https://guard.ipulse.one",
           "icon": "gauge"
         },
         {
-          "anchor": "Support",
-          "href": "https://arjandh.notion.site/1ff0645fff30819ab883fe1e29743e7c",
-          "icon": "life-ring"
+          "anchor": "PulseQR",
+          "href": "https://qr.ipulse.one",
+          "icon": "qrcode"
+        },
+        {
+          "anchor": "PulseFiles",
+          "href": "https://files.ipulse.one",
+          "icon": "file"
         }
       ]
     }
   },
   "logo": {
-    "light": "/images/android-chrome-192x192.png",
-    "dark": "/images/android-chrome-512x512.png"
+    "light": "/android-chrome-192x192.png",
+    "dark": "/android-chrome-512x512.png"
   },
   "navbar": {
     "links": [
       {
         "label": "Support",
-        "href": "https://arjandh.notion.site/1ff0645fff30819ab883fe1e29743e7c"
+        "href": "https://ipulse.notion.site/2ca4306c6bc6816aa871d3413fdac5ad?pvs=105"
       },
       {
         "label": "Email",
@@ -189,9 +169,9 @@
   },
   "footer": {
     "socials": {
-      "linkedin": "https://linkedin.com/company/pulseguardnl",
+      "linkedin": "https://www.linkedin.com/company/ipulsehq/",
       "instagram": "https://instagram.com/pulseguard_",
-      "github": "https://github.com/PulseGuardHQ"
+      "github": "https://github.com/iPulseHQ/"
     }
   }
 }

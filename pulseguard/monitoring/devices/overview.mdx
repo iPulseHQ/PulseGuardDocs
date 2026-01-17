@@ -1,0 +1,484 @@
+---
+title: "Device Monitoring"
+description: "Monitor server health, system metrics, and application status"
+---
+
+# Device Monitoring
+
+## Overzicht
+
+Device monitoring in PulseGuard stelt u in staat om de gezondheid en prestaties van uw fysieke en virtuele servers, werkstations en IoT apparaten te monitoren. De PulseGuard agent verzamelt uitgebreide systeem metrics en stuurt deze real-time naar het platform.
+
+## PulseGuard Agent
+
+### Technische Specificaties
+- **Programmeertaal**: Go 1.24.5
+- **Platform Support**: Windows, Linux, macOS
+- **Architectuur**: AMD64, ARM64
+- **Resource Usage**: < 50MB RAM, < 5% CPU
+- **Netwerk**: Outbound HTTPS alleen (geen inbound ports nodig)
+
+### Installatie Methodes
+
+#### Windows Installatie
+```powershell
+# Via installer (aanbevolen)
+1. Download pulse-agent-windows-amd64.exe
+2. Voer als administrator uit
+3. Volg installatie wizard
+4. Agent start automatisch bij opstarten
+
+# Manual installatie
+sc create PulseGuard binPath= "C:\Program Files\PulseGuard\pulse-agent.exe --service"
+sc start PulseGuard
+```
+
+#### Linux Installatie
+```bash
+# Ubuntu/Debian
+wget https://downloads.pulseguard.com/pulse-agent-linux-amd64
+chmod +x pulse-agent-linux-amd64
+sudo mv pulse-agent-linux-amd64 /usr/local/bin/pulse-agent
+sudo useradd -r -s /bin/false pulseguard
+
+# Systemd service
+sudo tee /etc/systemd/system/pulseguard.service > /dev/null <<EOF
+[Unit]
+Description=PulseGuard Agent
+After=network.target
+
+[Service]
+User=pulseguard
+ExecStart=/usr/local/bin/pulse-agent
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl enable pulseguard
+sudo systemctl start pulseguard
+```
+
+#### macOS Installatie
+```bash
+# Via Homebrew (aanbevolen)
+brew install pulseguard/tap/pulse-agent
+
+# Of manual
+curl -L https://downloads.pulseguard.com/pulse-agent-darwin-amd64 -o pulse-agent
+chmod +x pulse-agent
+sudo mv pulse-agent /usr/local/bin/
+
+# LaunchDaemon
+sudo tee /Library/LaunchDaemons/com.pulseguard.agent.plist > /dev/null <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.pulseguard.agent</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/bin/pulse-agent</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+</dict>
+</plist>
+EOF
+
+sudo launchctl load /Library/LaunchDaemons/com.pulseguard.agent.plist
+```
+
+## Metrics Verzameling
+
+### Systeem Metrics
+
+#### CPU Monitoring
+```json
+{
+  "cpu": {
+    "usage_percent": 45.2,
+    "cores": 8,
+    "frequency_mhz": 3200,
+    "temperature_celsius": 65,
+    "load_average": [1.5, 1.2, 1.1]
+  }
+}
+```
+
+#### Memory Monitoring
+```json
+{
+  "memory": {
+    "total_gb": 16,
+    "used_gb": 8.5,
+    "free_gb": 7.5,
+    "usage_percent": 53.1,
+    "swap_total_gb": 8,
+    "swap_used_gb": 2.1,
+    "swap_free_gb": 5.9
+  }
+}
+```
+
+#### Disk Monitoring
+```json
+{
+  "disks": [
+    {
+      "mount_point": "/home",
+      "filesystem": "ext4",
+      "total_gb": 1000,
+      "used_gb": 450,
+      "free_gb": 550,
+      "usage_percent": 45.0,
+      "read_bytes_per_sec": 1024000,
+      "write_bytes_per_sec": 512000
+    }
+  ]
+}
+```
+
+#### Network Monitoring
+```json
+{
+  "network": {
+    "interfaces": [
+      {
+        "name": "eth0",
+        "ip_address": "192.168.1.100",
+        "mac_address": "00:11:22:33:44:55",
+        "rx_bytes_per_sec": 125000,
+        "tx_bytes_per_sec": 67000,
+        "rx_packets_per_sec": 150,
+        "tx_packets_per_sec": 120,
+        "rx_errors": 0,
+        "tx_errors": 0
+      }
+    ],
+    "connections": {
+      "established": 45,
+      "listening": 12,
+      "time_wait": 8
+    }
+  }
+}
+```
+
+### Process Monitoring
+
+#### Process Inventory
+```json
+{
+  "processes": {
+    "total_count": 245,
+    "by_user": {
+      "root": 12,
+      "www-data": 45,
+      "pulseguard": 1
+    },
+    "top_cpu": [
+      {
+        "pid": 1234,
+        "name": "nginx",
+        "cpu_percent": 15.2,
+        "memory_percent": 8.5,
+        "user": "www-data"
+      }
+    ]
+  }
+}
+```
+
+#### Application Monitoring
+```json
+{
+  "applications": [
+    {
+      "name": "nginx",
+      "version": "1.21.3",
+      "status": "running",
+      "pid": 1234,
+      "cpu_percent": 12.5,
+      "memory_mb": 85,
+      "ports": [80, 443],
+      "uptime_seconds": 345600
+    }
+  ]
+}
+```
+
+### Log Monitoring
+
+#### Log Collection
+```json
+{
+  "logs": {
+    "system": {
+      "path": "/var/log/syslog",
+      "last_modified": "2024-01-17T10:30:00Z",
+      "size_bytes": 10485760,
+      "error_count_last_hour": 3,
+      "warning_count_last_hour": 12
+    },
+    "application": {
+      "nginx": {
+        "access_log": "/var/log/nginx/access.log",
+        "error_log": "/var/log/nginx/error.log",
+        "error_patterns": ["502 Bad Gateway", "504 Gateway Timeout"]
+      }
+    }
+  }
+}
+```
+
+## Alert Configuratie
+
+### Threshold-based Alerts
+
+#### CPU Alerts
+```json
+{
+  "cpu_alerts": {
+    "high_usage": {
+      "threshold_percent": 90,
+      "duration_minutes": 5,
+      "severity": "critical"
+    },
+    "high_temperature": {
+      "threshold_celsius": 85,
+      "severity": "warning"
+    }
+  }
+}
+```
+
+#### Memory Alerts
+```json
+{
+  "memory_alerts": {
+    "high_usage": {
+      "threshold_percent": 95,
+      "severity": "critical"
+    },
+    "swap_usage": {
+      "threshold_percent": 80,
+      "severity": "warning"
+    }
+  }
+}
+```
+
+#### Disk Alerts
+```json
+{
+  "disk_alerts": {
+    "space_low": {
+      "threshold_percent": 90,
+      "severity": "warning"
+    },
+    "space_critical": {
+      "threshold_percent": 95,
+      "severity": "critical"
+    }
+  }
+}
+```
+
+### Service Monitoring
+
+#### Windows Services
+```json
+{
+  "windows_services": [
+    {
+      "name": "PulseGuard",
+      "display_name": "PulseGuard Agent",
+      "status": "running",
+      "startup_type": "automatic",
+      "monitor": true
+    }
+  ]
+}
+```
+
+#### Linux Services (systemd)
+```json
+{
+  "systemd_services": [
+    {
+      "name": "nginx",
+      "status": "active",
+      "sub_status": "running",
+      "monitor": true,
+      "restart_on_failure": true
+    }
+  ]
+}
+```
+
+## Security Features
+
+### Data Encryption
+- **In-transit**: Alle data encrypted met TLS 1.3
+- **At-rest**: Gevoelige configuratie encrypted lokaal
+- **API Keys**: Device-specifieke API keys met scoped permissions
+
+### Access Control
+- **Device Registration**: Secure registration proces
+- **Certificate Pinning**: Voorkomt man-in-the-middle attacks
+- **Rate Limiting**: Beschermt tegen abuse
+
+### Privacy Protection
+- **Data Minimization**: Alleen noodzakelijke metrics verzameld
+- **Configurable Collection**: Gebruikers kunnen monitoring uitschakelen
+- **Local Storage**: Gevoelige data niet lokaal opgeslagen
+
+## Troubleshooting
+
+### Agent Installatie Problemen
+
+#### Windows
+```powershell
+# Check service status
+sc query PulseGuard
+
+# View agent logs
+Get-Content "$env:APPDATA\PulseGuard\logs\agent.log" -Tail 50
+
+# Manual start
+pulse-agent.exe --config "$env:APPDATA\PulseGuard\config.toml"
+```
+
+#### Linux
+```bash
+# Check service status
+sudo systemctl status pulseguard
+
+# View logs
+sudo journalctl -u pulseguard -f
+
+# Manual start
+sudo -u pulseguard /usr/local/bin/pulse-agent --config /etc/pulseguard/config.toml
+```
+
+### Veelvoorkomende Issues
+
+#### "Agent cannot connect to server"
+```bash
+# Check internet connectivity
+curl -I https://api.ipulse.one/health
+
+# Verify API key
+curl -H "Authorization: Bearer YOUR_API_KEY" https://api.ipulse.one/api/devices
+
+# Check firewall
+sudo ufw status
+sudo iptables -L
+```
+
+#### "High CPU usage by agent"
+```bash
+# Increase collection interval
+collection_interval = 60  # in config.toml
+
+# Reduce monitoring scope
+[monitoring]
+processes = false
+detailed_network = false
+```
+
+#### "Agent crashes on startup"
+```bash
+# Check system requirements
+uname -a
+go version  # if running from source
+
+# Verify configuration file
+pulse-agent --validate-config config.toml
+
+# Check disk space
+df -h
+```
+
+### Debug Mode
+```bash
+# Enable debug logging
+log_level = "debug"
+
+# Run in foreground (development)
+pulse-agent --foreground --config config.toml
+
+# Verbose startup
+pulse-agent --verbose-startup
+```
+
+## Performance Optimalisatie
+
+### Resource Management
+- **Collection Intervals**: Aanpassen aan use case (30s-300s)
+- **Monitoring Scope**: Alleen benodigde metrics inschakelen
+- **Data Retention**: Configureer lokale log rotatie
+
+### Network Optimization
+- **Compression**: Automatische payload compressie
+- **Batching**: Metrics gebundeld verzonden
+- **Retry Logic**: Intelligent retry bij netwerk issues
+
+### Scaling Considerations
+- **Multiple Agents**: Verschillende agents voor verschillende rollen
+- **Load Balancing**: Distribute monitoring load
+- **Centralized Config**: Beheer configuratie centraal
+
+## API Integratie
+
+### Device Management
+```bash
+# Device lijst
+GET /api/devices
+
+# Device details
+GET /api/devices/{id}
+
+# Device metrics
+GET /api/devices/{id}/metrics?period=1h
+
+# Device configuratie bijwerken
+PUT /api/devices/{id}/config
+
+# Device verwijderen
+DELETE /api/devices/{id}
+```
+
+### Real-time Metrics
+```bash
+# Live metrics stream (WebSocket)
+ws://api.ipulse.one/api/devices/{id}/live
+
+# Metrics export
+GET /api/devices/{id}/export?format=json&period=24h
+```
+
+## Best Practices
+
+### Deployment Strategy
+1. **Staged Rollout**: Start met test servers
+2. **Monitoring First**: Controleer agent performance
+3. **Gradual Expansion**: Breid monitoring geleidelijk uit
+4. **Backup Plan**: Zorg voor fallback monitoring
+
+### Alert Management
+1. **Baseline Establishment**: Leer normaal gedrag kennen
+2. **Threshold Tuning**: Stel realistische thresholds in
+3. **Alert Routing**: Route alerts naar juiste teams
+4. **Escalation Policies**: Definieer escalatie procedures
+
+### Maintenance
+1. **Regular Updates**: Houd agent up-to-date
+2. **Configuration Backup**: Backup configuratie files
+3. **Performance Monitoring**: Monitor agent performance
+4. **Log Rotation**: Configureer log rotatie

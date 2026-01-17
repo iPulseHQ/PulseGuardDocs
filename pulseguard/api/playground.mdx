@@ -1,0 +1,543 @@
+---
+title: "API Playground"
+description: "Interactive API testing and examples"
+---
+
+# API Playground
+
+Test the PulseGuard API directly in your browser with our interactive playground. All examples include authentication and can be run immediately.
+
+## Authentication Setup
+
+Before using the playground, you'll need to authenticate. Choose your preferred method:
+
+### Option 1: API Key (Recommended)
+
+1. Go to your [PulseGuard Dashboard](https://guard.ipulse.one)
+2. Navigate to Settings → API Keys
+3. Click "Generate New Key"
+4. Copy the key and use it in the Authorization header
+
+### Option 2: JWT Token
+
+If you're logged in to the dashboard, your JWT token is automatically used for API calls.
+
+## Domain Monitoring
+
+### Create a Domain
+
+Test domain creation with custom monitoring settings.
+
+<CodeGroup>
+```bash Create Domain
+curl -X POST "https://api.ipulse.one/api/domains" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com",
+    "name": "My Test Website",
+    "check_interval": 300,
+    "ssl_check": {
+      "enabled": true,
+      "warn_days_before_expiry": 30
+    },
+    "tags": ["test", "demo"]
+  }'
+```
+
+```json Response
+{
+  "id": "domain_123",
+  "url": "https://example.com",
+  "name": "My Test Website",
+  "status": "pending",
+  "check_interval": 300,
+  "created_at": "2024-01-17T10:00:00Z"
+}
+```
+</CodeGroup>
+
+### Get Domain Statistics
+
+Retrieve uptime statistics for the last 30 days.
+
+<CodeGroup>
+```bash Get Statistics
+curl -X GET "https://api.ipulse.one/api/domains/domain_123/stats?period=30d" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json Response
+{
+  "domain_id": "domain_123",
+  "period": "30d",
+  "uptime_percentage": 99.87,
+  "total_checks": 14400,
+  "successful_checks": 14358,
+  "failed_checks": 42,
+  "average_response_time_ms": 245,
+  "incidents_count": 2,
+  "total_downtime_seconds": 1560
+}
+```
+</CodeGroup>
+
+### Response Time Trends
+
+Get detailed response time data over time.
+
+<CodeGroup>
+```bash Response Time Trends
+curl -X GET "https://api.ipulse.one/api/domains/domain_123/response-time-trends?period=24h&resolution=5m" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json Response
+{
+  "domain_id": "domain_123",
+  "period": "24h",
+  "resolution": "5m",
+  "data_points": [
+    {
+      "timestamp": "2024-01-17T10:00:00Z",
+      "response_time_ms": 245,
+      "status": "up"
+    },
+    {
+      "timestamp": "2024-01-17T10:05:00Z",
+      "response_time_ms": 267,
+      "status": "up"
+    }
+  ]
+}
+```
+</CodeGroup>
+
+## Device Monitoring
+
+### Register a Device
+
+Add a new device for monitoring.
+
+<CodeGroup>
+```bash Register Device
+curl -X POST "https://api.ipulse.one/devices" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Web Server 01",
+    "description": "Production web server",
+    "tags": ["production", "web"]
+  }'
+```
+
+```json Response
+{
+  "id": "device_456",
+  "name": "Web Server 01",
+  "status": "active",
+  "created_at": "2024-01-17T10:00:00Z"
+}
+```
+</CodeGroup>
+
+### Get Device Metrics
+
+Retrieve real-time metrics from a device.
+
+<CodeGroup>
+```bash Get Device Metrics
+curl -X GET "https://api.ipulse.one/devices/device_456/metrics?period=1h" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json Response
+{
+  "device_id": "device_456",
+  "period": "1h",
+  "metrics": {
+    "cpu": {
+      "usage_percent": 45.2,
+      "cores": 8,
+      "temperature_celsius": 65
+    },
+    "memory": {
+      "total_gb": 16,
+      "used_gb": 8.5,
+      "usage_percent": 53.1
+    },
+    "disk": {
+      "total_gb": 500,
+      "used_gb": 250,
+      "usage_percent": 50.0
+    }
+  }
+}
+```
+</CodeGroup>
+
+## Service Monitoring
+
+### Create a Service
+
+Monitor a custom service or API endpoint.
+
+<CodeGroup>
+```bash Create Service
+curl -X POST "https://api.ipulse.one/api/services" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "User API",
+    "type": "http",
+    "host": "api.example.com",
+    "port": 443,
+    "check_interval": 60
+  }'
+```
+
+```json Response
+{
+  "id": "service_789",
+  "name": "User API",
+  "type": "http",
+  "status": "active",
+  "created_at": "2024-01-17T10:00:00Z"
+}
+```
+</CodeGroup>
+
+## Toolbox Tools
+
+### DNS Lookup
+
+Perform DNS lookups for troubleshooting.
+
+<CodeGroup>
+```bash DNS Lookup
+curl -X GET "https://api.ipulse.one/api/toolbox/dns-lookup?domain=example.com&type=A" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json Response
+{
+  "domain": "example.com",
+  "type": "A",
+  "records": [
+    {
+      "value": "93.184.216.34",
+      "ttl": 3600
+    }
+  ],
+  "query_time_ms": 45
+}
+```
+</CodeGroup>
+
+### SSL Certificate Check
+
+Analyze SSL certificate details.
+
+<CodeGroup>
+```bash SSL Check
+curl -X GET "https://api.ipulse.one/api/toolbox/ssl-check?host=example.com&port=443" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json Response
+{
+  "host": "example.com",
+  "port": 443,
+  "certificate": {
+    "subject": "CN=example.com",
+    "issuer": "CN=R3, O=Let's Encrypt",
+    "valid_from": "2024-01-01T00:00:00Z",
+    "valid_until": "2024-03-31T23:59:59Z",
+    "grade": "A+"
+  },
+  "validation": {
+    "is_valid": true,
+    "expires_in_days": 74
+  }
+}
+```
+</CodeGroup>
+
+### Website Analysis
+
+Get comprehensive website analysis.
+
+<CodeGroup>
+```bash Website Analysis
+curl -X POST "https://api.ipulse.one/api/toolbox/analyze" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com"
+  }'
+```
+
+```json Response
+{
+  "url": "https://example.com",
+  "technologies": {
+    "server": "nginx/1.21.3",
+    "cms": "WordPress 6.1",
+    "javascript": ["jQuery 3.6.1", "React 18.2.0"]
+  },
+  "performance": {
+    "load_time": "1.8 seconds",
+    "size": "2.3 MB",
+    "requests": 45
+  },
+  "security": {
+    "ssl_enabled": true,
+    "security_headers": true
+  }
+}
+```
+</CodeGroup>
+
+## Incident Management
+
+### Create Incident
+
+Manually create an incident for tracking.
+
+<CodeGroup>
+```bash Create Incident
+curl -X POST "https://api.ipulse.one/incidents" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Database Connection Issues",
+    "description": "Users reporting slow page loads",
+    "severity": "high",
+    "affected_domains": ["domain_123"]
+  }'
+```
+
+```json Response
+{
+  "id": "incident_101",
+  "title": "Database Connection Issues",
+  "status": "investigating",
+  "severity": "high",
+  "created_at": "2024-01-17T10:00:00Z"
+}
+```
+</CodeGroup>
+
+### Add Comment to Incident
+
+Collaborate on incident resolution.
+
+<CodeGroup>
+```bash Add Comment
+curl -X POST "https://api.ipulse.one/incidents/incident_101/comments" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Investigating database connection pool exhaustion",
+    "internal_only": false
+  }'
+```
+
+```json Response
+{
+  "id": "comment_202",
+  "content": "Investigating database connection pool exhaustion",
+  "author": "user@example.com",
+  "created_at": "2024-01-17T10:05:00Z"
+}
+```
+</CodeGroup>
+
+## Dashboard & Reports
+
+### Get Dashboard Statistics
+
+Retrieve high-level monitoring statistics.
+
+<CodeGroup>
+```bash Dashboard Stats
+curl -X GET "https://api.ipulse.one/dashboard/stats" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json Response
+{
+  "total_domains": 25,
+  "active_domains": 23,
+  "total_devices": 8,
+  "active_devices": 7,
+  "total_incidents": 12,
+  "active_incidents": 2,
+  "uptime_percentage": 99.8,
+  "avg_response_time_ms": 245
+}
+```
+</CodeGroup>
+
+## SDK Examples
+
+### JavaScript SDK
+
+```javascript
+import { PulseGuard } from '@pulseguard/sdk';
+
+const client = new PulseGuard({
+  apiKey: 'your_api_key'
+});
+
+// Create a domain
+const domain = await client.domains.create({
+  url: 'https://example.com',
+  name: 'My Website'
+});
+
+// Get statistics
+const stats = await client.domains.getStats(domain.id, {
+  period: '30d'
+});
+
+console.log(`Uptime: ${stats.uptime_percentage}%`);
+```
+
+### Python SDK
+
+```python
+from pulseguard import PulseGuardClient
+
+client = PulseGuardClient(api_key='your_api_key')
+
+# Create a domain
+domain = client.domains.create(
+    url='https://example.com',
+    name='My Website'
+)
+
+# Get statistics
+stats = client.domains.get_stats(domain.id, period='30d')
+
+print(f"Uptime: {stats['uptime_percentage']}%")
+```
+
+### PHP SDK
+
+```php
+use PulseGuard\\PulseGuardClient;
+
+$client = new PulseGuardClient([
+    'api_key' => 'your_api_key'
+]);
+
+// Create a domain
+$domain = $client->domains()->create([
+    'url' => 'https://example.com',
+    'name' => 'My Website'
+]);
+
+// Get statistics
+$stats = $client->domains()->getStats($domain['id'], [
+    'period' => '30d'
+]);
+
+echo "Uptime: {$stats['uptime_percentage']}%";
+```
+
+## Error Examples
+
+### Rate Limit Exceeded
+
+```bash
+curl -X GET "https://api.ipulse.one/api/domains" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json Response (429)
+{
+  "error": "RATE_LIMIT_EXCEEDED",
+  "message": "API rate limit exceeded",
+  "details": {
+    "limit": 1000,
+    "window": "1h",
+    "reset_in_seconds": 1800
+  }
+}
+```
+
+### Domain Not Found
+
+```bash
+curl -X GET "https://api.ipulse.one/api/domains/domain_999" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json Response (404)
+{
+  "error": "DOMAIN_NOT_FOUND",
+  "message": "Domain with ID 'domain_999' not found"
+}
+```
+
+### Validation Error
+
+```bash
+curl -X POST "https://api.ipulse.one/api/domains" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Test Domain"}'
+```
+
+```json Response (400)
+{
+  "error": "VALIDATION_ERROR",
+  "message": "Validation failed",
+  "details": {
+    "field": "url",
+    "reason": "URL is required for domain creation"
+  }
+}
+```
+
+## Webhook Testing
+
+### Register Webhook
+
+```bash
+curl -X POST "https://api.ipulse.one/api/webhooks" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://your-app.com/webhooks/pulseguard",
+    "events": ["domain_up", "domain_down"],
+    "secret": "your_webhook_secret"
+  }'
+```
+
+### Test Webhook
+
+```bash
+curl -X POST "https://api.ipulse.one/api/webhooks/test" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event": "domain_down",
+    "domain_id": "domain_123"
+  }'
+```
+
+## Next Steps
+
+1. **Explore the Full API**: Check the complete [API Reference](/pulseguard/api/reference/domains-api) for all endpoints
+2. **Build an Integration**: Use our SDKs or direct API calls
+3. **Set Up Webhooks**: Get real-time notifications
+4. **Monitor Usage**: Track your API usage in the dashboard
+
+## Support
+
+Need help with the API? Check our:
+- [API Reference Documentation](/pulseguard/api/reference/domains-api)
+- [Community Forums](https://community.pulseguard.com)
+- [Support Portal](https://support.pulseguard.com)

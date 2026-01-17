@@ -1,0 +1,678 @@
+---
+title: "Toolbox - Network & Security Utilities"
+description: "DNS lookup, port scanning, SSL checking, and more"
+---
+
+# Toolbox - Network & Security Utilities
+
+## Overzicht
+
+De PulseGuard Toolbox biedt een uitgebreide set van netwerk- en security tools voor troubleshooting, security analysis, en compliance checks. Alle tools zijn beschikbaar via de web interface en API.
+
+## DNS Analysis Tools
+
+### DNS Lookup
+```json
+{
+  "dns_lookup": {
+    "capabilities": {
+      "record_types": ["A", "AAAA", "CNAME", "MX", "TXT", "SRV", "PTR", "NS", "SOA"],
+      "global_resolution": true,
+      "authoritative_queries": true,
+      "dnssec_validation": true,
+      "trace_resolution": true
+    },
+    "example_query": {
+      "domain": "example.com",
+      "record_type": "A",
+      "resolver": "8.8.8.8",
+      "response": {
+        "records": [
+          {
+            "type": "A",
+            "value": "93.184.216.34",
+            "ttl": 3600,
+            "authoritative": false
+          }
+        ],
+        "query_time_ms": 45,
+        "resolver_used": "8.8.8.8"
+      }
+    }
+  }
+}
+```
+
+### DNS Propagation Checker
+```json
+{
+  "dns_propagation": {
+    "global_check": {
+      "locations": [
+        "Amsterdam, NL", "London, UK", "New York, US",
+        "San Francisco, US", "Singapore", "Sydney, AU",
+        "Tokyo, JP", "São Paulo, BR"
+      ],
+      "check_interval": 300, // 5 minutes
+      "expected_value": "1.2.3.4"
+    },
+    "propagation_results": {
+      "total_locations": 8,
+      "propagated_locations": 7,
+      "pending_locations": 1,
+      "estimated_completion": "15_minutes"
+    }
+  }
+}
+```
+
+### DNSSEC Validator
+```json
+{
+  "dnssec_validation": {
+    "validation_process": {
+      "check_dnskey": true,
+      "verify_signatures": true,
+      "validate_chain": true,
+      "check_expiration": true
+    },
+    "validation_result": {
+      "domain": "example.com",
+      "dnssec_enabled": true,
+      "valid_signatures": true,
+      "trust_chain_valid": true,
+      "next_renewal": "2024-02-15",
+      "warnings": []
+    }
+  }
+}
+```
+
+## Network Scanning Tools
+
+### Port Scanner
+```json
+{
+  "port_scanner": {
+    "scan_types": {
+      "quick_scan": {
+        "ports": [21, 22, 23, 25, 53, 80, 110, 143, 443, 993, 995],
+        "timeout": 5
+      },
+      "full_scan": {
+        "ports": "1-65535",
+        "timeout": 2
+      },
+      "custom_scan": {
+        "ports": [80, 443, 8080, 8443],
+        "timeout": 10
+      }
+    },
+    "scan_result": {
+      "target": "example.com",
+      "scan_type": "quick_scan",
+      "open_ports": [
+        {
+          "port": 80,
+          "service": "http",
+          "protocol": "tcp",
+          "state": "open",
+          "banner": "Apache/2.4.29 (Ubuntu)"
+        },
+        {
+          "port": 443,
+          "service": "https",
+          "protocol": "tcp",
+          "state": "open",
+          "banner": "Apache/2.4.29 (Ubuntu)"
+        }
+      ],
+      "scan_duration": 1250 // milliseconds
+    }
+  }
+}
+```
+
+### IP Geolocation & Information
+```json
+{
+  "ip_geolocation": {
+    "lookup_capabilities": {
+      "ipv4_support": true,
+      "ipv6_support": true,
+      "reverse_dns": true,
+      "asn_lookup": true,
+      "threat_intelligence": true
+    },
+    "geolocation_result": {
+      "ip": "1.1.1.1",
+      "hostname": "one.one.one.one",
+      "continent": "North America",
+      "country": "United States",
+      "region": "California",
+      "city": "San Francisco",
+      "postal_code": "94107",
+      "latitude": 37.7749,
+      "longitude": -122.4194,
+      "timezone": "America/Los_Angeles",
+      "asn": "AS13335",
+      "organization": "Cloudflare, Inc.",
+      "threat_level": "low"
+    }
+  }
+}
+```
+
+## SSL/TLS Analysis Tools
+
+### SSL Certificate Checker
+```json
+{
+  "ssl_checker": {
+    "certificate_analysis": {
+      "basic_checks": {
+        "validity_period": true,
+        "issuer_validation": true,
+        "chain_validation": true,
+        "revocation_status": true
+      },
+      "advanced_checks": {
+        "cipher_suites": true,
+        "protocol_versions": true,
+        "hsts_header": true,
+        "security_headers": true
+      }
+    },
+    "certificate_details": {
+      "domain": "example.com",
+      "port": 443,
+      "certificate": {
+        "subject": "CN=example.com",
+        "issuer": "CN=R3, O=Let's Encrypt, C=US",
+        "valid_from": "2023-12-01T00:00:00Z",
+        "valid_until": "2024-02-29T23:59:59Z",
+        "serial_number": "03:12:34:56:78:90:AB:CD:EF",
+        "signature_algorithm": "sha256WithRSAEncryption",
+        "key_size": 2048,
+        "fingerprint_sha256": "12:34:56:78:90:AB:CD:EF..."
+      },
+      "chain_status": "valid",
+      "protocol_support": ["TLS 1.2", "TLS 1.3"],
+      "cipher_suites": ["TLS_AES_256_GCM_SHA384", "TLS_CHACHA20_POLY1305_SHA256"],
+      "vulnerabilities": [],
+      "grade": "A+"
+    }
+  }
+}
+```
+
+### SSL Chain Validator
+```json
+{
+  "ssl_chain_validator": {
+    "validation_steps": [
+      {
+        "step": "certificate_download",
+        "status": "success",
+        "details": "Downloaded server certificate"
+      },
+      {
+        "step": "intermediate_certificates",
+        "status": "success",
+        "details": "Found 1 intermediate certificate"
+      },
+      {
+        "step": "root_certificate",
+        "status": "success",
+        "details": "Root certificate in trust store"
+      },
+      {
+        "step": "signature_validation",
+        "status": "success",
+        "details": "All signatures valid"
+      }
+    ],
+    "chain_issues": [],
+    "recommendations": [
+      "Consider enabling HSTS header",
+      "Certificate expires in 45 days"
+    ]
+  }
+}
+```
+
+## Website Analysis Tools
+
+### Website Analyzer
+```json
+{
+  "website_analyzer": {
+    "analysis_categories": {
+      "technology_detection": {
+        "server_software": true,
+        "content_management": true,
+        "javascript_frameworks": true,
+        "analytics_tools": true
+      },
+      "security_headers": {
+        "content_security_policy": true,
+        "x_frame_options": true,
+        "x_content_type_options": true,
+        "strict_transport_security": true,
+        "referrer_policy": true
+      },
+      "performance_metrics": {
+        "page_load_time": true,
+        "resource_sizes": true,
+        "compression_check": true
+      }
+    },
+    "analysis_result": {
+      "url": "https://example.com",
+      "technologies": {
+        "server": "nginx/1.21.3",
+        "cms": "WordPress 6.1",
+        "theme": "Twenty Twenty-Three",
+        "plugins": ["Contact Form 7", "Yoast SEO"],
+        "javascript": ["jQuery 3.6.1", "React 18.2.0"],
+        "analytics": ["Google Analytics 4"]
+      },
+      "security_headers": {
+        "content_security_policy": "missing",
+        "x_frame_options": "DENY",
+        "x_content_type_options": "nosniff",
+        "strict_transport_security": "max-age=31536000",
+        "referrer_policy": "strict-origin-when-cross-origin"
+      },
+      "performance": {
+        "total_size": "2.3 MB",
+        "requests": 45,
+        "load_time": "1.8 seconds",
+        "compression": "gzip enabled"
+      },
+      "recommendations": [
+        "Add Content Security Policy header",
+        "Enable browser caching for static assets",
+        "Minify CSS and JavaScript files"
+      ]
+    }
+  }
+}
+```
+
+### Email Security Analyzer
+```json
+{
+  "email_security_analyzer": {
+    "domain": "example.com",
+    "spf_record": {
+      "exists": true,
+      "record": "v=spf1 include:_spf.google.com ~all",
+      "valid": true,
+      "issues": []
+    },
+    "dkim_records": {
+      "selector": "default",
+      "exists": true,
+      "valid": true,
+      "key_size": 2048
+    },
+    "dmarc_record": {
+      "exists": true,
+      "policy": "p=quarantine; rua=mailto:dmarc@example.com",
+      "percentage": 100,
+      "subdomain_policy": "none"
+    },
+    "bimi_record": {
+      "exists": false,
+      "recommendation": "Consider implementing BIMI for brand protection"
+    },
+    "mta_sts": {
+      "exists": true,
+      "policy": {
+        "version": "STSv1",
+        "mode": "enforce",
+        "max_age": 86400,
+        "mx": ["mail.example.com"]
+      }
+    },
+    "tls_reporting": {
+      "exists": true,
+      "endpoints": ["https://tls-rpt.example.com/report"]
+    },
+    "overall_score": "A",
+    "recommendations": [
+      "Consider upgrading DMARC policy to 'reject'",
+      "Add BIMI record for enhanced brand protection"
+    ]
+  }
+}
+```
+
+## Accessibility Analysis
+
+### WCAG Compliance Checker
+```json
+{
+  "accessibility_checker": {
+    "standards": ["WCAG 2.1 AA", "WCAG 2.2 AA"],
+    "check_categories": {
+      "perceivable": {
+        "alt_text": true,
+        "color_contrast": true,
+        "media_alternatives": true,
+        "text_resizing": true
+      },
+      "operable": {
+        "keyboard_navigation": true,
+        "timing_adjustable": true,
+        "seizure_prevention": true,
+        "navigation_consistent": true
+      },
+      "understandable": {
+        "language_identified": true,
+        "input_assistance": true,
+        "error_identification": true,
+        "consistent_behavior": true
+      },
+      "robust": {
+        "parsing_valid": true,
+        "name_role_value": true,
+        "status_messages": true
+      }
+    },
+    "scan_result": {
+      "url": "https://example.com",
+      "standard": "WCAG 2.1 AA",
+      "score": 87,
+      "issues": {
+        "critical": 2,
+        "serious": 5,
+        "moderate": 12,
+        "minor": 8
+      },
+      "violations": [
+        {
+          "rule": "color-contrast",
+          "impact": "serious",
+          "description": "Text does not have sufficient color contrast",
+          "elements": [".header h1", ".footer p"],
+          "recommendation": "Increase contrast ratio to at least 4.5:1"
+        },
+        {
+          "rule": "alt-text",
+          "impact": "critical",
+          "description": "Image missing alt text",
+          "elements": ["img.hero-image"],
+          "recommendation": "Add descriptive alt text to all images"
+        }
+      ],
+      "passed_checks": 45,
+      "report_url": "https://pulsefiles.com/reports/accessibility-123.pdf"
+    }
+  }
+}
+```
+
+## Security Assessment Tools
+
+### Vulnerability Scanner
+```json
+{
+  "vulnerability_scanner": {
+    "scan_types": {
+      "web_application": {
+        "sql_injection": true,
+        "xss_detection": true,
+        "csrf_protection": true,
+        "security_headers": true
+      },
+      "network_security": {
+        "open_ports": true,
+        "service_versions": true,
+        "ssl_configuration": true,
+        "firewall_rules": true
+      },
+      "configuration_audit": {
+        "default_credentials": true,
+        "misconfigurations": true,
+        "outdated_software": true
+      }
+    },
+    "scan_result": {
+      "target": "example.com",
+      "scan_duration": "15 minutes",
+      "vulnerabilities_found": 3,
+      "risk_levels": {
+        "critical": 0,
+        "high": 1,
+        "medium": 2,
+        "low": 0,
+        "info": 0
+      },
+      "findings": [
+        {
+          "id": "CVE-2023-12345",
+          "title": "Outdated Apache version",
+          "severity": "high",
+          "cvss_score": 7.5,
+          "description": "Apache HTTP Server 2.4.29 has known vulnerabilities",
+          "recommendation": "Upgrade to latest stable version",
+          "references": ["https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-12345"]
+        }
+      ],
+      "compliance_score": 78,
+      "report_generated": true
+    }
+  }
+}
+```
+
+### Malware Scanner
+```json
+{
+  "malware_scanner": {
+    "scan_methods": {
+      "signature_based": true,
+      "behavior_analysis": true,
+      "heuristic_detection": true,
+      "reputation_check": true
+    },
+    "threat_intelligence": {
+      "sources": ["VirusTotal", "Google Safe Browsing", "Phishtank"],
+      "update_frequency": "hourly"
+    },
+    "scan_result": {
+      "url": "https://suspicious-site.com",
+      "malware_detected": true,
+      "threat_level": "high",
+      "malware_types": ["phishing", "malicious_redirect"],
+      "detection_sources": ["Google Safe Browsing", "Phishtank"],
+      "first_seen": "2023-12-15T10:30:00Z",
+      "last_seen": "2024-01-17T14:20:00Z",
+      "recommendations": [
+        "Block access to this domain",
+        "Scan affected systems",
+        "Update security policies"
+      ]
+    }
+  }
+}
+```
+
+## API Endpoints
+
+### Toolbox API
+```bash
+# DNS Lookup
+GET /api/toolbox/dns-lookup?domain=example.com&type=A
+
+# Port Scan
+GET /api/toolbox/port-scan?host=example.com&ports=80,443
+
+# SSL Check
+GET /api/toolbox/ssl-check?host=example.com&port=443
+
+# IP Geolocation
+GET /api/toolbox/ip-location?ip=1.1.1.1
+
+# Website Analyzer
+GET /api/toolbox/website-analyzer?url=https://example.com
+
+# Accessibility Check
+POST /api/toolbox/accessibility-check
+Content-Type: application/json
+{
+  "url": "https://example.com",
+  "standard": "WCAG2AA",
+  "generate_report": true
+}
+```
+
+### Batch Operations
+```bash
+# Bulk DNS lookups
+POST /api/toolbox/batch/dns-lookup
+Content-Type: application/json
+{
+  "domains": ["example.com", "google.com", "github.com"],
+  "record_types": ["A", "AAAA", "MX"]
+}
+
+# Bulk port scans
+POST /api/toolbox/batch/port-scan
+Content-Type: application/json
+{
+  "targets": [
+    {"host": "example.com", "ports": [80, 443]},
+    {"host": "api.example.com", "ports": [80, 443, 8080]}
+  ]
+}
+```
+
+## Security & Rate Limiting
+
+### Authentication & Authorization
+```json
+{
+  "security": {
+    "api_key_required": true,
+    "rate_limiting": {
+      "requests_per_minute": 60,
+      "requests_per_hour": 1000,
+      "burst_limit": 100
+    },
+    "scan_restrictions": {
+      "max_ports_per_scan": 100,
+      "max_concurrent_scans": 5,
+      "blocked_ranges": ["127.0.0.0/8", "10.0.0.0/8"],
+      "honeypot_detection": true
+    }
+  }
+}
+```
+
+### Data Privacy
+```json
+{
+  "privacy": {
+    "data_retention": {
+      "scan_results": "30_days",
+      "accessibility_reports": "90_days",
+      "vulnerability_reports": "1_year"
+    },
+    "data_sharing": {
+      "anonymized_analytics": true,
+      "threat_intelligence": false,
+      "research_data": false
+    },
+    "gdpr_compliance": {
+      "data_minimization": true,
+      "right_to_erasure": true,
+      "consent_management": true
+    }
+  }
+}
+```
+
+## Integration Examples
+
+### CI/CD Pipeline Integration
+```yaml
+# GitHub Actions example
+name: Security Scan
+on: [push, pull_request]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: SSL Certificate Check
+        run: |
+          curl -X GET "https://api.ipulse.one/api/toolbox/ssl-check?host=${{ secrets.DOMAIN }}" \
+            -H "Authorization: Bearer ${{ secrets.PULSEGUARD_API_KEY }}" \
+            -H "Content-Type: application/json"
+      - name: Port Scan
+        run: |
+          curl -X GET "https://api.ipulse.one/api/toolbox/port-scan?host=${{ secrets.DOMAIN }}&ports=80,443" \
+            -H "Authorization: Bearer ${{ secrets.PULSEGUARD_API_KEY }}"
+```
+
+### Monitoring Dashboard Integration
+```javascript
+// React component example
+import { useEffect, useState } from 'react';
+
+function SecurityDashboard() {
+  const [sslStatus, setSslStatus] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/toolbox/ssl-check?host=example.com', {
+      headers: {
+        'Authorization': `Bearer ${process.env.PULSEGUARD_API_KEY}`
+      }
+    })
+    .then(res => res.json())
+    .then(data => setSslStatus(data));
+  }, []);
+
+  return (
+    <div>
+      <h3>SSL Certificate Status</h3>
+      {sslStatus && (
+        <div>
+          <p>Expires: {sslStatus.valid_until}</p>
+          <p>Grade: {sslStatus.grade}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+## Best Practices
+
+### Security Scanning
+1. **Obtain Permission**: Altijd toestemming vragen voor security scans
+2. **Respect Rate Limits**: Gebruik redelijke intervallen tussen scans
+3. **Handle Sensitive Data**: Wees voorzichtig met gevonden credentials
+4. **Report Responsibly**: Gebruik responsible disclosure voor vulnerabilities
+
+### Performance Considerations
+1. **Scan Scheduling**: Voer zware scans uit tijdens daluren
+2. **Parallel Processing**: Gebruik batch APIs voor multiple targets
+3. **Caching**: Cache resultaten waar mogelijk
+4. **Resource Monitoring**: Monitor eigen resource usage
+
+### Compliance & Legal
+1. **Terms of Service**: Controleer acceptability van target websites
+2. **Data Protection**: Respect privacy en data protection laws
+3. **Ethical Use**: Gebruik tools alleen voor legitieme doeleinden
+4. **Transparency**: Wees transparant over security assessments
+
+### Maintenance & Updates
+1. **Stay Updated**: Gebruik nieuwste versies van security signatures
+2. **Regular Audits**: Controleer regelmatig tool accuracy
+3. **Feedback Loop**: Rapporteer false positives/negatives
+4. **Training**: Blijf op de hoogte van nieuwste threats

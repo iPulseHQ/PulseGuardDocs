@@ -1,0 +1,480 @@
+---
+title: "PulseQR Overview"
+description: "Dynamic QR code generation service integrated with PulseGuard"
+---
+
+# PulseQR - Dynamische QR Code Generator
+
+## Overzicht
+
+**PulseQR** is een geavanceerde QR code generatie service die volledig geïntegreerd is met PulseGuard. Het systeem genereert dynamische QR codes die gebruikt kunnen worden voor status pagina's, incident communicatie, en andere monitoring-gerelateerde toepassingen.
+
+## Belangrijkste Features
+
+### Dynamische QR Codes
+- **Real-time Updates**: QR codes die automatisch updaten met nieuwste status
+- **Custom Branding**: Volledig customizable design en branding
+- **Multiple Formats**: Ondersteuning voor verschillende QR code standaarden
+- **Error Correction**: Betrouwbare foutcorrectie voor scanning
+
+### PulseGuard Integratie
+- **Status Page QR**: Directe links naar actuele status informatie
+- **Incident QR**: QR codes die naar incident details leiden
+- **Maintenance QR**: Automatische QR codes voor onderhoudsvensters
+- **API Gebaseerd**: Volledige integratie via REST API
+
+### Analytics & Tracking
+- **Scan Tracking**: Monitor hoeveel mensen QR codes scannen
+- **Geographic Data**: Zie waar scans vandaan komen
+- **Device Analytics**: Inzicht in gebruikte apparaten en browsers
+- **Conversion Tracking**: Meet effectiviteit van QR code campagnes
+
+### Customization Opties
+- **Logo Integration**: Voeg bedrijfslogo toe aan QR codes
+- **Color Schemes**: Custom kleuren voor branding
+- **Size Options**: Verschillende formaten voor diverse toepassingen
+- **Background Patterns**: Optionele achtergrond patronen
+
+## Technische Specificaties
+
+### QR Code Standaarden
+- **QR Code 2005**: Basis standaard met backward compatibility
+- **Micro QR**: Compacte versie voor kleine oppervlaktes
+- **iQR Code**: Vierkante versie voor betere error correction
+- **Frame QR**: Ronde versie voor speciale toepassingen
+
+### Error Correction Levels
+- **Level L**: 7% error correction (snelste)
+- **Level M**: 15% error correction (balanced)
+- **Level Q**: 25% error correction (betrouwbaar)
+- **Level H**: 30% error correction (maximaal betrouwbaar)
+
+### Ondersteunde Content Types
+- **URL**: Web links naar status pagina's
+- **Text**: Plaine tekst berichten
+- **Email**: Directe email links
+- **Phone**: Telefoonnummer dialing
+- **SMS**: SMS berichten
+- **Location**: GPS coordinaten
+- **WiFi**: WiFi netwerk configuratie
+
+## Use Cases
+
+### Status Pagina QR Codes
+```json
+{
+  "type": "status_page",
+  "pulseguard_integration": {
+    "organization_id": "org-123",
+    "status_page_id": "page-456",
+    "dynamic_updates": true,
+    "incident_alerts": true
+  },
+  "design": {
+    "logo_url": "https://company.com/logo.png",
+    "primary_color": "#007acc",
+    "background_color": "#ffffff",
+    "size": "300x300"
+  }
+}
+```
+
+### Incident QR Codes
+```json
+{
+  "type": "incident",
+  "incident_details": {
+    "incident_id": "inc-789",
+    "short_url": true,
+    "auto_update": true,
+    "include_timeline": true
+  },
+  "customization": {
+    "title": "Service Incident",
+    "message": "Scan voor details",
+    "icon": "warning"
+  }
+}
+```
+
+### Maintenance QR Codes
+```json
+{
+  "type": "maintenance",
+  "maintenance_window": {
+    "start_time": "2024-01-20T02:00:00Z",
+    "end_time": "2024-01-20T04:00:00Z",
+    "description": "Database onderhoud",
+    "contact_info": "support@company.com"
+  },
+  "styling": {
+    "theme": "maintenance",
+    "urgency_level": "scheduled"
+  }
+}
+```
+
+## API Specificaties
+
+### QR Code Generatie
+```bash
+# Genereer nieuwe QR code
+POST /api/pulseqr/generate
+Content-Type: application/json
+{
+  "content": {
+    "type": "url",
+    "value": "https://status.company.com"
+  },
+  "design": {
+    "size": 300,
+    "error_correction": "M",
+    "logo": "https://company.com/logo.png"
+  },
+  "metadata": {
+    "name": "Status Page QR",
+    "tags": ["status", "public"],
+    "expires_at": "2024-12-31T23:59:59Z"
+  }
+}
+
+# Response
+{
+  "qr_id": "qr-123456",
+  "qr_code_url": "https://qr.pulseqr.com/qr-123456.png",
+  "short_url": "https://pq.rs/abc123",
+  "expires_at": "2024-12-31T23:59:59Z"
+}
+```
+
+### QR Code Management
+```bash
+# Haal QR code details op
+GET /api/pulseqr/{qr_id}
+
+# Update QR code
+PUT /api/pulseqr/{qr_id}
+Content-Type: application/json
+{
+  "content": {
+    "value": "https://status.company.com/incident-123"
+  }
+}
+
+# Verwijder QR code
+DELETE /api/pulseqr/{qr_id}
+
+# Haal scan analytics op
+GET /api/pulseqr/{qr_id}/analytics?period=30d
+```
+
+### Batch Operaties
+```bash
+# Genereer multiple QR codes
+POST /api/pulseqr/batch/generate
+Content-Type: application/json
+{
+  "qrs": [
+    {
+      "name": "Website Status",
+      "content": {"type": "url", "value": "https://status.company.com"}
+    },
+    {
+      "name": "API Status",
+      "content": {"type": "url", "value": "https://status.company.com/api"}
+    }
+  ]
+}
+```
+
+## Analytics & Reporting
+
+### Scan Analytics
+```json
+{
+  "qr_id": "qr-123456",
+  "total_scans": 1250,
+  "unique_scans": 890,
+  "time_series": [
+    {"date": "2024-01-17", "scans": 45},
+    {"date": "2024-01-16", "scans": 67}
+  ],
+  "geographic_data": [
+    {"country": "Netherlands", "scans": 450},
+    {"country": "Germany", "scans": 280},
+    {"country": "Belgium", "scans": 160}
+  ],
+  "device_data": {
+    "mobile": {"scans": 780, "percentage": 62.4},
+    "desktop": {"scans": 340, "percentage": 27.2},
+    "tablet": {"scans": 130, "percentage": 10.4}
+  },
+  "referrer_data": [
+    {"source": "direct", "scans": 600},
+    {"source": "social_media", "scans": 350},
+    {"source": "email", "scans": 300}
+  ]
+}
+```
+
+### Performance Metrics
+```json
+{
+  "uptime_percentage": 99.98,
+  "average_response_time": 45, // milliseconds
+  "error_rate": 0.02,
+  "bandwidth_usage": "2.3 GB/month",
+  "storage_usage": "1.2 GB"
+}
+```
+
+## Security Features
+
+### Access Control
+```json
+{
+  "security": {
+    "api_key_required": true,
+    "rate_limiting": {
+      "requests_per_minute": 100,
+      "requests_per_hour": 1000
+    },
+    "ip_whitelisting": {
+      "enabled": false,
+      "allowed_ips": ["1.2.3.4", "5.6.7.8"]
+    },
+    "content_filtering": {
+      "block_malicious_urls": true,
+      "domain_whitelist": ["*.company.com", "status.pulseguard.com"]
+    }
+  }
+}
+```
+
+### Data Privacy
+```json
+{
+  "privacy": {
+    "scan_anonymization": {
+      "ip_address": "anonymized",
+      "user_agent": "hashed",
+      "geolocation": "country_level_only"
+    },
+    "data_retention": {
+      "analytics_data": "2_years",
+      "qr_codes": "indefinite",
+      "deleted_qr_data": "30_days"
+    },
+    "gdpr_compliance": {
+      "data_portability": true,
+      "right_to_erasure": true,
+      "consent_management": true
+    }
+  }
+}
+```
+
+## Integratie Voorbeelden
+
+### PulseGuard Status Page Integratie
+```javascript
+// Automatische QR code generatie bij incident
+const incidentCreated = async (incident) => {
+  const qrCode = await fetch('/api/pulseqr/generate', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${PULSEGUARD_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      content: {
+        type: 'url',
+        value: `https://status.company.com/incidents/${incident.id}`
+      },
+      design: {
+        logo: 'https://company.com/logo.png',
+        primary_color: '#ff4444'
+      },
+      metadata: {
+        name: `Incident ${incident.id} QR`,
+        tags: ['incident', 'auto-generated']
+      }
+    })
+  });
+
+  const qrData = await qrCode.json();
+  // Gebruik qrData.qr_code_url in notificaties
+};
+```
+
+### Email Template Integratie
+```html
+<!-- Email template met QR code -->
+<div class="incident-notification">
+  <h2>Service Incident Detected</h2>
+  <p>We have detected an issue with our services. For more details, scan the QR code below:</p>
+
+  <div class="qr-code-container">
+    <img src="{{qr_code_url}}" alt="Incident Details QR Code" />
+  </div>
+
+  <p>Or visit: <a href="{{incident_url}}">{{incident_url}}</a></p>
+
+  <div class="incident-summary">
+    <strong>Status:</strong> {{incident.status}}<br>
+    <strong>Started:</strong> {{incident.started_at}}<br>
+    <strong>Estimated Resolution:</strong> {{incident.eta}}
+  </div>
+</div>
+```
+
+### Mobile App Integratie
+```swift
+// iOS Swift voorbeeld
+func generateStatusQR() async throws -> UIImage {
+    let qrRequest = QRGenerationRequest(
+        content: .url(URL(string: "https://status.company.com")!),
+        design: QRDesign(
+            size: 300,
+            errorCorrection: .medium,
+            logo: UIImage(named: "company-logo")
+        )
+    )
+
+    let qrImage = try await PulseQRService.shared.generateQR(request: qrRequest)
+    return qrImage
+}
+```
+
+## Pricing & Limits
+
+### Gratis Plan
+- **QR Codes**: 100 per maand
+- **Scans**: 10,000 per maand
+- **Analytics**: Basis analytics
+- **Custom Branding**: Beperkt
+- **Support**: Community support
+
+### Pro Plan (€9.99/maand)
+- **QR Codes**: 1,000 per maand
+- **Scans**: 100,000 per maand
+- **Analytics**: Uitgebreide analytics
+- **Custom Branding**: Volledig customizable
+- **API Access**: Volledige API toegang
+- **Support**: Email support
+
+### Enterprise Plan (€49.99/maand)
+- **QR Codes**: Onbeperkt
+- **Scans**: Onbeperkt
+- **Analytics**: Real-time analytics
+- **Custom Branding**: White-label optie
+- **API Access**: Prioriteit API toegang
+- **Support**: 24/7 support
+- **SLA**: 99.9% uptime garantie
+
+## Technische Documentatie
+
+### API Rate Limits
+```json
+{
+  "rate_limits": {
+    "generate_qr": {
+      "per_minute": 60,
+      "per_hour": 1000,
+      "per_day": 10000
+    },
+    "retrieve_qr": {
+      "per_minute": 300,
+      "per_hour": 5000
+    },
+    "analytics": {
+      "per_minute": 120,
+      "per_hour": 2000
+    }
+  }
+}
+```
+
+### Webhook Events
+```json
+{
+  "webhook_events": [
+    {
+      "event": "qr_scanned",
+      "payload": {
+        "qr_id": "qr-123456",
+        "scan_id": "scan-789012",
+        "timestamp": "2024-01-17T10:30:00Z",
+        "ip_address": "192.168.1.1",
+        "user_agent": "Mozilla/5.0...",
+        "location": {
+          "country": "Netherlands",
+          "city": "Amsterdam"
+        }
+      }
+    }
+  ]
+}
+```
+
+## Troubleshooting
+
+### Veelvoorkomende Problemen
+
+#### QR Code Scant Niet
+- Controleer error correction level (gebruik H voor drukwerk)
+- Verificeer contrast tussen voor- en achtergrond
+- Test met multiple QR code readers
+- Controleer of URL correct is
+
+#### Analytics Data Ontbreekt
+- Controleer of QR code recentelijk gegenereerd is
+- Verificeer API key permissions
+- Controleer firewall settings voor analytics endpoints
+
+#### Custom Logo Problemen
+- Logo moet minimaal 100x100 pixels zijn
+- Gebruik PNG of SVG format
+- Zorg voor voldoende contrast
+- Test logo op verschillende formaten
+
+### Debug Tools
+```bash
+# Test QR code generatie
+curl -X POST "https://api.pulseqr.com/api/generate" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"content": {"type": "url", "value": "https://example.com"}}'
+
+# Controleer QR code status
+curl -X GET "https://api.pulseqr.com/api/{qr_id}" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+# Haal debug informatie op
+curl -X GET "https://api.pulseqr.com/api/{qr_id}/debug" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## Roadmap
+
+### Q1 2024
+- [ ] NFC tag integratie
+- [ ] Augmented Reality QR codes
+- [ ] Bulk QR code management
+- [ ] Advanced analytics dashboard
+
+### Q2 2024
+- [ ] Dynamic content updates
+- [ ] Social media integratie
+- [ ] Mobile SDK releases
+- [ ] Enterprise SSO integratie
+
+### Q3 2024
+- [ ] AI-powered QR design
+- [ ] Predictive scan analytics
+- [ ] Integration marketplace
+- [ ] Advanced security features
+
+---
+
+PulseQR is ontworpen om moderne bedrijven te helpen bij het effectief communiceren van status informatie via QR codes. Met naadloze PulseGuard integratie, uitgebreide customization opties, en gedetailleerde analytics, biedt PulseQR een complete oplossing voor dynamische QR code behoeften.

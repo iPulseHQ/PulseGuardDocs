@@ -1,0 +1,894 @@
+---
+title: "Domains API"
+description: "Manage domain monitoring, uptime tracking, and SSL certificates"
+---
+
+import { Code } from "@astrojs/starlight/components";
+
+<Code code={`{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "PulseGuard Domains API",
+    "version": "1.0.0",
+    "description": "API for managing domain monitoring and analytics"
+  },
+  "servers": [
+    {
+      "url": "https://api.ipulse.one",
+      "description": "Production server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/domains": {
+      "post": {
+        "summary": "Create a new domain",
+        "tags": ["Domains"],
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DomainCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Domain created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Domain"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List domains",
+        "tags": ["Domains"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["active", "inactive", "pending"]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of domains",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/domains/{id}": {
+      "get": {
+        "summary": "Get domain details",
+        "tags": ["Domains"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Domain details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Domain"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Domain not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update domain",
+        "tags": ["Domains"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DomainUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Domain updated successfully"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete domain",
+        "tags": ["Domains"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Domain deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/domains/{id}/stats": {
+      "get": {
+        "summary": "Get domain uptime statistics",
+        "tags": ["Domains", "Statistics"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["1h", "24h", "7d", "30d", "90d"],
+              "default": "30d"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Domain statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainStats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/domains/{id}/response-time-trends": {
+      "get": {
+        "summary": "Get response time trends",
+        "tags": ["Domains", "Statistics"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["1h", "24h", "7d", "30d", "90d"],
+              "default": "24h"
+            }
+          },
+          {
+            "name": "resolution",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["1m", "5m", "1h", "1d"],
+              "default": "5m"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response time trends",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseTimeTrends"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/domains/{id}/incidents/recent": {
+      "get": {
+        "summary": "Get recent incidents for domain",
+        "tags": ["Domains", "Incidents"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recent incidents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/domains/{id}/monitoring/history": {
+      "get": {
+        "summary": "Get monitoring history",
+        "tags": ["Domains", "Monitoring"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["1h", "24h", "7d", "30d"],
+              "default": "24h"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Monitoring history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonitoringHistory"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/domains/{id}/uptime-tracker": {
+      "get": {
+        "summary": "Get uptime tracker data",
+        "tags": ["Domains", "Uptime"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Uptime tracker data"
+          }
+        }
+      }
+    },
+    "/api/domains/{id}/accessibility": {
+      "get": {
+        "summary": "Get accessibility report",
+        "tags": ["Domains", "Accessibility"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Accessibility report"
+          }
+        }
+      },
+      "post": {
+        "summary": "Run accessibility scan",
+        "tags": ["Domains", "Accessibility"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "standards": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": ["WCAG2A", "WCAG2AA", "WCAG2AAA"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accessibility scan started"
+          }
+        }
+      }
+    },
+    "/api/domains/{id}/generate-qr": {
+      "post": {
+        "summary": "Generate QR code for domain status",
+        "tags": ["Domains", "QR Codes"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "QR code generated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QRCode"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "DomainCreateRequest": {
+        "type": "object",
+        "required": ["url"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://example.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "My Website"
+          },
+          "check_interval": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 86400,
+            "default": 300,
+            "example": 300
+          },
+          "timeout": {
+            "type": "integer",
+            "minimum": 5,
+            "maximum": 300,
+            "default": 30,
+            "example": 30
+          },
+          "expected_status_codes": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "default": [200, 201, 301, 302],
+            "example": [200, 201, 301, 302]
+          },
+          "follow_redirects": {
+            "type": "boolean",
+            "default": true
+          },
+          "ssl_check": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "default": true
+              },
+              "warn_days_before_expiry": {
+                "type": "integer",
+                "default": 30
+              }
+            }
+          },
+          "dns_check": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "default": true
+              },
+              "record_types": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": ["A", "AAAA", "CNAME", "MX", "TXT", "SRV", "PTR", "NS", "SOA"]
+                },
+                "default": ["A", "AAAA", "CNAME", "MX"]
+              }
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["production", "website"]
+          }
+        }
+      },
+      "Domain": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "domain_123"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://example.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "My Website"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "inactive", "pending"],
+            "example": "active"
+          },
+          "check_interval": {
+            "type": "integer",
+            "example": 300
+          },
+          "last_check": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "uptime_percentage": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "nullable": true
+          },
+          "response_time_ms": {
+            "type": "integer",
+            "nullable": true
+          },
+          "ssl_expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "DomainList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Domain"
+            }
+          },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer"
+              },
+              "limit": {
+                "type": "integer"
+              },
+              "offset": {
+                "type": "integer"
+              },
+              "has_more": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "DomainStats": {
+        "type": "object",
+        "properties": {
+          "domain_id": {
+            "type": "string"
+          },
+          "period": {
+            "type": "string"
+          },
+          "uptime_percentage": {
+            "type": "number"
+          },
+          "total_checks": {
+            "type": "integer"
+          },
+          "successful_checks": {
+            "type": "integer"
+          },
+          "failed_checks": {
+            "type": "integer"
+          },
+          "average_response_time_ms": {
+            "type": "number"
+          },
+          "min_response_time_ms": {
+            "type": "number"
+          },
+          "max_response_time_ms": {
+            "type": "number"
+          },
+          "p95_response_time_ms": {
+            "type": "number"
+          },
+          "incidents_count": {
+            "type": "integer"
+          },
+          "total_downtime_seconds": {
+            "type": "integer"
+          },
+          "longest_incident_seconds": {
+            "type": "integer"
+          }
+        }
+      },
+      "ResponseTimeTrends": {
+        "type": "object",
+        "properties": {
+          "domain_id": {
+            "type": "string"
+          },
+          "period": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "data_points": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "response_time_ms": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["up", "down"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "QRCode": {
+        "type": "object",
+        "properties": {
+          "qr_id": {
+            "type": "string"
+          },
+          "qr_code_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "short_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}`} json lang="json" />
+
+## Domains API
+
+The Domains API allows you to manage domain monitoring, retrieve uptime statistics, and access SSL certificate information.
+
+### Authentication
+
+All requests require authentication via Bearer token. See [Authentication](/pulseguard/api/authentication) for details.
+
+### Base URL
+```
+https://api.ipulse.one
+```
+
+### Create Domain
+
+<CodeGroup>
+```bash Create Domain
+curl -X POST "https://api.ipulse.one/api/domains" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com",
+    "name": "My Website",
+    "check_interval": 300,
+    "ssl_check": {
+      "enabled": true,
+      "warn_days_before_expiry": 30
+    }
+  }'
+```
+</CodeGroup>
+
+### Get Domain Statistics
+
+<CodeGroup>
+```bash Get Statistics
+curl -X GET "https://api.ipulse.one/api/domains/domain_123/stats?period=30d" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+</CodeGroup>
+
+### Response Time Trends
+
+<CodeGroup>
+```bash Response Time Trends
+curl -X GET "https://api.ipulse.one/api/domains/domain_123/response-time-trends?period=24h&resolution=5m" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+</CodeGroup>
+
+### Accessibility Scan
+
+<CodeGroup>
+```bash Run Accessibility Scan
+curl -X POST "https://api.ipulse.one/api/domains/domain_123/accessibility" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "standards": ["WCAG2AA"]
+  }'
+```
+</CodeGroup>
+
+### Generate QR Code
+
+<CodeGroup>
+```bash Generate QR Code
+curl -X POST "https://api.ipulse.one/api/domains/domain_123/generate-qr" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+</CodeGroup>
+
+## Error Handling
+
+### Common Errors
+
+| Status Code | Error | Description |
+|-------------|-------|-------------|
+| 400 | VALIDATION_ERROR | Invalid request data |
+| 401 | UNAUTHORIZED | Invalid or missing authentication |
+| 403 | FORBIDDEN | Insufficient permissions |
+| 404 | DOMAIN_NOT_FOUND | Domain does not exist |
+| 429 | RATE_LIMIT_EXCEEDED | API rate limit exceeded |
+| 500 | INTERNAL_ERROR | Server error |
+
+### Error Response Format
+
+```json
+{
+  "error": "VALIDATION_ERROR",
+  "message": "Invalid domain URL format",
+  "details": {
+    "field": "url",
+    "reason": "URL must include protocol (http/https)"
+  }
+}
+```
+
+## Rate Limits
+
+- **GET requests**: 1000 per hour
+- **POST/PUT/DELETE**: 100 per hour
+- **Bulk operations**: 10 per hour
+
+## Webhooks
+
+Domains support webhooks for real-time notifications. Configure webhooks in your dashboard settings.
+
+### Webhook Events
+
+- `domain_up` - Domain comes back online
+- `domain_down` - Domain goes offline
+- `ssl_expiring` - SSL certificate expires soon
+- `ssl_expired` - SSL certificate has expired
+- `dns_changed` - DNS records have changed
+
+### Webhook Payload
+
+```json
+{
+  "event": "domain_down",
+  "domain": {
+    "id": "domain_123",
+    "url": "https://example.com",
+    "name": "My Website"
+  },
+  "check": {
+    "timestamp": "2024-01-17T10:30:00Z",
+    "status": "down",
+    "response_time_ms": null,
+    "error": "Connection timeout after 30 seconds",
+    "location": "ams"
+  },
+  "incident_id": "incident_456"
+}
+```

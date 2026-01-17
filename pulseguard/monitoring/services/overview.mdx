@@ -1,0 +1,315 @@
+---
+title: "Service Monitoring"
+description: "Monitor APIs, databases, and network services"
+---
+
+# Service Monitoring
+
+## Overzicht
+
+Service monitoring in PulseGuard controleert de beschikbaarheid en prestaties van netwerk services zoals APIs, databases, email servers en andere TCP/UDP gebaseerde diensten. Het ondersteunt meerdere protocollen en integraties met cloud platforms.
+
+## Ondersteunde Protocollen
+
+### HTTP/HTTPS Services
+- **API Endpoints**: REST, GraphQL, SOAP APIs
+- **Web Services**: Microservices, legacy web services
+- **Health Check Endpoints**: `/health`, `/status`, `/ping`
+- **Custom Headers**: Authentication headers, API keys
+
+### TCP Services
+- **Database Connections**: PostgreSQL, MySQL, MongoDB, Redis
+- **Application Servers**: Tomcat, Node.js, Python servers
+- **Load Balancers**: Nginx, HAProxy, AWS ELB
+- **Custom TCP Services**: Any service listening on TCP port
+
+### Email Services
+- **SMTP Servers**: Outbound email servers
+- **IMAP/POP3**: Email retrieval services
+- **SMTP Authentication**: Username/password, OAuth
+- **TLS Encryption**: STARTTLS, SSL/TLS
+
+### DNS Services
+- **Name Servers**: Authoritative DNS servers
+- **Recursive Resolvers**: DNS caching servers
+- **DNS over HTTPS/TLS**: Modern DNS protocols
+- **Zone Transfer Monitoring**: AXFR monitoring
+
+## Cloud Platform Integraties
+
+### Azure Integration
+```json
+{
+  "provider": "azure",
+  "resource_type": "App Service",
+  "subscription_id": "xxx-xxx-xxx",
+  "resource_group": "production-rg",
+  "app_service_name": "my-web-app",
+  "authentication": {
+    "type": "service_principal",
+    "client_id": "xxx",
+    "client_secret": "xxx",
+    "tenant_id": "xxx"
+  }
+}
+```
+
+### Vercel Integration
+```json
+{
+  "provider": "vercel",
+  "project_id": "prj_xxx",
+  "team_id": "team_xxx",
+  "authentication": {
+    "token": "vercel_token_here"
+  },
+  "monitors": {
+    "deployments": true,
+    "functions": true,
+    "domains": true
+  }
+}
+```
+
+### Coolify Integration
+```json
+{
+  "provider": "coolify",
+  "server_ip": "1.2.3.4",
+  "api_token": "coolify_token",
+  "projects": ["web-app", "api-server"],
+  "authentication": {
+    "type": "api_token"
+  }
+}
+```
+
+## Health Check Patterns
+
+### REST API Health Checks
+```json
+{
+  "health_checks": {
+    "endpoint": "/health",
+    "method": "GET",
+    "expected_response": {
+      "status": 200,
+      "body_contains": "healthy",
+      "json_schema": {
+        "type": "object",
+        "properties": {
+          "status": {"type": "string", "enum": ["healthy"]},
+          "timestamp": {"type": "string"}
+        }
+      }
+    }
+  }
+}
+```
+
+### Database Health Checks
+```json
+{
+  "health_checks": {
+    "connection_test": {
+      "query": "SELECT 1",
+      "timeout": 5,
+      "expected_rows": 1
+    },
+    "performance_test": {
+      "query": "SELECT COUNT(*) FROM users",
+      "max_execution_time": 1000
+    }
+  }
+}
+```
+
+### Application Health Checks
+```json
+{
+  "health_checks": {
+    "readiness": {
+      "endpoint": "/ready",
+      "initial_delay": 30,
+      "period": 10,
+      "failure_threshold": 3
+    },
+    "liveness": {
+      "endpoint": "/alive",
+      "period": 30,
+      "timeout": 5
+    }
+  }
+}
+```
+
+## Monitoring Locaties & Regions
+
+### Global Monitoring
+- **Europe**: Amsterdam, Frankfurt, London
+- **North America**: New York, San Francisco, Toronto
+- **Asia Pacific**: Singapore, Tokyo, Sydney
+- **South America**: São Paulo
+
+### Custom Monitoring Locaties
+```json
+{
+  "monitoring_locations": [
+    {
+      "name": "Corporate HQ",
+      "region": "us-east-1",
+      "ip_address": "10.0.0.1",
+      "enabled": true
+    }
+  ]
+}
+```
+
+## Alert Configuratie
+
+### Service-specific Alerts
+```json
+{
+  "alerts": {
+    "service_down": {
+      "enabled": true,
+      "severity": "critical",
+      "channels": ["email", "slack", "webhook"]
+    },
+    "slow_response": {
+      "enabled": true,
+      "threshold_ms": 5000,
+      "severity": "warning"
+    },
+    "high_error_rate": {
+      "enabled": true,
+      "threshold_percent": 5,
+      "time_window_minutes": 15
+    }
+  }
+}
+```
+
+### Escalation Policies
+```json
+{
+  "escalation": {
+    "levels": [
+      {
+        "delay_minutes": 0,
+        "channels": ["email"],
+        "recipients": ["devops@company.com"]
+      },
+      {
+        "delay_minutes": 30,
+        "channels": ["slack", "sms"],
+        "recipients": ["oncall@company.com"]
+      }
+    ]
+  }
+}
+```
+
+## Performance Metrics
+
+### Response Time Monitoring
+```json
+{
+  "metrics": {
+    "response_time": {
+      "p50": 245,
+      "p95": 1200,
+      "p99": 3500,
+      "min": 120,
+      "max": 8500
+    },
+    "uptime_percentage": 99.97,
+    "total_requests": 1456789,
+    "error_count": 234
+  }
+}
+```
+
+### Protocol-specific Metrics
+```json
+{
+  "protocol_metrics": {
+    "http": {
+      "status_codes": {
+        "200": 1456000,
+        "201": 456,
+        "400": 123,
+        "500": 110
+      },
+      "response_sizes": {
+        "avg_bytes": 2456,
+        "min_bytes": 234,
+        "max_bytes": 45678
+      }
+    },
+    "tcp": {
+      "connection_time_ms": 45,
+      "ssl_handshake_time_ms": 12,
+      "data_transfer_time_ms": 234
+    }
+  }
+}
+```
+
+## Troubleshooting
+
+### HTTP Service Issues
+```bash
+# Test endpoint manually
+curl -I https://api.example.com/health
+
+# Check SSL certificate
+openssl s_client -connect api.example.com:443 -servername api.example.com
+
+# Test with authentication
+curl -H "Authorization: Bearer token" https://api.example.com/users
+```
+
+### TCP Connection Issues
+```bash
+# Test TCP connection
+telnet db.example.com 5432
+
+# Check port availability
+nmap -p 5432 db.example.com
+
+# Test with specific timeout
+timeout 10 bash -c "</dev/tcp/db.example.com/5432" && echo "Port open" || echo "Port closed"
+```
+
+### Email Service Issues
+```bash
+# Test SMTP connection
+openssl s_client -connect smtp.gmail.com:587 -starttls smtp
+
+# Send test email
+swaks --to user@example.com --server smtp.gmail.com:587 --auth LOGIN --auth-user user@gmail.com
+
+# Check MX records
+dig MX example.com
+```
+
+## Best Practices
+
+### Service Configuration
+1. **Use Health Check Endpoints**: Implement dedicated health endpoints
+2. **Set Realistic Timeouts**: Gebaseerd op service karakteristieken
+3. **Monitor Dependencies**: Controleer ook upstream services
+4. **Use Authentication**: Beveilig health checks waar mogelijk
+
+### Alert Management
+1. **Avoid Alert Fatigue**: Gebruik digest notificaties
+2. **Set Appropriate Thresholds**: Leer normaal gedrag kennen
+3. **Implement Escalation**: Voor kritische services
+4. **Document Runbooks**: Voor snelle incident response
+
+### Performance Optimization
+1. **Optimize Check Frequency**: Balans tussen monitoring en load
+2. **Use Multiple Locations**: Voor betere availability detectie
+3. **Implement Caching**: Voor health check endpoints
+4. **Monitor Resource Usage**: Voorkom monitoring impact op services

@@ -1,0 +1,640 @@
+---
+title: "PulseFiles Overview"
+description: "Secure file sharing service with automatic expiration"
+---
+
+# PulseFiles - Secure File Sharing Service
+
+## Overzicht
+
+**PulseFiles** is een veilige, tijdelijke file sharing service die volledig geïntegreerd is met PulseGuard. Het systeem stelt gebruikers in staat om bestanden veilig te delen via tijdelijke links, met automatische verwijdering na een ingestelde periode.
+
+## Belangrijkste Features
+
+### Veilig File Sharing
+- **End-to-end Encryption**: Bestanden worden encrypted opgeslagen
+- **Time-limited Access**: Automatische verwijdering na expiration
+- **Secure Links**: Unieke, moeilijk te raden URLs
+- **Access Logging**: Gedetailleerde logs van alle toegangspogingen
+
+### PulseGuard Integratie
+- **Rapport Sharing**: Deel monitoring rapporten en exports
+- **Screenshot Storage**: Bewaar incident screenshots veilig
+- **Log File Sharing**: Deel systeem logs met support teams
+- **Backup Storage**: Tijdelijke opslag voor backups
+
+### Analytics & Monitoring
+- **Download Tracking**: Monitor hoeveel keer bestanden gedownload worden
+- **Geographic Analytics**: Zie waar downloads vandaan komen
+- **Security Monitoring**: Detecteer verdachte toegangspogingen
+- **Usage Reports**: Gedetailleerde rapporten over storage usage
+
+## Technische Specificaties
+
+### Ondersteunde Bestandstypes
+- **Documenten**: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX
+- **Afbeeldingen**: PNG, JPG, JPEG, GIF, SVG, WebP
+- **Archieven**: ZIP, RAR, 7Z, TAR, GZ
+- **Media**: MP4, AVI, MP3, WAV
+- **Code**: TXT, JSON, XML, CSV, LOG
+- **Overige**: Maximaal 100MB per bestand
+
+### Storage Limits (per Plan)
+```json
+{
+  "free": {
+    "max_file_size": "10MB",
+    "total_storage": "100MB",
+    "files_per_day": 10,
+    "retention_period": "7_days"
+  },
+  "pro": {
+    "max_file_size": "100MB",
+    "total_storage": "1GB",
+    "files_per_day": 100,
+    "retention_period": "30_days"
+  },
+  "enterprise": {
+    "max_file_size": "1GB",
+    "total_storage": "10GB",
+    "files_per_day": 1000,
+    "retention_period": "90_days"
+  }
+}
+```
+
+### Encryption Specificaties
+- **At-rest Encryption**: AES-256-GCM encryptie
+- **In-transit Encryption**: TLS 1.3 voor alle transfers
+- **Key Management**: Rotatie elke 30 dagen
+- **Zero-knowledge**: Server heeft geen toegang tot decryption keys
+
+## Use Cases
+
+### Monitoring Rapporten Delen
+```json
+{
+  "upload_scenario": "monitoring_report",
+  "file_details": {
+    "name": "weekly-uptime-report.pdf",
+    "size": "2.5MB",
+    "type": "application/pdf"
+  },
+  "sharing_config": {
+    "expiration_hours": 168, // 7 dagen
+    "max_downloads": 50,
+    "password_protected": false,
+    "notify_on_access": true
+  },
+  "integration": {
+    "pulseguard_report_id": "report-123",
+    "auto_generated": true
+  }
+}
+```
+
+### Incident Screenshots Opslaan
+```json
+{
+  "upload_scenario": "incident_screenshot",
+  "file_details": {
+    "name": "database-error-404.png",
+    "size": "1.2MB",
+    "type": "image/png",
+    "metadata": {
+      "incident_id": "inc-456",
+      "timestamp": "2024-01-17T10:30:00Z",
+      "error_code": "ERR_DB_CONNECTION"
+    }
+  },
+  "sharing_config": {
+    "expiration_hours": 720, // 30 dagen
+    "max_downloads": 10,
+    "password_protected": true,
+    "allowed_emails": ["support@company.com", "devops@company.com"]
+  }
+}
+```
+
+### Log Files Delen met Support
+```json
+{
+  "upload_scenario": "support_logs",
+  "files": [
+    {
+      "name": "app-server.log",
+      "size": "15MB",
+      "compression": "gzip"
+    },
+    {
+      "name": "database-slow-queries.log",
+      "size": "8MB",
+      "compression": "gzip"
+    }
+  ],
+  "sharing_config": {
+    "expiration_hours": 24,
+    "password_required": true,
+    "download_notification": true,
+    "auto_delete_after_first_download": false
+  }
+}
+```
+
+## API Specificaties
+
+### File Upload
+```bash
+# Enkel bestand upload
+POST /api/pulsefiles/upload
+Content-Type: multipart/form-data
+
+# Form data
+file: <binary_file_data>
+expiration_hours: 24
+max_downloads: 5
+password: optional_password
+notify_email: user@example.com
+
+# Response
+{
+  "file_id": "file-123456",
+  "download_url": "https://files.pulsefiles.com/dl/abc123def456",
+  "expires_at": "2024-01-18T10:30:00Z",
+  "max_downloads": 5,
+  "password_protected": false
+}
+```
+
+### Batch Upload
+```bash
+# Multiple bestanden upload
+POST /api/pulsefiles/upload/batch
+Content-Type: multipart/form-data
+
+# Form data
+files: [<file1>, <file2>, <file3>]
+expiration_hours: 48
+compress_files: true
+create_zip: true
+
+# Response
+{
+  "batch_id": "batch-789012",
+  "files": [
+    {
+      "file_id": "file-123456",
+      "original_name": "report.pdf",
+      "download_url": "https://files.pulsefiles.com/dl/abc123"
+    }
+  ],
+  "zip_download_url": "https://files.pulsefiles.com/dl/zip-def456"
+}
+```
+
+### File Management
+```bash
+# Haal file details op
+GET /api/pulsefiles/{file_id}
+
+# Update file settings
+PUT /api/pulsefiles/{file_id}
+Content-Type: application/json
+{
+  "expiration_hours": 72,
+  "max_downloads": 10,
+  "password": "new_password"
+}
+
+# Verwijder file
+DELETE /api/pulsefiles/{file_id}
+
+# Haal download statistics op
+GET /api/pulsefiles/{file_id}/stats
+```
+
+### Download Process
+```bash
+# Password protected download
+GET /api/pulsefiles/dl/{short_code}?password=mypassword
+
+# Direct download (als geen password)
+GET /api/pulsefiles/dl/{short_code}
+
+# Response headers voor direct download
+Content-Type: application/pdf
+Content-Disposition: attachment; filename="report.pdf"
+X-Download-Count: 3
+X-Max-Downloads: 5
+X-Expires-At: 2024-01-18T10:30:00Z
+```
+
+## Security Features
+
+### Access Control
+```json
+{
+  "access_control": {
+    "password_protection": {
+      "enabled": true,
+      "min_length": 8,
+      "complexity_required": true
+    },
+    "ip_restrictions": {
+      "enabled": false,
+      "allowed_ips": ["192.168.1.0/24"],
+      "blocked_countries": ["North Korea", "Iran"]
+    },
+    "email_restrictions": {
+      "enabled": true,
+      "allowed_domains": ["company.com", "partner.com"],
+      "require_verification": false
+    },
+    "download_limits": {
+      "max_downloads": 100,
+      "time_window_hours": 24,
+      "block_after_limit": true
+    }
+  }
+}
+```
+
+### Audit Logging
+```json
+{
+  "audit_log": {
+    "events_logged": [
+      "file_upload",
+      "file_download",
+      "password_attempt",
+      "access_denied",
+      "file_expired",
+      "file_deleted"
+    ],
+    "log_details": {
+      "timestamp": "2024-01-17T10:30:00Z",
+      "ip_address": "192.168.1.100",
+      "user_agent": "Mozilla/5.0...",
+      "action": "file_download",
+      "file_id": "file-123456",
+      "success": true,
+      "download_count": 3
+    },
+    "retention_period": "2_years",
+    "export_capability": true
+  }
+}
+```
+
+### Malware Scanning
+```json
+{
+  "malware_protection": {
+    "scan_on_upload": true,
+    "engines": ["ClamAV", "VirusTotal"],
+    "block_infected": true,
+    "quarantine_storage": true,
+    "false_positive_handling": {
+      "allow_user_override": true,
+      "admin_review_required": false
+    }
+  }
+}
+```
+
+## Analytics & Reporting
+
+### Download Analytics
+```json
+{
+  "file_analytics": {
+    "file_id": "file-123456",
+    "total_downloads": 47,
+    "unique_downloads": 23,
+    "download_trends": [
+      {"date": "2024-01-17", "downloads": 12},
+      {"date": "2024-01-16", "downloads": 8},
+      {"date": "2024-01-15", "downloads": 27}
+    ],
+    "geographic_distribution": [
+      {"country": "Netherlands", "downloads": 25},
+      {"country": "Germany", "downloads": 12},
+      {"country": "Belgium", "downloads": 10}
+    ],
+    "device_types": {
+      "desktop": {"downloads": 30, "percentage": 63.8},
+      "mobile": {"downloads": 12, "percentage": 25.5},
+      "tablet": {"downloads": 5, "percentage": 10.7}
+    },
+    "referrer_sources": [
+      {"source": "direct", "downloads": 20},
+      {"source": "pulseguard_dashboard", "downloads": 15},
+      {"source": "email", "downloads": 12}
+    ]
+  }
+}
+```
+
+### Storage Analytics
+```json
+{
+  "storage_analytics": {
+    "user_id": "user-789",
+    "current_usage": {
+      "used_bytes": 524288000, // 500MB
+      "total_bytes": 1073741824, // 1GB
+      "usage_percentage": 48.8
+    },
+    "file_breakdown": {
+      "by_type": {
+        "pdf": {"count": 45, "size_bytes": 209715200},
+        "png": {"count": 23, "size_bytes": 157286400},
+        "log": {"count": 12, "size_bytes": 104857600}
+      },
+      "by_age": {
+        "0-7_days": {"count": 34, "size_bytes": 314572800},
+        "8-30_days": {"count": 28, "size_bytes": 157286400},
+        "31-90_days": {"count": 18, "size_bytes": 52428800}
+      }
+    },
+    "expiration_schedule": [
+      {"files_expiring_24h": 5, "total_size_bytes": 10485760},
+      {"files_expiring_7d": 12, "total_size_bytes": 52428800}
+    ]
+  }
+}
+```
+
+## Integratie Voorbeelden
+
+### PulseGuard Report Sharing
+```javascript
+// Automatische upload van monitoring rapport
+const shareMonitoringReport = async (reportData) => {
+  const formData = new FormData();
+  formData.append('file', reportData.blob, 'uptime-report.pdf');
+  formData.append('expiration_hours', '168'); // 7 dagen
+  formData.append('max_downloads', '50');
+  formData.append('notify_email', 'team@company.com');
+
+  const response = await fetch('/api/pulsefiles/upload', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${PULSEGUARD_API_KEY}`
+    },
+    body: formData
+  });
+
+  const result = await response.json();
+
+  // Update PulseGuard report met share link
+  await fetch(`/api/reports/${reportData.id}`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${PULSEGUARD_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      share_url: result.download_url
+    })
+  });
+
+  return result;
+};
+```
+
+### Incident Screenshot Upload
+```javascript
+// Upload screenshot bij incident creatie
+const uploadIncidentScreenshot = async (screenshotBlob, incidentId) => {
+  const formData = new FormData();
+  formData.append('file', screenshotBlob, 'incident-screenshot.png');
+  formData.append('expiration_hours', '720'); // 30 dagen
+  formData.append('max_downloads', '10');
+  formData.append('password', generateSecurePassword());
+
+  const uploadResponse = await fetch('/api/pulsefiles/upload', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${PULSEGUARD_API_KEY}`
+    },
+    body: formData
+  });
+
+  const uploadResult = await uploadResponse.json();
+
+  // Koppel screenshot aan incident
+  await fetch(`/api/incidents/${incidentId}/attachments`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${PULSEGUARD_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      type: 'screenshot',
+      url: uploadResult.download_url,
+      password_protected: true
+    })
+  });
+
+  return uploadResult;
+};
+```
+
+### CI/CD Artifact Sharing
+```yaml
+# GitHub Actions workflow voor artifact sharing
+name: Deploy and Share Logs
+on: [deployment]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload deployment logs
+        run: |
+          # Create log archive
+          tar -czf deployment-logs.tar.gz /var/log/deployment/
+
+          # Upload to PulseFiles
+          curl -X POST "https://api.pulsefiles.com/api/upload" \
+            -H "Authorization: Bearer ${{ secrets.PULSEFILES_API_KEY }}" \
+            -F "file=@deployment-logs.tar.gz" \
+            -F "expiration_hours=24" \
+            -F "password=${{ secrets.LOGS_PASSWORD }}" \
+            -o upload-result.json
+
+          # Extract share URL
+          SHARE_URL=$(cat upload-result.json | jq -r '.download_url')
+
+          # Post to Slack
+          curl -X POST "${{ secrets.SLACK_WEBHOOK }}" \
+            -H 'Content-type: application/json' \
+            -d "{\"text\":\"Deployment logs: $SHARE_URL\"}"
+```
+
+## Pricing & Limits
+
+### Gratis Plan
+- **Max File Size**: 10MB per bestand
+- **Total Storage**: 100MB
+- **Files per Day**: 10 uploads
+- **Retention**: 7 dagen
+- **Download Limit**: 100 downloads per bestand
+
+### Pro Plan (€4.99/maand)
+- **Max File Size**: 100MB per bestand
+- **Total Storage**: 1GB
+- **Files per Day**: 100 uploads
+- **Retention**: 30 dagen
+- **Download Limit**: 1000 downloads per bestand
+- **Password Protection**: Ja
+- **Analytics**: Uitgebreid
+
+### Enterprise Plan (€19.99/maand)
+- **Max File Size**: 1GB per bestand
+- **Total Storage**: 10GB
+- **Files per Day**: 1000 uploads
+- **Retention**: 90 dagen
+- **Download Limit**: Onbeperkt
+- **Advanced Security**: Ja
+- **Custom Branding**: Ja
+- **API Access**: Volledig
+- **Priority Support**: Ja
+
+## Technische Documentatie
+
+### Webhook Events
+```json
+{
+  "webhook_events": [
+    {
+      "event": "file_uploaded",
+      "payload": {
+        "file_id": "file-123456",
+        "file_name": "report.pdf",
+        "file_size": 2457600,
+        "upload_timestamp": "2024-01-17T10:30:00Z",
+        "expires_at": "2024-01-24T10:30:00Z"
+      }
+    },
+    {
+      "event": "file_downloaded",
+      "payload": {
+        "file_id": "file-123456",
+        "download_id": "dl-789012",
+        "timestamp": "2024-01-17T11:00:00Z",
+        "ip_address": "192.168.1.100",
+        "user_agent": "Mozilla/5.0...",
+        "country": "Netherlands"
+      }
+    }
+  ]
+}
+```
+
+### API Rate Limits
+```json
+{
+  "rate_limits": {
+    "upload": {
+      "per_minute": 10,
+      "per_hour": 100,
+      "per_day": 1000
+    },
+    "download": {
+      "per_minute": 60,
+      "per_hour": 1000
+    },
+    "api_calls": {
+      "per_minute": 120,
+      "per_hour": 2000
+    }
+  }
+}
+```
+
+## Troubleshooting
+
+### Veelvoorkomende Problemen
+
+#### Upload Fails
+```bash
+# Controleer file size limits
+ls -lh filename.ext
+
+# Verificeer API key
+curl -I -H "Authorization: Bearer YOUR_API_KEY" https://api.pulsefiles.com/api/upload
+
+# Check quota
+curl -H "Authorization: Bearer YOUR_API_KEY" https://api.pulsefiles.com/api/quota
+```
+
+#### Download Link Bestaat Niet
+```bash
+# Controleer expiration
+curl -H "Authorization: Bearer YOUR_API_KEY" https://api.pulsefiles.com/api/files/{file_id}
+
+# Check download count
+# Response header X-Download-Count vs X-Max-Downloads
+
+# Verify password (indien van toepassing)
+curl -H "Authorization: Bearer YOUR_API_KEY" "https://api.pulsefiles.com/api/dl/{code}?password=yourpassword"
+```
+
+#### Storage Quota Overschreden
+```bash
+# Check current usage
+curl -H "Authorization: Bearer YOUR_API_KEY" https://api.pulsefiles.com/api/usage
+
+# List files by size
+curl -H "Authorization: Bearer YOUR_API_KEY" https://api.pulsefiles.com/api/files?sort=size_desc
+
+# Delete old files
+curl -X DELETE -H "Authorization: Bearer YOUR_API_KEY" https://api.pulsefiles.com/api/files/{file_id}
+```
+
+### Debug Tools
+```bash
+# Upload test file
+echo "test content" > test.txt
+curl -X POST "https://api.pulsefiles.com/api/upload" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F "file=@test.txt" \
+  -F "expiration_hours=1"
+
+# Test download
+curl -I "https://files.pulsefiles.com/dl/{short_code}"
+
+# Check file info
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+  "https://api.pulsefiles.com/api/files/{file_id}/debug"
+```
+
+## Best Practices
+
+### Security Best Practices
+1. **Gebruik Sterke Passwords**: Voor gevoelige bestanden
+2. **Stel Korte Expiratie Tijden In**: Voor tijdelijke shares
+3. **Monitor Download Activity**: Controleer verdachte toegang
+4. **Regular Cleanup**: Verwijder ongebruikte bestanden
+
+### Performance Optimalisatie
+1. **Comprimeer Grote Bestanden**: Gebruik ZIP voor multiple files
+2. **Gebruik Batch Uploads**: Voor multiple gerelateerde bestanden
+3. **Plan Expiration Strategisch**: Balans tussen accessibility en security
+4. **Monitor Storage Usage**: Voorkom quota overschrijdingen
+
+### Compliance Considerations
+1. **Data Classification**: Classificeer bestanden op gevoeligheid
+2. **Retention Policies**: Stel passende retention periods in
+3. **Access Logging**: Bewaar audit logs voor compliance
+4. **GDPR Compliance**: Respect data protection regulations
+
+### Integration Best Practices
+1. **Error Handling**: Implementeer proper error handling
+2. **Retry Logic**: Voeg retry logic toe voor failed uploads
+3. **Progress Tracking**: Toon upload/download progress
+4. **Fallback Options**: Zorg voor alternatieven bij API uitval
+
+PulseFiles biedt een veilige, betrouwbare manier om bestanden tijdelijk te delen, met volledige integratie in het PulseGuard ecosysteem. Met end-to-end encryptie, gedetailleerde analytics, en flexibele configuratie opties, is PulseFiles de ideale oplossing voor moderne file sharing behoeften.

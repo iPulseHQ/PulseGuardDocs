@@ -1,0 +1,260 @@
+---
+title: "Domain Monitoring"
+description: "Monitor website uptime, performance, and SSL certificates"
+---
+
+# Domain Monitoring
+
+## Overzicht
+
+Domain monitoring in PulseGuard controleert de beschikbaarheid, prestaties en gezondheid van uw websites en domeinen. Het systeem voert continue checks uit en waarschuwt u bij problemen.
+
+## Ondersteunde Protocollen
+
+### HTTP/HTTPS Monitoring
+- **Uptime Checks**: Controleert of uw website bereikbaar is
+- **Response Time Monitoring**: Meet laadtijden
+- **Status Code Monitoring**: Controleert HTTP status codes
+- **Content Validation**: Optioneel controleren op specifieke content
+
+### SSL Certificaat Monitoring
+- **Expiration Warnings**: Automatische notificaties bij verlopen certificaten
+- **Certificate Chain Validation**: Controleert volledige certificaat keten
+- **Security Analysis**: Detecteert zwakke encryptie of configuraties
+
+### DNS Monitoring
+- **Record Changes**: Detecteert wijzigingen in DNS records
+- **Propagation Monitoring**: Controleert DNS propagation wereldwijd
+- **Name Server Health**: Controleert health van name servers
+
+## Monitoring Locaties
+
+PulseGuard gebruikt een wereldwijd netwerk van monitoring locaties:
+
+### Primaire Locaties
+- **Amsterdam, Netherlands** (Default)
+- **London, UK**
+- **Frankfurt, Germany**
+- **New York, USA**
+- **San Francisco, USA**
+- **Singapore**
+- **Sydney, Australia**
+
+### Enterprise Locaties (Betaald)
+- **Tokyo, Japan**
+- **São Paulo, Brazil**
+- **Mumbai, India**
+- **Cape Town, South Africa**
+
+## Notificatie Triggers
+
+### Automatische Alerts
+- **Domain Down**: Wanneer website niet bereikbaar is
+- **Slow Response**: Wanneer response time boven threshold komt
+- **SSL Expiring**: 30 dagen voor certificaat verloopt
+- **SSL Expired**: Wanneer certificaat verlopen is
+- **DNS Changes**: Bij detectie van DNS record wijzigingen
+- **Content Missing**: Wanneer verwachte content niet gevonden wordt
+
+### Severity Levels
+- Critical: Domain down, SSL expired
+- **🟡 Warning**: Slow response, SSL expiring soon
+- Info: DNS changes, minor issues
+
+## Response Time Monitoring
+
+### Metrics Verzameld
+- **Time to First Byte (TTFB)**: Tijd tot eerste byte ontvangen
+- **Total Response Time**: Totale laadtijd
+- **DNS Lookup Time**: DNS resolvetijd
+- **TCP Connect Time**: TCP connect tijd
+- **SSL Handshake Time**: SSL handshake duur
+- **Content Transfer Time**: Content transfer tijd
+
+### Thresholds & Alerts
+```json
+{
+  "response_time_thresholds": {
+    "warning": 2000,  // ms - gele alert
+    "critical": 5000, // ms - rode alert
+    "timeout": 30000  // ms - beschouw als down
+  }
+}
+```
+
+## SSL Monitoring Details
+
+### Certificate Checks
+- **Expiration Date**: Controleert wanneer certificaat verloopt
+- **Issuer Validation**: Verificeert certificaat authority
+- **Chain Completeness**: Controleert volledige certificaat keten
+- **Revocation Status**: Checkt CRL/OCSP voor revocation
+- **Key Strength**: Analyseert encryptie sterkte
+
+### Security Analysis
+- **Protocol Support**: Controleert ondersteunde TLS versies
+- **Cipher Suites**: Analyseert gebruikte encryptie methodes
+- **HSTS Headers**: Controleert HTTP Strict Transport Security
+- **Certificate Transparency**: Checkt certificate transparency logs
+
+## DNS Monitoring
+
+### Record Types Monitored
+- **A Records**: IPv4 adressen
+- **AAAA Records**: IPv6 adressen
+- **CNAME Records**: Canonical name records
+- **MX Records**: Mail exchange servers
+- **TXT Records**: Text records (SPF, DKIM, etc.)
+- **NS Records**: Name servers
+
+### Propagation Monitoring
+- **Global Checks**: Controleert DNS propagation wereldwijd
+- **Authoritative Servers**: Controleert primary name servers
+- **Cache Poisoning Detection**: Detecteert DNS cache poisoning
+
+## Website Change Detection
+
+### Content Monitoring
+- **HTML Changes**: Detecteert wijzigingen in pagina content
+- **Screenshot Comparison**: Visuele vergelijking van pagina's
+- **Structured Data**: Controleert JSON-LD en microdata
+- **SEO Elements**: Monitor title, meta descriptions, headings
+
+### Change Alerts
+```json
+{
+  "change_detection": {
+    "enabled": true,
+    "check_frequency": 3600, // elke uur
+    "alert_on_changes": true,
+    "capture_screenshots": true,
+    "ignore_selectors": [".timestamp", "#random-content"]
+  }
+}
+```
+
+## Performance Monitoring
+
+### Core Web Vitals
+- **Largest Contentful Paint (LCP)**: Loading performance
+- **First Input Delay (FID)**: Interactivity
+- **Cumulative Layout Shift (CLS)**: Visual stability
+
+### Additional Metrics
+- **Time to Interactive**: Wanneer pagina interactief wordt
+- **Total Blocking Time**: Tijd dat main thread geblokkeerd is
+- **Resource Load Times**: Individuele resource laadtijden
+
+## Monitoring Intervals
+
+### Standaard Intervals (per Plan)
+- **Free**: Elke 10 minuten
+- **Pro**: Elke 5 minuten
+- **Enterprise**: Elke minuut
+- **Custom**: Configureerbare intervals (30 seconden minimum)
+
+### Dynamic Intervals
+- **Incident State**: Elke minuut tijdens incidenten
+- **Recovery Monitoring**: Intensievere checks tijdens herstel
+- **Scheduled Maintenance**: Aangepaste intervals tijdens onderhoud
+
+## Data Retention
+
+### Metrics Data
+- **Raw Data**: 90 dagen (Pro), 1 jaar (Enterprise)
+- **Aggregated Data**: 2 jaar (alle plannen)
+- **Incident Data**: Onbeperkt
+
+### Screenshot Storage
+- **Change Detection Screenshots**: 30 dagen
+- **Incident Screenshots**: 1 jaar
+- **Manual Screenshots**: 1 jaar
+
+## API Integratie
+
+### REST API Endpoints
+```bash
+# Domain lijst ophalen
+GET /api/domains
+
+# Domain details
+GET /api/domains/{id}
+
+# Domain metrics
+GET /api/domains/{id}/metrics?period=24h
+
+# Domain toevoegen
+POST /api/domains
+
+# Domain bijwerken
+PUT /api/domains/{id}
+
+# Domain verwijderen
+DELETE /api/domains/{id}
+```
+
+### Webhook Events
+```json
+{
+  "event": "domain_down",
+  "domain": {
+    "id": "domain-123",
+    "url": "https://example.com",
+    "status": "down",
+    "response_time": null,
+    "error": "Connection timeout",
+    "timestamp": "2024-01-17T10:30:00Z"
+  }
+}
+```
+
+## Troubleshooting
+
+### Veelvoorkomende Problemen
+
+#### "Domain Always Down"
+- Controleer firewall settings
+- Verificeer DNS records
+- Check of domein publiek bereikbaar is
+
+#### "False Positive Alerts"
+- Verhoog timeout waarde
+- Stel verwachte status codes in
+- Configureer content validation
+
+#### "SSL Certificate Issues"
+- Controleer certificaat chain
+- Verificeer intermediate certificaten
+- Check certificate transparency logs
+
+#### "Slow Response Times"
+- Analyseer server performance
+- Controleer CDN configuratie
+- Monitor database query performance
+
+### Debug Tools
+- **Manual Check**: Test domain via toolbox
+- **SSL Checker**: Analyseer certificaat details
+- **DNS Lookup**: Controleer DNS configuratie
+- **Port Scanner**: Verificeer netwerk connectivity
+
+## Best Practices
+
+### Optimal Configuration
+1. **Stel Realistische Thresholds In**: Voorkom false positives
+2. **Gebruik Multiple Locations**: Voor betere availability detectie
+3. **Configureer Maintenance Windows**: Voorkom alerts tijdens onderhoud
+4. **Monitor Core Web Vitals**: Voor betere user experience
+5. **Stel Upward Escalation In**: Voor kritische systemen
+
+### Alert Management
+1. **Gebruik Severity Levels**: Prioriteer alerts
+2. **Stel Digest Notifications In**: Vermijd alert fatigue
+3. **Configureer On-call Rotatie**: Voor 24/7 coverage
+4. **Document Runbooks**: Voor snelle incident response
+
+### Performance Optimization
+1. **Monitor Resource Usage**: CPU, Memory, Disk
+2. **Implement Caching**: Voor betere response times
+3. **Use CDN**: Voor globale performance
+4. **Optimize Images**: Voor snellere pagina loads
