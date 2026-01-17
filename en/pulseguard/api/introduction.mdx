@@ -1,0 +1,271 @@
+---
+title: "API Introduction"
+description: "Get started with the PulseGuard API"
+---
+
+# PulseGuard API
+
+The PulseGuard API provides programmatic access to all monitoring features, allowing you to integrate monitoring capabilities into your applications, automate workflows, and build custom dashboards.
+
+## Base URL
+
+```
+https://api.ipulse.one
+```
+
+All API requests must be made over HTTPS. HTTP requests will be redirected to HTTPS.
+
+## Authentication
+
+The PulseGuard API uses Bearer token authentication. You can obtain an API key from your dashboard or use JWT tokens from Clerk authentication.
+
+<CodeGroup>
+```bash API Key Authentication
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+  https://api.ipulse.one/api/domains
+```
+
+```bash JWT Token Authentication
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  https://api.ipulse.one/api/domains
+```
+</CodeGroup>
+
+## API Playground
+
+You can test all API endpoints directly in your browser with our interactive playground. All examples include authentication and can be run immediately.
+
+The playground includes:
+- **Live API calls** with your authentication
+- **Request/response examples** in multiple languages
+- **Schema validation** for all parameters
+- **Error simulation** for testing error handling
+
+## Rate Limits
+
+API rate limits vary by endpoint and authentication method:
+
+| Endpoint Type | API Key Limit | JWT Token Limit |
+|---------------|---------------|-----------------|
+| Read operations | 1000/hour | 5000/hour |
+| Write operations | 100/hour | 1000/hour |
+| Bulk operations | 10/hour | 50/hour |
+
+Rate limit headers are included in all responses:
+
+```
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 999
+X-RateLimit-Reset: 1640995200
+```
+
+## Response Format
+
+All API responses follow a consistent JSON format:
+
+```json
+{
+  "data": { ... },
+  "pagination": { ... },
+  "meta": { ... }
+}
+```
+
+Error responses include detailed error information:
+
+```json
+{
+  "error": "VALIDATION_ERROR",
+  "message": "Invalid domain URL format",
+  "details": {
+    "field": "url",
+    "reason": "URL must include protocol (http/https)"
+  }
+}
+```
+
+## SDKs and Libraries
+
+### Official SDKs
+
+<CodeGroup>
+```bash JavaScript SDK
+npm install @pulseguard/sdk
+```
+
+```bash Python SDK
+pip install pulseguard-sdk
+```
+
+```bash PHP SDK
+composer require pulseguard/pulseguard-sdk
+```
+</CodeGroup>
+
+### Community SDKs
+
+- **Go SDK**: [github.com/pulseguard/go-sdk](https://github.com/pulseguard/go-sdk)
+- **Ruby SDK**: [github.com/pulseguard/ruby-sdk](https://github.com/pulseguard/ruby-sdk)
+- **Java SDK**: [github.com/pulseguard/java-sdk](https://github.com/pulseguard/java-sdk)
+
+## Quick Start
+
+1. **Get an API Key**
+   - Log in to your PulseGuard dashboard
+   - Go to Settings → API Keys
+   - Click "Generate New Key"
+
+2. **Make your first request**
+   ```bash
+   curl -H "Authorization: Bearer YOUR_API_KEY" \
+     https://api.ipulse.one/api/domains
+   ```
+
+3. **Create your first domain**
+   ```bash
+   curl -X POST "https://api.ipulse.one/api/domains" \
+     -H "Authorization: Bearer YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "url": "https://example.com",
+       "name": "My Website"
+     }'
+   ```
+
+## API Versions
+
+The current API version is **v1**. All endpoints are backward compatible within major versions.
+
+API versioning is handled through URL paths:
+- Current: `https://api.ipulse.one/api/...`
+- Future v2: `https://api.ipulse.one/v2/api/...`
+
+## Webhooks
+
+PulseGuard supports webhooks for real-time notifications. Configure webhooks to receive events when:
+
+- Domains go up/down
+- SSL certificates expire
+- Incidents are created/resolved
+- Maintenance windows start/end
+
+### Webhook Configuration
+
+```json
+{
+  "url": "https://your-app.com/webhooks/pulseguard",
+  "events": ["domain_up", "domain_down", "incident_created"],
+  "secret": "your_webhook_secret"
+}
+```
+
+### Webhook Payload
+
+```json
+{
+  "event": "domain_down",
+  "timestamp": "2024-01-17T10:30:00Z",
+  "data": {
+    "domain_id": "domain_123",
+    "url": "https://example.com",
+    "status": "down",
+    "response_time_ms": null,
+    "error": "Connection timeout"
+  }
+}
+```
+
+## Error Handling
+
+Implement proper error handling for all API requests:
+
+<CodeGroup>
+```javascript JavaScript Error Handling
+async function apiRequest(endpoint, options = {}) {
+  try {
+    const response = await fetch(`https://api.ipulse.one${endpoint}`, {
+      headers: {
+        'Authorization': `Bearer ${API_KEY}`,
+        'Content-Type': 'application/json',
+        ...options.headers
+      },
+      ...options
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(`${error.error}: ${error.message}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('API request failed:', error);
+    throw error;
+  }
+}
+```
+
+```python Python Error Handling
+import requests
+from requests.exceptions import RequestException
+
+def api_request(endpoint, method='GET', data=None):
+    try:
+        response = requests.request(
+            method,
+            f'https://api.ipulse.one{endpoint}',
+            headers={
+                'Authorization': f'Bearer {API_KEY}',
+                'Content-Type': 'application/json'
+            },
+            json=data
+        )
+
+        response.raise_for_status()
+        return response.json()
+
+    except RequestException as e:
+        print(f'API request failed: {e}')
+        raise
+```
+</CodeGroup>
+
+## Support
+
+### Getting Help
+- **Documentation**: Complete API reference with examples
+- **API Playground**: Interactive testing environment
+- **Community Forums**: Peer support and discussions
+- **Support Portal**: Priority support for paid plans
+
+### Common Issues
+
+**401 Unauthorized**
+- Check your API key is correct and not expired
+- Ensure the Authorization header is properly formatted
+
+**429 Too Many Requests**
+- Implement exponential backoff
+- Check rate limit headers in responses
+- Upgrade to higher plan if needed
+
+**500 Internal Server Error**
+- Retry with exponential backoff
+- Check the PulseGuard status page for outages
+- Contact support if the issue persists
+
+## Changelog
+
+### v1.0.0 (Current)
+- Initial release of PulseGuard API
+- Full CRUD operations for domains, services, devices
+- Comprehensive monitoring statistics
+- Webhook support for real-time notifications
+- Interactive API playground
+
+### Upcoming Features
+- GraphQL API (Q2 2024)
+- Bulk operations for large datasets
+- Advanced filtering and search
+- Real-time WebSocket connections
+- Enhanced AI insights API

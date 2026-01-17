@@ -1,0 +1,260 @@
+---
+title: "Domain Monitoring"
+description: "Monitor website uptime, performance, and SSL certificates"
+---
+
+# Domain Monitoring
+
+## Overview
+
+Domain monitoring in PulseGuard monitors the availability, performance, and health of your websites and domains. The system performs continuous checks and alerts you when issues occur.
+
+## Supported Protocols
+
+### HTTP/HTTPS Monitoring
+- **Uptime Checks**: Checks if your website is reachable
+- **Response Time Monitoring**: Measures loading times
+- **Status Code Monitoring**: Monitors HTTP status codes
+- **Content Validation**: Optionally check for specific content
+
+### SSL Certificate Monitoring
+- **Expiration Warnings**: Automatic notifications for expiring certificates
+- **Certificate Chain Validation**: Checks complete certificate chain
+- **Security Analysis**: Detects weak encryption or configurations
+
+### DNS Monitoring
+- **Record Changes**: Detects changes in DNS records
+- **Propagation Monitoring**: Checks DNS propagation worldwide
+- **Name Server Health**: Monitors health of name servers
+
+## Monitoring Locations
+
+PulseGuard uses a global network of monitoring locations:
+
+### Primary Locations
+- **Amsterdam, Netherlands** (Default)
+- **London, UK**
+- **Frankfurt, Germany**
+- **New York, USA**
+- **San Francisco, USA**
+- **Singapore**
+- **Sydney, Australia**
+
+### Enterprise Locations (Paid)
+- **Tokyo, Japan**
+- **São Paulo, Brazil**
+- **Mumbai, India**
+- **Cape Town, South Africa**
+
+## Notification Triggers
+
+### Automatic Alerts
+- **Domain Down**: When website is unreachable
+- **Slow Response**: When response time exceeds threshold
+- **SSL Expiring**: 30 days before certificate expires
+- **SSL Expired**: When certificate has expired
+- **DNS Changes**: Upon detection of DNS record changes
+- **Content Missing**: When expected content is not found
+
+### Severity Levels
+- Critical: Domain down, SSL expired
+- **Warning**: Slow response, SSL expiring soon
+- Info: DNS changes, minor issues
+
+## Response Time Monitoring
+
+### Metrics Collected
+- **Time to First Byte (TTFB)**: Time until first byte received
+- **Total Response Time**: Total loading time
+- **DNS Lookup Time**: DNS resolution time
+- **TCP Connect Time**: TCP connect time
+- **SSL Handshake Time**: SSL handshake duration
+- **Content Transfer Time**: Content transfer time
+
+### Thresholds & Alerts
+```json
+{
+  "response_time_thresholds": {
+    "warning": 2000,  // ms - gele alert
+    "critical": 5000, // ms - rode alert
+    "timeout": 30000  // ms - beschouw als down
+  }
+}
+```
+
+## SSL Monitoring Details
+
+### Certificate Checks
+- **Expiration Date**: Checks when certificate expires
+- **Issuer Validation**: Verifies certificate authority
+- **Chain Completeness**: Checks complete certificate chain
+- **Revocation Status**: Checks CRL/OCSP for revocation
+- **Key Strength**: Analyzes encryption strength
+
+### Security Analysis
+- **Protocol Support**: Checks supported TLS versions
+- **Cipher Suites**: Analyzes used encryption methods
+- **HSTS Headers**: Checks HTTP Strict Transport Security
+- **Certificate Transparency**: Checks certificate transparency logs
+
+## DNS Monitoring
+
+### Record Types Monitored
+- **A Records**: IPv4 addresses
+- **AAAA Records**: IPv6 addresses
+- **CNAME Records**: Canonical name records
+- **MX Records**: Mail exchange servers
+- **TXT Records**: Text records (SPF, DKIM, etc.)
+- **NS Records**: Name servers
+
+### Propagation Monitoring
+- **Global Checks**: Checks DNS propagation worldwide
+- **Authoritative Servers**: Checks primary name servers
+- **Cache Poisoning Detection**: Detects DNS cache poisoning
+
+## Website Change Detection
+
+### Content Monitoring
+- **HTML Changes**: Detects changes in page content
+- **Screenshot Comparison**: Visual comparison of pages
+- **Structured Data**: Checks JSON-LD and microdata
+- **SEO Elements**: Monitor title, meta descriptions, headings
+
+### Change Alerts
+```json
+{
+  "change_detection": {
+    "enabled": true,
+    "check_frequency": 3600, // elke uur
+    "alert_on_changes": true,
+    "capture_screenshots": true,
+    "ignore_selectors": [".timestamp", "#random-content"]
+  }
+}
+```
+
+## Performance Monitoring
+
+### Core Web Vitals
+- **Largest Contentful Paint (LCP)**: Loading performance
+- **First Input Delay (FID)**: Interactivity
+- **Cumulative Layout Shift (CLS)**: Visual stability
+
+### Additional Metrics
+- **Time to Interactive**: When page becomes interactive
+- **Total Blocking Time**: Time main thread is blocked
+- **Resource Load Times**: Individual resource loading times
+
+## Monitoring Intervals
+
+### Standard Intervals (per Plan)
+- **Free**: Every 10 minutes
+- **Pro**: Every 5 minutes
+- **Enterprise**: Every minute
+- **Custom**: Configurable intervals (30 seconds minimum)
+
+### Dynamic Intervals
+- **Incident State**: Every minute during incidents
+- **Recovery Monitoring**: More intensive checks during recovery
+- **Scheduled Maintenance**: Customized intervals during maintenance
+
+## Data Retention
+
+### Metrics Data
+- **Raw Data**: 90 days (Pro), 1 year (Enterprise)
+- **Aggregated Data**: 2 years (all plans)
+- **Incident Data**: Unlimited
+
+### Screenshot Storage
+- **Change Detection Screenshots**: 30 days
+- **Incident Screenshots**: 1 year
+- **Manual Screenshots**: 1 year
+
+## API Integration
+
+### REST API Endpoints
+```bash
+# Get domain list
+GET /api/domains
+
+# Domain details
+GET /api/domains/{id}
+
+# Domain metrics
+GET /api/domains/{id}/metrics?period=24h
+
+# Add domain
+POST /api/domains
+
+# Update domain
+PUT /api/domains/{id}
+
+# Delete domain
+DELETE /api/domains/{id}
+```
+
+### Webhook Events
+```json
+{
+  "event": "domain_down",
+  "domain": {
+    "id": "domain-123",
+    "url": "https://example.com",
+    "status": "down",
+    "response_time": null,
+    "error": "Connection timeout",
+    "timestamp": "2024-01-17T10:30:00Z"
+  }
+}
+```
+
+## Troubleshooting
+
+### Common Problems
+
+#### "Domain Always Down"
+- Check firewall settings
+- Verify DNS records
+- Check if domain is publicly reachable
+
+#### "False Positive Alerts"
+- Increase timeout value
+- Set expected status codes
+- Configure content validation
+
+#### "SSL Certificate Issues"
+- Check certificate chain
+- Verify intermediate certificates
+- Check certificate transparency logs
+
+#### "Slow Response Times"
+- Analyze server performance
+- Check CDN configuration
+- Monitor database query performance
+
+### Debug Tools
+- **Manual Check**: Test domain via toolbox
+- **SSL Checker**: Analyze certificate details
+- **DNS Lookup**: Check DNS configuration
+- **Port Scanner**: Verify network connectivity
+
+## Best Practices
+
+### Optimal Configuration
+1. **Set Realistic Thresholds**: Prevent false positives
+2. **Use Multiple Locations**: For better availability detection
+3. **Configure Maintenance Windows**: Prevent alerts during maintenance
+4. **Monitor Core Web Vitals**: For better user experience
+5. **Set Up Escalation**: For critical systems
+
+### Alert Management
+1. **Use Severity Levels**: Prioritize alerts
+2. **Set Digest Notifications**: Avoid alert fatigue
+3. **Configure On-call Rotation**: For 24/7 coverage
+4. **Document Runbooks**: For fast incident response
+
+### Performance Optimization
+1. **Monitor Resource Usage**: CPU, Memory, Disk
+2. **Implement Caching**: For better response times
+3. **Use CDN**: For global performance
+4. **Optimize Images**: For faster page loads

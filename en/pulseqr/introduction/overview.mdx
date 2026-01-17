@@ -1,0 +1,481 @@
+---
+title: "PulseQR Overview"
+description: "Dynamic QR code generation service integrated with PulseGuard"
+---
+
+# PulseQR - Dynamic QR Code Generator
+
+## Overview
+
+**PulseQR** is an advanced QR code generation service fully integrated with PulseGuard. The system generates dynamic QR codes that can be used for status pages, incident communication, and other monitoring-related applications.
+
+## Key Features
+
+### Dynamic QR Codes
+- **Real-time Updates**: QR codes that automatically update with the latest status
+- **Custom Branding**: Fully customizable design and branding
+- **Multiple Formats**: Support for different QR code standards
+- **Error Correction**: Reliable error correction for scanning
+
+### PulseGuard Integration
+- **Status Page QR**: Direct links to current status information
+- **Incident QR**: QR codes that lead to incident details
+- **Maintenance QR**: Automatic QR codes for maintenance windows
+- **API Based**: Complete integration via REST API
+
+### Analytics & Tracking
+- **Scan Tracking**: Monitor how many people scan QR codes
+- **Geographic Data**: See where scans come from
+- **Device Analytics**: Insights into devices and browsers used
+- **Conversion Tracking**: Measure effectiveness of QR code campaigns
+
+### Customization Options
+- **Logo Integration**: Add company logo to QR codes
+- **Color Schemes**: Custom colors for branding
+- **Size Options**: Different formats for various applications
+- **Background Patterns**: Optional background patterns
+
+## Technical Specifications
+
+### QR Code Standards
+- **QR Code 2005**: Basic standard with backward compatibility
+- **Micro QR**: Compact version for small surfaces
+- **iQR Code**: Square version for better error correction
+- **Frame QR**: Round version for special applications
+
+### Error Correction Levels
+- **Level L**: 7% error correction (fastest)
+- **Level M**: 15% error correction (balanced)
+- **Level Q**: 25% error correction (reliable)
+- **Level H**: 30% error correction (maximum reliable)
+
+### Supported Content Types
+- **URL**: Web links to status pages
+- **Text**: Plain text messages
+- **Email**: Direct email links
+- **Phone**: Phone number dialing
+- **SMS**: SMS messages
+- **Location**: GPS coordinates
+- **WiFi**: WiFi network configuration
+
+## Use Cases
+
+### Status Page QR Codes
+```json
+{
+  "type": "status_page",
+  "pulseguard_integration": {
+    "organization_id": "org-123",
+    "status_page_id": "page-456",
+    "dynamic_updates": true,
+    "incident_alerts": true
+  },
+  "design": {
+    "logo_url": "https://company.com/logo.png",
+    "primary_color": "#007acc",
+    "background_color": "#ffffff",
+    "size": "300x300"
+  }
+}
+```
+
+### Incident QR Codes
+```json
+{
+  "type": "incident",
+  "incident_details": {
+    "incident_id": "inc-789",
+    "short_url": true,
+    "auto_update": true,
+    "include_timeline": true
+  },
+  "customization": {
+    "title": "Service Incident",
+    "message": "Scan for details",
+    "icon": "warning"
+  }
+}
+```
+
+### Maintenance QR Codes
+```json
+{
+  "type": "maintenance",
+  "maintenance_window": {
+    "start_time": "2024-01-20T02:00:00Z",
+    "end_time": "2024-01-20T04:00:00Z",
+    "description": "Database maintenance",
+    "contact_info": "support@company.com"
+  },
+  "styling": {
+    "theme": "maintenance",
+    "urgency_level": "scheduled"
+  }
+}
+```
+
+## API Specifications
+
+### QR Code Generation
+```bash
+# Generate new QR code
+POST /api/pulseqr/generate
+Content-Type: application/json
+
+{
+  "content": {
+    "type": "url",
+    "value": "https://status.company.com"
+  },
+  "design": {
+    "size": 300,
+    "error_correction": "M",
+    "logo": "https://company.com/logo.png"
+  },
+  "metadata": {
+    "name": "Status Page QR",
+    "tags": ["status", "public"],
+    "expires_at": "2024-12-31T23:59:59Z"
+  }
+}
+
+# Response
+{
+  "qr_id": "qr-123456",
+  "qr_code_url": "https://qr.pulseqr.com/qr-123456.png",
+  "short_url": "https://pq.rs/abc123",
+  "expires_at": "2024-12-31T23:59:59Z"
+}
+```
+
+### QR Code Management
+```bash
+# Get QR code details
+GET /api/pulseqr/{qr_id}
+
+# Update QR code
+PUT /api/pulseqr/{qr_id}
+Content-Type: application/json
+{
+  "content": {
+    "value": "https://status.company.com/incident-123"
+  }
+}
+
+# Delete QR code
+DELETE /api/pulseqr/{qr_id}
+
+# Get scan analytics
+GET /api/pulseqr/{qr_id}/analytics?period=30d
+```
+
+### Batch Operations
+```bash
+# Generate multiple QR codes
+POST /api/pulseqr/batch/generate
+Content-Type: application/json
+{
+  "qrs": [
+    {
+      "name": "Website Status",
+      "content": {"type": "url", "value": "https://status.company.com"}
+    },
+    {
+      "name": "API Status",
+      "content": {"type": "url", "value": "https://status.company.com/api"}
+    }
+  ]
+}
+```
+
+## Analytics & Reporting
+
+### Scan Analytics
+```json
+{
+  "qr_id": "qr-123456",
+  "total_scans": 1250,
+  "unique_scans": 890,
+  "time_series": [
+    {"date": "2024-01-17", "scans": 45},
+    {"date": "2024-01-16", "scans": 67}
+  ],
+  "geographic_data": [
+    {"country": "Netherlands", "scans": 450},
+    {"country": "Germany", "scans": 280},
+    {"country": "Belgium", "scans": 160}
+  ],
+  "device_data": {
+    "mobile": {"scans": 780, "percentage": 62.4},
+    "desktop": {"scans": 340, "percentage": 27.2},
+    "tablet": {"scans": 130, "percentage": 10.4}
+  },
+  "referrer_data": [
+    {"source": "direct", "scans": 600},
+    {"source": "social_media", "scans": 350},
+    {"source": "email", "scans": 300}
+  ]
+}
+```
+
+### Performance Metrics
+```json
+{
+  "uptime_percentage": 99.98,
+  "average_response_time": 45, // milliseconds
+  "error_rate": 0.02,
+  "bandwidth_usage": "2.3 GB/month",
+  "storage_usage": "1.2 GB"
+}
+```
+
+## Security Features
+
+### Access Control
+```json
+{
+  "security": {
+    "api_key_required": true,
+    "rate_limiting": {
+      "requests_per_minute": 100,
+      "requests_per_hour": 1000
+    },
+    "ip_whitelisting": {
+      "enabled": false,
+      "allowed_ips": ["1.2.3.4", "5.6.7.8"]
+    },
+    "content_filtering": {
+      "block_malicious_urls": true,
+      "domain_whitelist": ["*.company.com", "status.pulseguard.com"]
+    }
+  }
+}
+```
+
+### Data Privacy
+```json
+{
+  "privacy": {
+    "scan_anonymization": {
+      "ip_address": "anonymized",
+      "user_agent": "hashed",
+      "geolocation": "country_level_only"
+    },
+    "data_retention": {
+      "analytics_data": "2_years",
+      "qr_codes": "indefinite",
+      "deleted_qr_data": "30_days"
+    },
+    "gdpr_compliance": {
+      "data_portability": true,
+      "right_to_erasure": true,
+      "consent_management": true
+    }
+  }
+}
+```
+
+## Integration Examples
+
+### PulseGuard Status Page Integration
+```javascript
+// Automatic QR code generation on incident
+const incidentCreated = async (incident) => {
+  const qrCode = await fetch('/api/pulseqr/generate', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${PULSEGUARD_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      content: {
+        type: 'url',
+        value: `https://status.company.com/incidents/${incident.id}`
+      },
+      design: {
+        logo: 'https://company.com/logo.png',
+        primary_color: '#ff4444'
+      },
+      metadata: {
+        name: `Incident ${incident.id} QR`,
+        tags: ['incident', 'auto-generated']
+      }
+    })
+  });
+
+  const qrData = await qrCode.json();
+  // Use qrData.qr_code_url in notifications
+};
+```
+
+### Email Template Integration
+```html
+<!-- Email template with QR code -->
+<div class="incident-notification">
+  <h2>Service Incident Detected</h2>
+  <p>We have detected an issue with our services. For more details, scan the QR code below:</p>
+
+  <div class="qr-code-container">
+    <img src="{{qr_code_url}}" alt="Incident Details QR Code" />
+  </div>
+
+  <p>Or visit: <a href="{{incident_url}}">{{incident_url}}</a></p>
+
+  <div class="incident-summary">
+    <strong>Status:</strong> {{incident.status}}<br>
+    <strong>Started:</strong> {{incident.started_at}}<br>
+    <strong>Estimated Resolution:</strong> {{incident.eta}}
+  </div>
+</div>
+```
+
+### Mobile App Integration
+```swift
+// iOS Swift example
+func generateStatusQR() async throws -> UIImage {
+    let qrRequest = QRGenerationRequest(
+        content: .url(URL(string: "https://status.company.com")!),
+        design: QRDesign(
+            size: 300,
+            errorCorrection: .medium,
+            logo: UIImage(named: "company-logo")
+        )
+    )
+
+    let qrImage = try await PulseQRService.shared.generateQR(request: qrRequest)
+    return qrImage
+}
+```
+
+## Pricing & Limits
+
+### Free Plan
+- **QR Codes**: 100 per month
+- **Scans**: 10,000 per month
+- **Analytics**: Basic analytics
+- **Custom Branding**: Limited
+- **Support**: Community support
+
+### Pro Plan (€9.99/month)
+- **QR Codes**: 1,000 per month
+- **Scans**: 100,000 per month
+- **Analytics**: Extended analytics
+- **Custom Branding**: Fully customizable
+- **API Access**: Full API access
+- **Support**: Email support
+
+### Enterprise Plan (€49.99/month)
+- **QR Codes**: Unlimited
+- **Scans**: Unlimited
+- **Analytics**: Real-time analytics
+- **Custom Branding**: White-label option
+- **API Access**: Priority API access
+- **Support**: 24/7 support
+- **SLA**: 99.9% uptime guarantee
+
+## Technical Documentation
+
+### API Rate Limits
+```json
+{
+  "rate_limits": {
+    "generate_qr": {
+      "per_minute": 60,
+      "per_hour": 1000,
+      "per_day": 10000
+    },
+    "retrieve_qr": {
+      "per_minute": 300,
+      "per_hour": 5000
+    },
+    "analytics": {
+      "per_minute": 120,
+      "per_hour": 2000
+    }
+  }
+}
+```
+
+### Webhook Events
+```json
+{
+  "webhook_events": [
+    {
+      "event": "qr_scanned",
+      "payload": {
+        "qr_id": "qr-123456",
+        "scan_id": "scan-789012",
+        "timestamp": "2024-01-17T10:30:00Z",
+        "ip_address": "192.168.1.1",
+        "user_agent": "Mozilla/5.0...",
+        "location": {
+          "country": "Netherlands",
+          "city": "Amsterdam"
+        }
+      }
+    }
+  ]
+}
+```
+
+## Troubleshooting
+
+### Common Problems
+
+#### QR Code Won't Scan
+- Check error correction level (use H for printing)
+- Verify contrast between foreground and background
+- Test with multiple QR code readers
+- Ensure URL is correct
+
+#### Analytics Data Missing
+- Check if QR code was recently generated
+- Verify API key permissions
+- Check firewall settings for analytics endpoints
+
+#### Custom Logo Problems
+- Logo must be at least 100x100 pixels
+- Use PNG or SVG format
+- Ensure sufficient contrast
+- Test logo on different sizes
+
+### Debug Tools
+```bash
+# Test QR code generation
+curl -X POST "https://api.pulseqr.com/api/generate" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"content": {"type": "url", "value": "https://example.com"}}'
+
+# Check QR code status
+curl -X GET "https://api.pulseqr.com/api/{qr_id}" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+# Get debug information
+curl -X GET "https://api.pulseqr.com/api/{qr_id}/debug" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## Roadmap
+
+### Q1 2024
+- [ ] NFC tag integration
+- [ ] Augmented Reality QR codes
+- [ ] Bulk QR code management
+- [ ] Advanced analytics dashboard
+
+### Q2 2024
+- [ ] Dynamic content updates
+- [ ] Social media integration
+- [ ] Mobile SDK releases
+- [ ] Enterprise SSO integration
+
+### Q3 2024
+- [ ] AI-powered QR design
+- [ ] Predictive scan analytics
+- [ ] Integration marketplace
+- [ ] Advanced security features
+
+---
+
+PulseQR is designed to help modern businesses effectively communicate status information via QR codes. With seamless PulseGuard integration, extensive customization options, and detailed analytics, PulseQR provides a complete solution for dynamic QR code needs.

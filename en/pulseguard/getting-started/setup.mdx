@@ -1,0 +1,245 @@
+---
+title: "Getting Started"
+description: "Set up your PulseGuard account and start monitoring"
+---
+
+# Getting Started with PulseGuard
+
+## Account Setup
+
+### 1. Registration
+Visit [guard.ipulse.one](https://guard.ipulse.one) and click "Sign Up" to create a new account.
+
+**Required information:**
+- Email address
+- Company name (for organizations)
+- Password
+
+### 2. Email Verification
+Check your inbox for a verification email and click the confirmation link.
+
+### 3. Organization Setup (Optional)
+For team use, you can create an organization:
+1. Go to Settings → Organization
+2. Click "Create Organization"
+3. Invite team members via email invites
+
+## First Monitoring Setup
+
+### Domain Monitoring
+```bash
+# Via the web interface:
+1. Go to Dashboard
+2. Click "Add Domain"
+3. Enter your domain name (e.g. example.com)
+4. Choose monitoring options:
+   - Uptime checks (every 5 minutes)
+   - SSL certificate monitoring
+   - DNS monitoring
+   - Website change detection
+5. Configure notifications
+6. Click "Save"
+```
+
+### Device Monitoring
+```bash
+# Download the agent:
+1. Go to Dashboard → Devices
+2. Click "Download Agent"
+3. Choose your operating system (Windows/Linux/macOS)
+4. Download the installation file
+
+# Installation on Windows:
+1. Run the .exe file
+2. Follow the installation wizard
+3. The agent registers automatically
+4. Check status in the dashboard
+```
+
+### Service Monitoring
+```bash
+# For API monitoring:
+1. Go to Dashboard → Services
+2. Click "Add Service"
+3. Choose protocol (HTTP/TCP/IMAP/SMTP/DNS)
+4. Enter endpoint URL
+5. Set monitoring interval
+6. Configure expected behavior
+7. Click "Save"
+```
+
+## Notification Configuration
+
+### Email Notifications
+```bash
+# Enabled by default for:
+- Critical alerts (downtime)
+- SSL certificate expiration (30 days before)
+- Domain expiration warnings
+
+# Adjust:
+1. Go to Settings → Notifications
+2. Choose "Email" tab
+3. Set frequency (Immediate/Daily/Weekly)
+4. Choose severity levels
+```
+
+### Slack Integration
+```bash
+# Setup steps:
+1. Go to Settings → Integrations
+2. Click "Add Slack"
+3. Authorize PulseGuard in Slack
+4. Choose channel for notifications
+5. Configure message format
+6. Test the integration
+```
+
+### Webhook Notifications
+```bash
+# For custom integrations:
+1. Go to Settings → Integrations → Webhooks
+2. Click "Add Webhook"
+3. Enter webhook URL
+4. Choose events to trigger:
+   - domain_up
+   - domain_down
+   - incident_created
+   - incident_resolved
+5. Configure headers (if needed)
+6. Test webhook
+```
+
+## API Key Creation
+
+### For Programmatic Access
+```bash
+# Via dashboard:
+1. Go to Settings → API Keys
+2. Click "Generate New Key"
+3. Give the key a name (e.g. "Production API")
+4. Set permissions:
+   - Read domains
+   - Write domains
+   - Read devices
+   - Read incidents
+5. Set rate limits (requests per hour)
+6. Click "Create"
+7. Copy the API key (shown only once!)
+```
+
+### Using API Key
+```bash
+# Example curl request:
+curl -X GET "https://api.ipulse.one/api/domains" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json"
+```
+
+## Advanced Setup
+
+### Environment Variables (For Development)
+```env
+# Backend environment (.env in apps/backend/)
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/pulseguard
+NEXT_PUBLIC_API_URL=https://api.ipulse.one
+CLERK_SECRET_KEY=your_clerk_secret
+STRIPE_SECRET_KEY=your_stripe_key
+
+# Frontend environment (.env.local in apps/frontend/)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+NEXT_PUBLIC_API_URL=https://api.ipulse.one
+```
+
+### Docker Setup (Development)
+```bash
+# Start all services:
+cd /path/to/PulseGuard
+docker compose up -d
+
+# Check status:
+docker compose ps
+
+# Stop services:
+docker compose down
+```
+
+### Agent Configuration
+```bash
+# Agent configuration (generated automatically):
+{
+  "server_url": "https://api.ipulse.one",
+  "api_key": "your_device_api_key",
+  "device_name": "Server-01",
+  "collection_interval": 30,
+  "log_level": "info"
+}
+```
+
+## Troubleshooting Setup Issues
+
+### Database Connection Failed
+```bash
+# Check PostgreSQL:
+docker compose ps
+
+# View logs:
+docker compose logs postgres
+
+# Reset database:
+docker compose down -v
+docker compose up -d postgres
+```
+
+### Agent Registration Failed
+```bash
+# Check internet connection
+ping api.ipulse.one
+
+# Verify API key
+curl -H "Authorization: Bearer YOUR_API_KEY" https://api.ipulse.one/api/devices
+
+# Check firewall
+sudo ufw status
+sudo iptables -L
+```
+
+### SSL Certificate Issues
+```bash
+# For local development:
+# Download mkcert: https://github.com/FiloSottile/mkcert
+mkcert -install
+mkcert localhost
+
+# Place certificates in apps/frontend/certs/
+```
+
+## Next Steps
+
+After successful setup:
+
+1. **Explore the Dashboard**: View your monitoring data
+2. **Set Up Alerts**: Configure notifications for critical events
+3. **Add More Assets**: Extend monitoring to more domains/services
+4. **Configure Integrations**: Connect with your favorite tools
+5. **View Reports**: Generate your first uptime report
+
+### Useful Links
+- [Dashboard](https://guard.ipulse.one/dashboard)
+- [API Documentation](/pulseguard/api/authentication)
+- [Community Forums](https://community.pulseguard.com)
+- [Support Portal](https://support.pulseguard.com)
+
+### Setup FAQ
+
+**Q: How often are checks performed?**
+A: Default every 5 minutes for domains, every 30 seconds for devices.
+
+**Q: Can I import historical data?**
+A: No, PulseGuard starts monitoring from the time of addition.
+
+**Q: What are the API rate limits?**
+A: 1000 requests per hour for free tier, higher for paid plans.
+
+**Q: Does PulseGuard support IPv6?**
+A: Yes, both IPv4 and IPv6 are supported for all monitoring types.

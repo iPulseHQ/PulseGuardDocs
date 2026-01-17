@@ -1,0 +1,646 @@
+---
+title: "PulseFiles Overview"
+description: "Secure file sharing service with automatic expiration"
+---
+
+# PulseFiles - Secure File Sharing Service
+
+## Overview
+
+**PulseFiles** is a secure, temporary file sharing service fully integrated with PulseGuard. The system allows users to securely share files via temporary links, with automatic deletion after a set period.
+
+## Key Features
+
+### Secure File Sharing
+- **End-to-end Encryption**: Files are encrypted when stored
+- **Time-limited Access**: Automatic deletion after expiration
+- **Secure Links**: Unique, difficult-to-guess URLs
+- **Access Logging**: Detailed logs of all access attempts
+
+### PulseGuard Integration
+- **Report Sharing**: Share monitoring reports and exports
+- **Screenshot Storage**: Securely store incident screenshots
+- **Log File Sharing**: Share system logs with support teams
+- **Backup Storage**: Temporary storage for backups
+
+### Analytics & Monitoring
+- **Download Tracking**: Monitor how many times files are downloaded
+- **Geographic Analytics**: See where downloads come from
+- **Security Monitoring**: Detect suspicious access attempts
+- **Usage Reports**: Detailed reports on storage usage
+
+### Advanced Configuration
+- **Custom Expiration**: Set custom expiration times
+- **Password Protection**: Optional password protection
+- **Download Limits**: Limit number of downloads per file
+- **File Type Restrictions**: Control which file types are allowed
+
+## Technical Specifications
+
+### Supported File Types
+- **Documents**: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX
+- **Images**: PNG, JPG, JPEG, GIF, SVG, WebP
+- **Archives**: ZIP, RAR, 7Z, TAR, GZ
+- **Media**: MP4, AVI, MP3, WAV
+- **Code**: TXT, JSON, XML, CSV, LOG
+- **Other**: Maximum 100MB per file
+
+### Storage Limits (per Plan)
+```json
+{
+  "free": {
+    "max_file_size": "10MB",
+    "total_storage": "100MB",
+    "files_per_day": 10,
+    "retention_period": "7_days"
+  },
+  "pro": {
+    "max_file_size": "100MB",
+    "total_storage": "1GB",
+    "files_per_day": 100,
+    "retention_period": "30_days"
+  },
+  "enterprise": {
+    "max_file_size": "1GB",
+    "total_storage": "10GB",
+    "files_per_day": 1000,
+    "retention_period": "90_days"
+  }
+}
+```
+
+### Encryption Specifications
+- **At-rest Encryption**: AES-256-GCM encryption
+- **In-transit Encryption**: TLS 1.3 for all transfers
+- **Key Management**: Rotation every 30 days
+- **Zero-knowledge**: Server has no access to decryption keys
+
+## Use Cases
+
+### Sharing Monitoring Reports
+```json
+{
+  "upload_scenario": "monitoring_report",
+  "file_details": {
+    "name": "weekly-uptime-report.pdf",
+    "size": "2.5MB",
+    "type": "application/pdf"
+  },
+  "sharing_config": {
+    "expiration_hours": 168, // 7 days
+    "max_downloads": 50,
+    "password_protected": false,
+    "notify_on_access": true
+  },
+  "integration": {
+    "pulseguard_report_id": "report-123",
+    "auto_generated": true
+  }
+}
+```
+
+### Storing Incident Screenshots
+```json
+{
+  "upload_scenario": "incident_screenshot",
+  "file_details": {
+    "name": "database-error-404.png",
+    "size": "1.2MB",
+    "type": "image/png",
+    "metadata": {
+      "incident_id": "inc-456",
+      "timestamp": "2024-01-17T10:30:00Z",
+      "error_code": "ERR_DB_CONNECTION"
+    }
+  },
+  "sharing_config": {
+    "expiration_hours": 720, // 30 days
+    "max_downloads": 10,
+    "password_protected": true,
+    "allowed_emails": ["support@company.com", "devops@company.com"]
+  }
+}
+```
+
+### Sharing Log Files with Support
+```json
+{
+  "upload_scenario": "support_logs",
+  "files": [
+    {
+      "name": "app-server.log",
+      "size": "15MB",
+      "compression": "gzip"
+    },
+    {
+      "name": "database-slow-queries.log",
+      "size": "8MB",
+      "compression": "gzip"
+    }
+  ],
+  "sharing_config": {
+    "expiration_hours": 24,
+    "password_required": true,
+    "download_notification": true,
+    "auto_delete_after_first_download": false
+  }
+}
+```
+
+## API Specifications
+
+### File Upload
+```bash
+# Single file upload
+POST /api/pulsefiles/upload
+Content-Type: multipart/form-data
+
+# Form data
+file: <binary_file_data>
+expiration_hours: 24
+max_downloads: 5
+password: optional_password
+notify_email: user@example.com
+
+# Response
+{
+  "file_id": "file-123456",
+  "download_url": "https://files.pulsefiles.com/dl/abc123def456",
+  "expires_at": "2024-01-18T10:30:00Z",
+  "max_downloads": 5,
+  "password_protected": false
+}
+```
+
+### Batch Upload
+```bash
+# Multiple files upload
+POST /api/pulsefiles/upload/batch
+Content-Type: multipart/form-data
+
+# Form data
+files: [<file1>, <file2>, <file3>]
+expiration_hours: 48
+compress_files: true
+create_zip: true
+
+# Response
+{
+  "batch_id": "batch-789012",
+  "files": [
+    {
+      "file_id": "file-123456",
+      "original_name": "report.pdf",
+      "download_url": "https://files.pulsefiles.com/dl/abc123"
+    }
+  ],
+  "zip_download_url": "https://files.pulsefiles.com/dl/zip-def456"
+}
+```
+
+### File Management
+```bash
+# Get file details
+GET /api/pulsefiles/{file_id}
+
+# Update file settings
+PUT /api/pulsefiles/{file_id}
+Content-Type: application/json
+{
+  "expiration_hours": 72,
+  "max_downloads": 10,
+  "password": "new_password"
+}
+
+# Delete file
+DELETE /api/pulsefiles/{file_id}
+
+# Get download statistics
+GET /api/pulsefiles/{file_id}/stats
+```
+
+### Download Process
+```bash
+# Password protected download
+GET /api/pulsefiles/dl/{short_code}?password=mypassword
+
+# Direct download (if no password)
+GET /api/pulsefiles/dl/{short_code}
+
+# Response headers for direct download
+Content-Type: application/pdf
+Content-Disposition: attachment; filename="report.pdf"
+X-Download-Count: 3
+X-Max-Downloads: 5
+X-Expires-At: 2024-01-18T10:30:00Z
+```
+
+## Security Features
+
+### Access Control
+```json
+{
+  "access_control": {
+    "password_protection": {
+      "enabled": true,
+      "min_length": 8,
+      "complexity_required": true
+    },
+    "ip_restrictions": {
+      "enabled": false,
+      "allowed_ips": ["192.168.1.0/24"],
+      "blocked_countries": ["North Korea", "Iran"]
+    },
+    "email_restrictions": {
+      "enabled": true,
+      "allowed_domains": ["company.com", "partner.com"],
+      "require_verification": false
+    },
+    "download_limits": {
+      "max_downloads": 100,
+      "time_window_hours": 24,
+      "block_after_limit": true
+    }
+  }
+}
+```
+
+### Audit Logging
+```json
+{
+  "audit_log": {
+    "events_logged": [
+      "file_upload",
+      "file_download",
+      "password_attempt",
+      "access_denied",
+      "file_expired",
+      "file_deleted"
+    ],
+    "log_details": {
+      "timestamp": "2024-01-17T10:30:00Z",
+      "ip_address": "192.168.1.100",
+      "user_agent": "Mozilla/5.0...",
+      "action": "file_download",
+      "file_id": "file-123456",
+      "success": true,
+      "download_count": 3
+    },
+    "retention_period": "2_years",
+    "export_capability": true
+  }
+}
+```
+
+### Malware Scanning
+```json
+{
+  "malware_protection": {
+    "scan_on_upload": true,
+    "engines": ["ClamAV", "VirusTotal"],
+    "block_infected": true,
+    "quarantine_storage": true,
+    "false_positive_handling": {
+      "allow_user_override": true,
+      "admin_review_required": false
+    }
+  }
+}
+```
+
+## Analytics & Reporting
+
+### Download Analytics
+```json
+{
+  "file_analytics": {
+    "file_id": "file-123456",
+    "total_downloads": 47,
+    "unique_downloads": 23,
+    "download_trends": [
+      {"date": "2024-01-17", "downloads": 12},
+      {"date": "2024-01-16", "downloads": 8},
+      {"date": "2024-01-15", "downloads": 27}
+    ],
+    "geographic_distribution": [
+      {"country": "Netherlands", "downloads": 25},
+      {"country": "Germany", "downloads": 12},
+      {"country": "Belgium", "downloads": 10}
+    ],
+    "device_types": {
+      "desktop": {"downloads": 30, "percentage": 63.8},
+      "mobile": {"downloads": 12, "percentage": 25.5},
+      "tablet": {"downloads": 5, "percentage": 10.7}
+    },
+    "referrer_sources": [
+      {"source": "direct", "downloads": 20},
+      {"source": "pulseguard_dashboard", "downloads": 15},
+      {"source": "email", "downloads": 12}
+    ]
+  }
+}
+```
+
+### Storage Analytics
+```json
+{
+  "storage_analytics": {
+    "user_id": "user-789",
+    "current_usage": {
+      "used_bytes": 524288000, // 500MB
+      "total_bytes": 1073741824, // 1GB
+      "usage_percentage": 48.8
+    },
+    "file_breakdown": {
+      "by_type": {
+        "pdf": {"count": 45, "size_bytes": 209715200},
+        "png": {"count": 23, "size_bytes": 157286400},
+        "log": {"count": 12, "size_bytes": 104857600}
+      },
+      "by_age": {
+        "0-7_days": {"count": 34, "size_bytes": 314572800},
+        "8-30_days": {"count": 28, "size_bytes": 157286400},
+        "31-90_days": {"count": 18, "size_bytes": 52428800}
+      }
+    },
+    "expiration_schedule": [
+      {"files_expiring_24h": 5, "total_size_bytes": 10485760},
+      {"files_expiring_7d": 12, "total_size_bytes": 52428800}
+    ]
+  }
+}
+```
+
+## Integration Examples
+
+### PulseGuard Report Sharing
+```javascript
+// Automatic upload of monitoring report
+const shareMonitoringReport = async (reportData) => {
+  const formData = new FormData();
+  formData.append('file', reportData.blob, 'uptime-report.pdf');
+  formData.append('expiration_hours', '168'); // 7 days
+  formData.append('max_downloads', '50');
+  formData.append('notify_email', 'team@company.com');
+
+  const response = await fetch('/api/pulsefiles/upload', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${PULSEGUARD_API_KEY}`
+    },
+    body: formData
+  });
+
+  const result = await response.json();
+
+  // Update PulseGuard report with share link
+  await fetch(`/api/reports/${reportData.id}`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${PULSEGUARD_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      share_url: result.download_url
+    })
+  });
+
+  return result;
+};
+```
+
+### Incident Screenshot Upload
+```javascript
+// Upload screenshot on incident creation
+const uploadIncidentScreenshot = async (screenshotBlob, incidentId) => {
+  const formData = new FormData();
+  formData.append('file', screenshotBlob, 'incident-screenshot.png');
+  formData.append('expiration_hours', '720'); // 30 days
+  formData.append('max_downloads', '10');
+  formData.append('password', generateSecurePassword());
+
+  const uploadResponse = await fetch('/api/pulsefiles/upload', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${PULSEGUARD_API_KEY}`
+    },
+    body: formData
+  });
+
+  const uploadResult = await uploadResponse.json();
+
+  // Link screenshot to incident
+  await fetch(`/api/incidents/${incidentId}/attachments`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${PULSEGUARD_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      type: 'screenshot',
+      url: uploadResult.download_url,
+      password_protected: true
+    })
+  });
+
+  return uploadResult;
+};
+```
+
+### CI/CD Artifact Sharing
+```yaml
+# GitHub Actions workflow for artifact sharing
+name: Deploy and Share Logs
+on: [deployment]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload deployment logs
+        run: |
+          # Create log archive
+          tar -czf deployment-logs.tar.gz /var/log/deployment/
+
+          # Upload to PulseFiles
+          curl -X POST "https://api.pulsefiles.com/api/upload" \
+            -H "Authorization: Bearer ${{ secrets.PULSEFILES_API_KEY }}" \
+            -F "file=@deployment-logs.tar.gz" \
+            -F "expiration_hours=24" \
+            -F "password=${{ secrets.LOGS_PASSWORD }}" \
+            -o upload-result.json
+
+          # Extract share URL
+          SHARE_URL=$(cat upload-result.json | jq -r '.download_url')
+
+          # Post to Slack
+          curl -X POST "${{ secrets.SLACK_WEBHOOK }}" \
+            -H 'Content-type: application/json' \
+            -d "{\"text\":\"Deployment logs: $SHARE_URL\"}"
+```
+
+## Pricing & Limits
+
+### Free Plan
+- **Max File Size**: 10MB per file
+- **Total Storage**: 100MB
+- **Files per Day**: 10 uploads
+- **Retention**: 7 days
+- **Download Limit**: 100 downloads per file
+
+### Pro Plan (€4.99/month)
+- **Max File Size**: 100MB per file
+- **Total Storage**: 1GB
+- **Files per Day**: 100 uploads
+- **Retention**: 30 days
+- **Download Limit**: 1000 downloads per file
+- **Password Protection**: Yes
+- **Analytics**: Extended
+
+### Enterprise Plan (€19.99/month)
+- **Max File Size**: 1GB per file
+- **Total Storage**: 10GB
+- **Files per Day**: 1000 uploads
+- **Retention**: 90 days
+- **Download Limit**: Unlimited
+- **Advanced Security**: Yes
+- **Custom Branding**: Yes
+- **API Access**: Full
+- **Priority Support**: Yes
+
+## Technical Documentation
+
+### Webhook Events
+```json
+{
+  "webhook_events": [
+    {
+      "event": "file_uploaded",
+      "payload": {
+        "file_id": "file-123456",
+        "file_name": "report.pdf",
+        "file_size": 2457600,
+        "upload_timestamp": "2024-01-17T10:30:00Z",
+        "expires_at": "2024-01-24T10:30:00Z"
+      }
+    },
+    {
+      "event": "file_downloaded",
+      "payload": {
+        "file_id": "file-123456",
+        "download_id": "dl-789012",
+        "timestamp": "2024-01-17T11:00:00Z",
+        "ip_address": "192.168.1.100",
+        "user_agent": "Mozilla/5.0...",
+        "country": "Netherlands"
+      }
+    }
+  ]
+}
+```
+
+### API Rate Limits
+```json
+{
+  "rate_limits": {
+    "upload": {
+      "per_minute": 10,
+      "per_hour": 100,
+      "per_day": 1000
+    },
+    "download": {
+      "per_minute": 60,
+      "per_hour": 1000
+    },
+    "api_calls": {
+      "per_minute": 120,
+      "per_hour": 2000
+    }
+  }
+}
+```
+
+## Troubleshooting
+
+### Common Problems
+
+#### Upload Fails
+```bash
+# Check file size limits
+ls -lh filename.ext
+
+# Verify API key
+curl -I -H "Authorization: Bearer YOUR_API_KEY" https://api.pulsefiles.com/api/upload
+
+# Check quota
+curl -H "Authorization: Bearer YOUR_API_KEY" https://api.pulsefiles.com/api/quota
+```
+
+#### Download Link Doesn't Exist
+```bash
+# Check expiration
+curl -H "Authorization: Bearer YOUR_API_KEY" https://api.pulsefiles.com/api/files/{file_id}
+
+# Check download count
+# Response header X-Download-Count vs X-Max-Downloads
+
+# Verify password (if applicable)
+curl -H "Authorization: Bearer YOUR_API_KEY" "https://api.pulsefiles.com/api/dl/{code}?password=yourpassword"
+```
+
+#### Storage Quota Exceeded
+```bash
+# Check current usage
+curl -H "Authorization: Bearer YOUR_API_KEY" https://api.pulsefiles.com/api/usage
+
+# List files by size
+curl -H "Authorization: Bearer YOUR_API_KEY" https://api.pulsefiles.com/api/files?sort=size_desc
+
+# Delete old files
+curl -X DELETE -H "Authorization: Bearer YOUR_API_KEY" https://api.pulsefiles.com/api/files/{file_id}
+```
+
+### Debug Tools
+```bash
+# Upload test file
+echo "test content" > test.txt
+curl -X POST "https://api.pulsefiles.com/api/upload" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F "file=@test.txt" \
+  -F "expiration_hours=1"
+
+# Test download
+curl -I "https://files.pulsefiles.com/dl/{short_code}"
+
+# Check file info
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+  "https://api.pulsefiles.com/api/files/{file_id}/debug"
+```
+
+## Best Practices
+
+### Security Best Practices
+1. **Use Strong Passwords**: For sensitive files
+2. **Set Short Expiration Times**: For temporary shares
+3. **Monitor Download Activity**: Check for suspicious access
+4. **Regular Cleanup**: Remove unused files
+
+### Performance Optimization
+1. **Compress Large Files**: Use ZIP for multiple files
+2. **Use Batch Uploads**: For multiple related files
+3. **Plan Expiration Strategically**: Balance accessibility and security
+4. **Monitor Storage Usage**: Prevent quota overruns
+
+### Compliance Considerations
+1. **Data Classification**: Classify files by sensitivity
+2. **Retention Policies**: Set appropriate retention periods
+3. **Access Logging**: Maintain audit logs for compliance
+4. **GDPR Compliance**: Respect data protection regulations
+
+### Integration Best Practices
+1. **Error Handling**: Implement proper error handling
+2. **Retry Logic**: Add retry logic for failed uploads
+3. **Progress Tracking**: Show upload/download progress
+4. **Fallback Options**: Provide alternatives for API downtime
+
+PulseFiles provides a secure, reliable way to temporarily share files with full integration into the PulseGuard ecosystem. With end-to-end encryption, detailed analytics, and flexible configuration options, PulseFiles is the ideal solution for modern file sharing needs.

@@ -23,13 +23,13 @@
         "tab": "PulseGuard",
         "groups": [
           {
-            "group": "Introduction",
+            "group": "Introductie",
             "pages": [
               "pulseguard/introduction/overview"
             ]
           },
           {
-            "group": "Getting Started",
+            "group": "Aan de slag",
             "pages": [
               "pulseguard/getting-started/setup"
             ]
@@ -45,7 +45,7 @@
             ]
           },
           {
-            "group": "Features",
+            "group": "Functies",
             "pages": [
               "pulseguard/features/ai-insights/overview",
               "pulseguard/features/toolbox/overview"
@@ -61,11 +61,11 @@
             ]
           },
           {
-            "group": "API Reference",
+            "group": "API Referentie",
             "openapi": "pulseguard/api/openapi.json"
           },
           {
-            "group": "MCP Integration",
+            "group": "MCP Integratie",
             "pages": [
               "pulseguard/mcp/overview",
               "pulseguard/mcp/setup",
@@ -79,7 +79,7 @@
         "tab": "PulseQR",
         "groups": [
           {
-            "group": "Introduction",
+            "group": "Introductie",
             "pages": [
               "pulseqr/introduction/overview"
             ]
@@ -96,9 +96,100 @@
         "tab": "PulseFiles",
         "groups": [
           {
-            "group": "Introduction",
+            "group": "Introductie",
             "pages": [
               "pulsefiles/introduction/overview"
+            ]
+          }
+        ]
+      }
+    ],
+    "languages": [
+      {
+        "language": "en",
+        "tabs": [
+          {
+            "tab": "PulseGuard",
+            "groups": [
+              {
+                "group": "Introduction",
+                "pages": [
+                  "en/pulseguard/introduction/overview"
+                ]
+              },
+              {
+                "group": "Getting Started",
+                "pages": [
+                  "en/pulseguard/getting-started/setup"
+                ]
+              },
+              {
+                "group": "Monitoring",
+                "pages": [
+                  "en/pulseguard/monitoring/domains/overview",
+                  "en/pulseguard/monitoring/devices/overview",
+                  "en/pulseguard/monitoring/services/overview",
+                  "en/pulseguard/monitoring/incidents/overview",
+                  "en/pulseguard/monitoring/status-pages/overview"
+                ]
+              },
+              {
+                "group": "Features",
+                "pages": [
+                  "en/pulseguard/features/ai-insights/overview",
+                  "en/pulseguard/features/toolbox/overview"
+                ]
+              },
+              {
+                "group": "API",
+                "pages": [
+                  "en/pulseguard/api/introduction",
+                  "en/pulseguard/api/authentication",
+                  "en/pulseguard/api/api-keys",
+                  "en/pulseguard/api/playground"
+                ]
+              },
+              {
+                "group": "API Reference",
+                "openapi": "pulseguard/api/openapi.json"
+              },
+              {
+                "group": "MCP Integration",
+                "pages": [
+                  "en/pulseguard/mcp/overview",
+                  "en/pulseguard/mcp/setup",
+                  "en/pulseguard/mcp/tools",
+                  "en/pulseguard/mcp/oauth"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "PulseQR",
+            "groups": [
+              {
+                "group": "Introduction",
+                "pages": [
+                  "en/pulseqr/introduction/overview"
+                ]
+              },
+              {
+                "group": "API",
+                "pages": [
+                  "en/pulseqr/api/overview"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "PulseFiles",
+            "groups": [
+              {
+                "group": "Introduction",
+                "pages": [
+                  "en/pulsefiles/introduction/overview"
+                ]
+              }
             ]
           }
         ]
